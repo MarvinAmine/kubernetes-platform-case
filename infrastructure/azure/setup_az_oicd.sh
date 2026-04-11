@@ -20,29 +20,57 @@ if [[ -z "$REPO_OWNER"  || -z  "$SUBSCRIPTION_ID" ]]; then
 fi
 
 echo "Preemptive login verification"
-az account show --output table >/dev/null
+az account show --output table
 
 echo "Creating the Entra application: $APP_NAME"
-APP_ID=$(az ad app create \
+APP_ID="$(az ad app create \
   --display-name "$APP_NAME" \
-  --query appId -o tsv)
+  --query "[0].appId" -o tsv)"
 
-echo "Creating the service principal for app: $APP_ID"
-az ad sp create --id "$APP_ID"
+if [[ -z "$APP_ID" ]]; then
+    echo "No existing app found. Creating Entra application: $APP_NAME"
+    APP_ID="$(az ad app create --display-name "$APP_NAME" --query appId -o tsv)"
+else
+    echo "Existing Entra application found: $APP_ID"
+fi
 
-echo "Waiting for service principal propagation..."
-sleep 15
+echo "Checking whether the service principal already exists for app: $APP_ID"
+SP_ID="$(az ad sp show --id "$APP_ID" --query id -o tsv || true)"
+
+if [[ -z "$SP_ID" ]]; then
+    echo "No service principal found. Creating it..."
+    az ad sp create --id "$APP_ID"
+    echo "Waiting for service principal propagation..."
+    sleep 15
+    SP_ID="$(az ad sp show --id "$APP_ID" --query id -o tsv)"
+else
+    echo "Existing service principal found: $SP_ID"
+fi
 
 # Get the tenant ID
 TENANT_ID=$(az account show --query tenantId -o tsv)
 echo "TENANT_ID: $TENANT_ID"
 
 # Assign Azure role with the right scope
-SCOPE="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP"
+SCOPE="/subscriptions/$SUBSCRIPTION_ID"
 
-echo "Assigning role '$ROLE_NAME' on scope '$SCOPE'"
-az role assignment create --assignee "$APP_ID" --role "$ROLE_NAME" --scope "$SCOPE"
+echo "Checking role assignment '$ROLE_NAME' on scope '$SCOPE'"
+EXISTING_ASSIGNMENT="$(az role assignment list \
+  --assignee-object-id "$SP_ID" \
+  --scope "$SCOPE" \
+  --query "[?roleDefinitionName=='$ROLE_NAME'] | [0].id" \
+  -o tsv || true)"
 
+if [[ -z "$EXISTING_ASSIGNMENT" ]]; then
+    echo "Creating role assignment..."
+    az role assignment create \
+      --assignee-object-id "$SP_ID" \
+      --assignee-principal-type ServicePrincipal \
+      --role "$ROLE_NAME" \
+      --scope "$SCOPE"
+else
+    echo "Role assignment already exists."
+fi
 
 echo "Replacing the REPO_OWNER, REPO_NAME and GITHUB_BRANCH in the 'github-oidc-credential.json'"
 RENDERED_FILE="github-oidc-credential.json"
@@ -52,6 +80,23 @@ cp github-oidc-credential.template.json "$RENDERED_FILE"
 sed -i "s|<REPO_OWNER>|$REPO_OWNER|g" "$RENDERED_FILE"
 sed -i "s|<REPO_NAME>|$REPO_NAME|g" "$RENDERED_FILE"
 sed -i "s|<GITHUB_BRANCH>|$GITHUB_BRANCH|g" "$RENDERED_FILE"
+
+echo "Checking if federated credential already exists..."
+APP_OBJECT_ID="$(az ad app show --id "$APP_ID" --query id -o tsv)"
+FED_NAME="github-main-branch"
+
+FED_EXISTS="$(az rest \
+  --method GET \
+  --url "https://graph.microsoft.com/beta/applications/$APP_OBJECT_ID/federatedIdentityCredentials" \
+  --query "value[?name=='$FED_NAME'] | [0].name" \
+  -o tsv || true)"
+
+if [[ -n "$FED_EXISTS" ]]; then
+    echo "Federated credential '$FED_NAME' already exists. Replacing it to ensure subject is correct..."
+    az ad app federated-credential delete \
+      --id "$APP_ID" \
+      --federated-credential-id "$FED_NAME"
+fi
 
 az ad app federated-credential create --id "$APP_ID" --parameters @"$RENDERED_FILE"
 
