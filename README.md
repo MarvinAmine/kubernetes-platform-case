@@ -1,6 +1,6 @@
-# Stage 1 on 3 - Java microservice backend deployed in AKS Kubernetes using IaC Terraform, GitHub Actions and Docker container. 
+# Stage 1 on 3 - Java microservice backend deployed in AKS Kubernetes using IaC Terraform, GitHub Actions, Helm and Docker container. 
 
-Java Spring Boot microservice packaged with Docker, deployed with Helm to AKS (Azure Kubernetes Service) using GitHub Actions and OIDC secrets. Including operational checks, observability and simulated real failure scenarios documented walktrough of the troubleshooting. The responsability layers are squattered between the development team and the infrastructure team.
+Java Spring Boot microservice packaged with Docker and deployed with Helm to AKS (Azure Kubernetes Service) using GitHub Actions and OIDC. The project includes operational checks, observability, and simulated failure scenarios with documented troubleshooting. Responsibility is clearly split between the infrastructure team and the application team.
 
 ![alt text](environment_bootstrap_path.png)
 ![alt text](app_delivery_path.png)
@@ -197,6 +197,7 @@ Kubernetes / Application
 ```
 
 ## 5. Repo architecture
+The structure below represents the target Stage 1 repository architecture. Some helper scripts are currently still located directly under `infrastructure/azure/`.:
 ```
 kubernetes-platform-case/
 ├── .github/
@@ -207,16 +208,15 @@ kubernetes-platform-case/
 │
 ├── infrastructure/
 │   ├── azure/
+│   │   ├── versions.tf
+│   │   ├── export-kubeconfig.sh
+│   │   ├── validate-azure-context.sh
+│   │   ├── destroy-azure.sh
 │   │   ├── terraform/
 │   │   │   ├── main.tf
 │   │   │   ├── variables.tf
 │   │   │   ├── outputs.tf
 │   │   │   ├── providers.tf
-│   │   │   └── versions.tf
-│   │   ├── scripts/
-│   │   │   ├── export-kubeconfig.sh
-│   │   │   ├── validate-azure-context.sh
-│   │   │   └── destroy-azure.sh
 │   │   └── docs/
 │   │       └── README.md
 │   │

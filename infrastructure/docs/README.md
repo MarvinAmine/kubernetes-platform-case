@@ -1,12 +1,12 @@
 # Infrastructure documentation
 
-> This folder is reserved to the infrastructure team. In hightly regulated compagnies, this folder would be specifically on his own repository, only accessible by the infra team.
+> This folder is reserved for the infrastructure team. In highly regulated compagnies, this folder would usually live in its own repository and be accessible by the infrastructure team.
 
 ## Azure
 
-### Requirments steps (if it's not already done):
+### Requirments steps (if not already done):
 
-#### Install AZ command line on linux:
+#### Install the AZ command line on linux:
 ```bash
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 az version
@@ -19,41 +19,85 @@ az login
 
 #### If you have multiple subscriptions
 ```bash
-# identify the right subcription
+# identify the right subscription
 az account list --output table
 az account set --subscription "<YOUR_SUBSCRIPTION_NAME_OR_ID>"
 ```
 
-#### Register the resource providers
+#### Register the required resource providers
 ```bash
 az provider register --namespace Microsoft.ContainerService
 az provider register --namespace Microsoft.Compute
 az provider register --namespace Microsoft.Network
 ```
 
-### Create the AKS cluster and connect the kubectl to it:
+### Local manual tests 
+
+#### Create Azure resources with Terraform
 ```bash
-# From the root
+# From the root directory
+cd infrastructure/azure
+./create_azure_resources.sh
+```
+
+#### Create the AKS cluster and connect the kubectl to it:
+```bash
+# From the root directory
 cd infrastructure/azure
 ./create_aks_cluster_and_connect_with_kubectl.sh
 ```
 
-### Delete the AKS cluster to avoid any additional feeds, after the simulation
+#### Delete Azure resources after the simulation to avoid additional fees
+```bash
+# From the root directory
+cd infrastructure/azure
+./destroy_azure_resources.sh
+```
+
+#### Delete the Azure resources group manually
+```bash
+# From the root directory
+cd infrastructure/azure
+./delete_azure_resource_group_manually.sh
+```
+
+#### Alternative to delete the Azure resource group manually to avoid any additional fees, after the simulation
 ```bash
 az group delete --name "$RESOURCE_GROUP" --yes --no-wait
 ```
 
 ## Terraform
 
-Init and validate the syntax of the terrafom files:
+### Azure terraform layer
+Initialize and validate the Azure Terraform files:
 ```bash
-# From the root direcctory
-cd /infrastructure/terraform
+# From the root directory
+cd infrastructure/azure/terraform
+terraform init
+terraform validate
+```
+`terrafomr init` initializes the backend and provider plugins such as `hashicorp/azuerm`. It also creates the `.terraform.lock.hcl` file.
+
+Show the changes required by the current configuration:
+```bash
+terraform plan
+```
+
+Create or update Azure infrastructure:
+```
+terraform apply
+```
+
+### Cluster bootstrap Terraform layer
+Initialize and validate the Kubernetes bootstrap Terraform files:
+```bash
+# From the root directory
+cd /infrastructure/cluster-bootstrap/terraform
 terraform init
 terrafrom validate
 ```
 
-`terraform init` will initiate the backend, and provider plugins like `hashicorp/kubernetes` pluging. It will also create the `.terraform.lock.hcl` file.
+`terraform init` initializes the backend and provider plugins such as `hashicorp/kubernetes`. It also creates the `.terraform.lock.hcl` file.
 
 Show changes required by the current configuration. Create the `.terraform.tfstate.lock.info` file:
 ```bash
@@ -65,7 +109,7 @@ Create or update infrastructure
 terraform apply
 ```
 
-Verify the kubernetes ressources (here is the official documentation [Terraform_ArchiCorp_Kubernetes_provider](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/namespace))
+Verify the kubernetes resources (here is the official documentation [Terraform_ArchiCorp_Kubernetes_provider](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/namespace))
 ```bash
 kubectl get ns document-processing-stage1
 ```
@@ -120,3 +164,7 @@ NAME                       DATA   AGE
 kube-root-ca.crt           1      3h17m
 platform-baseline-config   3      42s
 ```
+
+## Set GitHub Actions secrets and variables
+![alt text](../../OIDC_secrets.png)
+![alt text](../../OIDC_variable.png)
