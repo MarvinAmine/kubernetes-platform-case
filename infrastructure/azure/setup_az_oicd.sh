@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 if [[ ! -f ".env" ]]; then
-    echo "Missing .env file. Copy .env.exemple to .env and fill the environment variables."
+    echo "Missing .env file. Copy .env.example to .env and fill the environment variables."
     exit 1
 fi
 
