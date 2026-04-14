@@ -2,6 +2,8 @@
 
 Java Spring Boot microservice packaged with Docker and deployed with Helm to AKS (Azure Kubernetes Service) using GitHub Actions and OIDC. The project includes operational checks, observability, and simulated failure scenarios with documented troubleshooting. Responsibility is clearly split between the infrastructure team and the application team.
 
+Important: this project uses a remote Terraform backend in Azure Storage so local runs and CI/CD executions share the same infrastructure state instead of relying on local Terraform state files.
+
 ![alt text](environment_bootstrap_path.png)
 ![alt text](app_delivery_path.png)
 

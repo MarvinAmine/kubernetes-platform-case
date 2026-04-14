@@ -47,6 +47,9 @@ jobs:
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
 
+            - name: Terraform Format Check
+              run: terraform fmt -check -diff    
+
             - name: Verify Azure subscription
               run: |
                 echo "Expected subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}"

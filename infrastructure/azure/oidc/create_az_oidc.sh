@@ -28,10 +28,8 @@ fi
 echo "Preemptive login verification"
 az account show --output table
 
-echo "Creating the Entra application: $APP_NAME"
-APP_ID="$(az ad app create \
-  --display-name "$APP_NAME" \
-  --query "[0].appId" -o tsv)"
+echo "Checking whether the Entra application already exists: $APP_NAME"
+APP_ID="$(az ad app list --display-name "$APP_NAME" --query "[0].appId" -o tsv)"
 
 if [[ -z "$APP_ID" ]]; then
     echo "No existing app found. Creating Entra application: $APP_NAME"
@@ -104,7 +102,7 @@ if [[ -n "$FED_EXISTS" ]]; then
       --federated-credential-id "$FED_NAME"
 fi
 
-az ad app federated-credential create --id "$APP_ID" --parameters @"$RENDERED_FILE"
+az ad app federated-credential create --id "$APP_ID" --parameters @"$OUTPUT_FILE"
 
 
 echo "Done. Add these GitHub secrets in your github repository:"
