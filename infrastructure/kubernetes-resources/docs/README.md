@@ -50,7 +50,7 @@ terraform apply
 
 ## GitHub Actions behavior
 
-The workflow `.github/workflows/kubernetes-resources.yml` supports two execution modes:
+The workflow `.github/workflows/kubernetes-resources-provision.yml` supports two execution modes:
 
 - `push`
   Runs Terraform format check, init, validate, and plan.

@@ -60,3 +60,7 @@ The workflow `.github/workflows/azure-destroy.yml` is manual only:
   Runs `terraform destroy -auto-approve`
 
 This keeps Azure provisioning validated on push while reserving real infrastructure changes and destruction for explicit manual execution.
+
+## Related Documentation
+
+- [OIDC For GitHub Actions](/home/marvin/Documents/dev/kubernetes/infrastructure/azure/docs/OIDC.md)

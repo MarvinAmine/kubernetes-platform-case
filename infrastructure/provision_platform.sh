@@ -92,6 +92,19 @@ backend_values_missing() {
     [[ -z "${TF_BACKEND_RESOURCE_GROUP:-}" || -z "${TF_BACKEND_STORAGE_ACCOUNT:-}" || -z "${TF_BACKEND_CONTAINER:-}" ]]
 }
 
+backend_exists() {
+    az storage account show \
+        --name "$TF_BACKEND_STORAGE_ACCOUNT" \
+        --resource-group "$TF_BACKEND_RESOURCE_GROUP" \
+        --output none >/dev/null 2>&1 || return 1
+
+    az storage container show \
+        --name "$TF_BACKEND_CONTAINER" \
+        --account-name "$TF_BACKEND_STORAGE_ACCOUNT" \
+        --auth-mode login \
+        --output none >/dev/null 2>&1 || return 1    
+}
+
 read_backend_outputs() {
     local backend_output_dir="$SCRIPT_DIR/terraform-backend/terraform"
 
@@ -100,7 +113,28 @@ read_backend_outputs() {
     BACKEND_CONTAINER="$(terraform -chdir="$backend_output_dir" output -raw backend_container_name)"
 }
 
+resolve_oidc_secret_values() {
+    RESOLVED_AZURE_CLIENT_ID="<from infrastructure/azure/oidc/create_az_oidc.sh output>"
+    RESOLVED_AZURE_TENANT_ID="<from infrastructure/azure/oidc/create_az_oidc.sh output>"
+
+    if [[ -n "${APP_NAME:-}" ]]; then
+        local app_id
+        app_id="$(az ad app list --display-name "$APP_NAME" --query "[0].appId" -o tsv 2>/dev/null || true)"
+        if [[ -n "$app_id" ]]; then
+            RESOLVED_AZURE_CLIENT_ID="$app_id"
+        fi
+    fi
+
+    local tenant_id
+    tenant_id="$(az account show --query tenantId -o tsv 2>/dev/null || true)"
+    if [[ -n "$tenant_id" ]]; then
+        RESOLVED_AZURE_TENANT_ID="$tenant_id"
+    fi
+}
+
 print_first_run_instructions() {
+    resolve_oidc_secret_values
+
     cat <<EOF
 
 Backend created successfully.
@@ -120,8 +154,8 @@ AKS_CLUSTER_NAME=${AKS_CLUSTER_NAME:-aks-stage1-platform}
 
 Confirm these GitHub repository secrets are set:
 AZURE_SUBSCRIPTION_ID=${SUBSCRIPTION_ID:-<your-subscription-id>}
-AZURE_CLIENT_ID=<from infrastructure/azure/oidc/create_az_oidc.sh output>
-AZURE_TENANT_ID=<from infrastructure/azure/oidc/create_az_oidc.sh output>
+AZURE_CLIENT_ID=${RESOLVED_AZURE_CLIENT_ID}
+AZURE_TENANT_ID=${RESOLVED_AZURE_TENANT_ID}
 
 Then load the environment:
 set -a
@@ -138,13 +172,7 @@ confirm_continue() {
     [[ "$answer" == "yes" ]]
 }
 
-run_first_time_backend_bootstrap() {
-    print_header "First Run Detected"
-    echo "Backend values are missing from $ENV_FILE."
-    echo "STEP 1/4 - Creating or reconciling the remote Terraform backend..."
-    "$SCRIPT_DIR/terraform-backend/create_remote_backend.sh"
-    read_backend_outputs
-
+print_manual_configuration_block() {
     print_header "Required Manual Configuration"
     print_first_run_instructions
 
@@ -157,20 +185,13 @@ run_first_time_backend_bootstrap() {
     echo "Optional now:"
     echo "- Continue local provisioning if you only want local bootstrap"
     echo "- Stop here and configure GitHub first"
+}
 
-    if ! confirm_continue "Do you want to continue with provisioning now? Type yes or no: "; then
-        echo "Stopping here so you can update .env and GitHub configuration."
-        exit 0
-    fi
-
-    echo "Reloading environment from $ENV_FILE before continuing..."
-    load_env
-
-    if backend_values_missing; then
-        echo "Backend values are still missing in $ENV_FILE."
-        echo "Update the file manually, then rerun this script."
-        exit 1
-    fi
+run_first_time_backend_bootstrap() {
+    print_header "First Run Detected"
+    echo "STEP 1/4 - Creating or reconciling the remote Terraform backend..."
+    "$SCRIPT_DIR/terraform-backend/create_remote_backend.sh"
+    read_backend_outputs
 }
 
 run_azure_provisioning() {
@@ -197,6 +218,8 @@ run_oidc_setup() {
 }
 
 main() {
+    local first_run_detected=false
+
     print_header "Platform Provisioning Wizard"
 
     ensure_env_file_exists
@@ -206,15 +229,29 @@ main() {
     register_required_providers
 
     if backend_values_missing; then
+        first_run_detected=true
         run_first_time_backend_bootstrap
     else
         print_header "Existing Backend Configuration Detected"
         echo "Backend values already exist in $ENV_FILE."
+
+        if backend_exists; then
+            echo "Remote backend exists and is reachable."
+        else
+            first_run_detected=true
+            echo "Remote backend values are set, but the backend does not exist yet or is not reachable."
+            echo "Falling back to STEP 1/4 to create or reconcile the remote Terraform backend."
+            run_first_time_backend_bootstrap
+        fi
     fi
 
     run_azure_provisioning
     run_kubernetes_provisioning
     run_oidc_setup
+
+    if [[ "$first_run_detected" == true ]]; then
+        print_manual_configuration_block
+    fi
 
     print_header "Completed"
     echo "Platform provisioning completed."
