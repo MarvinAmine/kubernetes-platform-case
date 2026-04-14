@@ -2,16 +2,18 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+ENV_FILE="$SCRIPT_DIR/../../.env"
+ENV_FILE_TEMPLATE="$SCRIPT_DIR/../../.env.example"
+cd "$SCRIPT_DIR/.."
 
-if [[ ! -f ".env" ]]; then
-    echo "Missing .env file. Copy .env.example to .env and fill the environment variables."
+if [[ ! -f "$ENV_FILE" ]]; then
+    echo "Missing $ENV_FILE. Copy $ENV_FILE_TEMPLATE to $ENV_FILE and fill the environment variables."
     exit 1
 fi
 
 # Source the variables from the env file
 set -a
-source .env
+source "$ENV_FILE"
 set +a
 
 if [[ -z "$RESOURCE_GROUP"  || -z  "$LOCATION" || -z  "$AKS_CLUSTER_NAME" ]]; then

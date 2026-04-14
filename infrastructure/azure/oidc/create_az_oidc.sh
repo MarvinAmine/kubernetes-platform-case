@@ -2,16 +2,22 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_FILE="$SCRIPT_DIR/../../.env"
+ENV_FILE_TEMPLATE="$SCRIPT_DIR/../../.env.example"
+TEMPLATE_FILE="$SCRIPT_DIR/github-oidc-credential.template.json"
+OUTPUT_FILE="$SCRIPT_DIR/github-oidc-credential.json"
+
+
 cd "$SCRIPT_DIR"
 
-if [[ ! -f ".env" ]]; then
-    echo "Missing .env file. Copy .env.example to .env and fill the environment variables."
+if [[ ! -f "$ENV_FILE" ]]; then
+    echo "Missing $ENV_FILE file. Copy $ENV_FILE_TEMPLATE to $ENV_FILE and fill the environment variables."
     exit 1
 fi
 
 # Source the variables from the env file
 set -a
-source .env
+source "$ENV_FILE"
 set +a
 
 if [[ -z "$REPO_OWNER"  || -z  "$SUBSCRIPTION_ID" ]]; then
@@ -73,13 +79,13 @@ else
 fi
 
 echo "Replacing the REPO_OWNER, REPO_NAME and GITHUB_BRANCH in the 'github-oidc-credential.json'"
-RENDERED_FILE="github-oidc-credential.json"
-cp github-oidc-credential.template.json "$RENDERED_FILE"
+
+cp "$TEMPLATE_FILE" "$OUTPUT_FILE"
 
 
-sed -i "s|<REPO_OWNER>|$REPO_OWNER|g" "$RENDERED_FILE"
-sed -i "s|<REPO_NAME>|$REPO_NAME|g" "$RENDERED_FILE"
-sed -i "s|<GITHUB_BRANCH>|$GITHUB_BRANCH|g" "$RENDERED_FILE"
+sed -i "s|<REPO_OWNER>|$REPO_OWNER|g" "$OUTPUT_FILE"
+sed -i "s|<REPO_NAME>|$REPO_NAME|g" "$OUTPUT_FILE"
+sed -i "s|<GITHUB_BRANCH>|$GITHUB_BRANCH|g" "$OUTPUT_FILE"
 
 echo "Checking if federated credential already exists..."
 APP_OBJECT_ID="$(az ad app show --id "$APP_ID" --query id -o tsv)"

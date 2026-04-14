@@ -24,7 +24,15 @@ jobs:
             TF_VAR_node_count: "1"
             TF_VAR_vm_size: Standard_D2as_v6
             TF_VAR_tier: Free
+            
+            ARM_USE_OIDC: true
+            ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+            ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+            ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+            TF_BACKEND_RESOURCE_GROUP: ${{ vars.TF_BACKEND_RESOURCE_GROUP }}
+            TF_BACKEND_STORAGE_ACCOUNT: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT }}
+            TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER }}
 
         steps:
             - name: Checkout repository
@@ -41,7 +49,17 @@ jobs:
               uses: hashicorp/setup-terraform@v3
 
             - name: Terraform Init
-              run: terraform init
+              run: |
+                terraform init \
+                  -backend-config="resource_group_name=${TF_BACKEND_RESOURCE_GROUP}" \
+                  -backend-config="storage_account_name=${TF_BACKEND_STORAGE_ACCOUNT}" \
+                  -backend-config="container_name=${TF_BACKEND_CONTAINER}" \
+                  -backend-config="key=azure/terraform.tfstate" \
+                  -backend-config="use_oidc=true" \
+                  -backend-config="use_azuread_auth=true" \
+                  -backend-config="client_id=${ARM_CLIENT_ID}" \
+                  -backend-config="tenant_id=${ARM_TENANT_ID}" \
+                  -backend-config="subscription_id=${ARM_SUBSCRIPTION_ID}"
             
             - name: terraform Destroy
               run: terraform destroy -auto-approve

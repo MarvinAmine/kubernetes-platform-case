@@ -1,40 +1,32 @@
-name: Azure Provision
+name: Kubernetes Resources
 
 on:
     push:
         paths:
-            - 'infrastructure/azure/**'
-            - '.github/workflows/azure-provision.yml'
+            - 'infrastructure/kubernetes-resources/**'
+            - '.github/workflows/kubernetes-resources.yml'
     workflow_dispatch:
 
 permissions:
-    id-token: write
-    contents: read
+  id-token: write
+  contents: read
 
 jobs:
-    azure-provision:
+    terraform-bootstrap:
         runs-on: ubuntu-latest
 
         defaults:
             run:
-                working-directory: infrastructure/azure/terraform
+                working-directory: infrastructure/kubernetes-resources/terraform
         
-        env:  
-            TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-            TF_VAR_resource_group_name: ${{ vars.RESOURCE_GROUP }}
-            TF_VAR_location: ${{ vars.AKS_LOCATION }}
-            TF_VAR_aks_cluster_name: ${{ vars.AKS_CLUSTER_NAME }}
-            TF_VAR_dns_prefix: aks-stage1
-            TF_VAR_node_count: "1"
-            TF_VAR_vm_size: Standard_D2as_v6
-            TF_VAR_tier: Free
-
+        env:
             TF_BACKEND_RESOURCE_GROUP: ${{ vars.TF_BACKEND_RESOURCE_GROUP }}
             TF_BACKEND_STORAGE_ACCOUNT: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT }}
             TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER }}
             ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
             ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
             ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
 
         steps:
             - name: Checkout repository
@@ -46,20 +38,41 @@ jobs:
                 client-id: ${{ secrets.AZURE_CLIENT_ID }}
                 tenant-id: ${{ secrets.AZURE_TENANT_ID }}
                 subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
+            
+            - name: Get AKS credentials
+              run: |
+                az aks get-credentials --resource-group "${{ vars.RESOURCE_GROUP }}" \
+                  --name "${{ vars.AKS_CLUSTER_NAME }}" --overwrite-existing
+            
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
 
+            - name: Verify Azure subscription
+              run: |
+                echo "Expected subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+                echo "Active subscription: $(az account show --query id -o tsv)"
+                test "${{ secrets.AZURE_SUBSCRIPTION_ID }}" = "$(az account show --query id -o tsv)"
+
+            - name: Verify kubectl context
+              run: |
+                echo "Current kubectl context:"
+                kubectl config current-context
+                echo
+                echo "Cluster info:"
+                kubectl cluster-info
+                echo "kube-system namespace:"
+                kubectl get ns kube-system     
+            
             - name: Terraform Format Check
               run: terraform fmt -check
-
+            
             - name: Terraform Init
               run: |
                 terraform init \
                   -backend-config="resource_group_name=${TF_BACKEND_RESOURCE_GROUP}" \
                   -backend-config="storage_account_name=${TF_BACKEND_STORAGE_ACCOUNT}" \
                   -backend-config="container_name=${TF_BACKEND_CONTAINER}" \
-                  -backend-config="key=azure/terraform.tfstate" \
+                  -backend-config="key=kubernetes-resources/terraform.tfstate" \
                   -backend-config="use_oidc=true" \
                   -backend-config="use_azuread_auth=true" \
                   -backend-config="client_id=${ARM_CLIENT_ID}" \
@@ -68,10 +81,10 @@ jobs:
 
             - name: Terraform Validate
               run: terraform validate
-              
+            
             - name: Terraform Plan
               run: terraform plan
 
             - name: Terraform Apply
               if: github.event_name == 'workflow_dispatch'
-              run: terraform apply -auto-approve
+              run: terraform apply -auto-approve  

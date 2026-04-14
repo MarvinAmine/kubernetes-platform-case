@@ -9,11 +9,16 @@ output "app_role_name" {
 }
 
 output "app_role_binding_name" {
-    description = "RoleBinding connectiong the runtime service account to its Role"
+    description = "RoleBinding connecting the runtime service account to its Role"
     value       = kubernetes_role_binding.app_runtime.metadata[0].name
 }
 
 output "baseline_configmap_name" {
     description = "Platform-owned baseline ConfigMap shared with the application team"
     value       = kubernetes_config_map.platform_baseline.metadata[0].name
+}
+
+output "namespace_name" {
+    description = "Platform-managed namespace created for the application team"
+    value       = kubernetes_namespace.app.metadata[0].name
 }

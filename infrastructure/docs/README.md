@@ -4,7 +4,7 @@
 
 ## Azure
 
-### Requirments steps (if not already done):
+### Requirements steps (if not already done):
 
 #### Install the AZ command line on linux:
 ```bash
@@ -31,6 +31,25 @@ az provider register --namespace Microsoft.Compute
 az provider register --namespace Microsoft.Network
 ```
 
+#### Shared environment file
+```bash
+cp infrastructure/.env.example infrastructure/.env
+```
+
+Fill `infrastructure/.env` before running the infrastructure scripts.
+
+#### Bootstrap the Terraform backend to ensure constant synchronization of the states between each local, bootstrap and GitHub Actions configuration state file
+
+> The remote backend should be created once, before using Terraform.
+
+To do so, you can run 
+```bash
+# From the root directory
+cd infrastructure/terraform-backend/terraform
+
+
+```
+
 ### Local manual tests 
 
 #### Create Azure resources with Terraform
@@ -44,7 +63,7 @@ cd infrastructure/azure
 ```bash
 # From the root directory
 cd infrastructure/azure
-./create_aks_cluster_and_connect_with_kubectl.sh
+./scripts/create_aks_cluster_and_connect_with_kubectl.sh
 ```
 
 #### Delete Azure resources after the simulation to avoid additional fees
@@ -58,7 +77,7 @@ cd infrastructure/azure
 ```bash
 # From the root directory
 cd infrastructure/azure
-./delete_azure_resource_group_manually.sh
+./script/delete_azure_resource_group_manually.sh
 ```
 
 #### Alternative to delete the Azure resource group manually to avoid any additional fees, after the simulation
@@ -73,10 +92,21 @@ Initialize and validate the Azure Terraform files:
 ```bash
 # From the root directory
 cd infrastructure/azure/terraform
-terraform init
+
+export TF_VAR_subscription_id="<your-subscription-id>"
+
+terraform init \
+-backend-config="resource_group_name=<tf-backend-rg>" \
+-backend-config="storage_account_name=<tf-backend-storage-account>" \
+-backend-config="container_name=tfstate" \
+-backend-config="key=azure/terraform.tfstate" \
+-backend-config="use_azuread_auth=true"
+
 terraform validate
 ```
-`terrafomr init` initializes the backend and provider plugins such as `hashicorp/azuerm`. It also creates the `.terraform.lock.hcl` file.
+Because key-based authentication is disabled on the backend storage account, local `terraform init` must include `use_azuread_auth=true`.
+
+`terraform init` initializes the backend and provider plugins such as `hashicorp/azuerm`. It also creates the `.terraform.lock.hcl` file.
 
 Show the changes required by the current configuration:
 ```bash
@@ -88,14 +118,23 @@ Create or update Azure infrastructure:
 terraform apply
 ```
 
-### Cluster bootstrap Terraform layer
-Initialize and validate the Kubernetes bootstrap Terraform files:
+### Kubernetes resources Terraform layer
+Initialize and validate the Kubernetes resources Terraform files:
 ```bash
 # From the root directory
-cd /infrastructure/cluster-bootstrap/terraform
-terraform init
-terrafrom validate
+cd infrastructure/kubernetes-resources/terraform
+
+terraform init \
+-backend-config="resource_group_name=<tf-backend-rg>" \
+-backend-config="storage_account_name=<tf-backend-storage-account>" \
+-backend-config="container_name=tfstate" \
+-backend-config="key=kubernetes-resources/terraform.tfstate" \
+-backend-config="use_azuread_auth=true"
+
+terraform validate
 ```
+Because key-based authentication is disabled on the backend storage account, local `terraform init` must include `use_azuread_auth=true`.
+
 
 `terraform init` initializes the backend and provider plugins such as `hashicorp/kubernetes`. It also creates the `.terraform.lock.hcl` file.
 

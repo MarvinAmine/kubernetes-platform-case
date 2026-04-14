@@ -2,18 +2,21 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_FILE="$SCRIPT_DIR/../.env"
+ENV_FILE_TEMPLATE="$SCRIPT_DIR/../.env.example"
+source "$SCRIPT_DIR/../scripts/wait_for_backend_access.sh"
 
-if [[ ! -f "$SCRIPT_DIR/.env" ]]; then
-    echo "Missing .env file. Copy .env.example to .env and fill the values first."
+if [[ ! -f "$ENV_FILE" ]]; then
+    echo "Missing $ENV_FILE. Copy $ENV_FILE_TEMPLATE to $ENV_FILE and fill the values first."
     exit 1
 fi
 
 set -a
-source "$SCRIPT_DIR/.env"
+source "$ENV_FILE"
 set +a
 
-if [[ -z "${SUBSCRIPTION_ID:-}" || -z "${RESOURCE_GROUP:-}" || -z "${LOCATION:-}" || -z "${AKS_CLUSTER_NAME:-}" ]]; then
-    echo "SUBSCRIPTION_ID, RESOURCE_GROUP, LOCATION and AKS_CLUSTER_NAME must be set in infrastructure/azure/.env"
+if [[ -z "${SUBSCRIPTION_ID:-}" || -z "${RESOURCE_GROUP:-}" || -z "${LOCATION:-}" || -z "${AKS_CLUSTER_NAME:-}" || -z "${TF_BACKEND_RESOURCE_GROUP:-}" || -z "${TF_BACKEND_STORAGE_ACCOUNT:-}" || -z "${TF_BACKEND_CONTAINER:-}" ]]; then
+    echo "SUBSCRIPTION_ID, RESOURCE_GROUP, LOCATION, AKS_CLUSTER_NAME, TF_BACKEND_RESOURCE_GROUP, TF_BACKEND_STORAGE_ACCOUNT and TF_BACKEND_CONTAINER must be set in .env file"
     exit 1
 fi
 
@@ -30,7 +33,15 @@ echo "Checking Azure login..."
 az account show --output table >/dev/null
 
 cd "$SCRIPT_DIR/terraform"
-terraform init
+echo "Init Azure resources..."
+terraform_init_with_backend_retry \
+  "$TF_BACKEND_RESOURCE_GROUP" \
+  "$TF_BACKEND_STORAGE_ACCOUNT" \
+  "$TF_BACKEND_CONTAINER" \
+  "azure/terraform.tfstate"
+
+echo "Plan Azure resources..."
+terraform validate
 
 echo "If the next step fails because the resource group already exists, run:"
 echo "terraform import azurerm_resource_group.aks \"/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP\""

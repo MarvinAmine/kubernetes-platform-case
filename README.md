@@ -197,46 +197,71 @@ Kubernetes / Application
 ```
 
 ## 5. Repo architecture
-The structure below represents the target Stage 1 repository architecture. Some helper scripts are currently still located directly under `infrastructure/azure/`.:
+The structure below represents the current Stage 1 repository architecture:
 ```
 kubernetes-platform-case/
 ├── .github/
 │   └── workflows/
 │       ├── azure-provision.yml
-│       ├── cluster-bootstrap.yml
+│       ├── azure-destroy.yml
+│       ├── kubernetes-resources.yml
 │       └── app-delivery.yml
 │
 ├── infrastructure/
-│   ├── azure/
-│   │   ├── versions.tf
-│   │   ├── export-kubeconfig.sh
-│   │   ├── validate-azure-context.sh
-│   │   ├── destroy-azure.sh
-│   │   ├── terraform/
-│   │   │   ├── main.tf
-│   │   │   ├── variables.tf
-│   │   │   ├── outputs.tf
-│   │   │   ├── providers.tf
-│   │   └── docs/
-│   │       └── README.md
-│   │
-│   ├── cluster-bootstrap/
+│   ├── .env
+│   ├── .env.example
+│   ├── provision_platform.sh
+│   ├── destroy_platform.sh
+│   ├── terraform-backend/
+│   │   ├── create_remote_backend.sh
+│   │   ├── destroy_remote_backend.sh
 │   │   ├── terraform/
 │   │   │   ├── main.tf
 │   │   │   ├── variables.tf
 │   │   │   ├── outputs.tf
 │   │   │   ├── providers.tf
 │   │   │   └── versions.tf
+│   │   └── docs/
+│   │       └── README.md
+│   │
+│   ├── azure/
+│   │   ├── create_azure_resources.sh
+│   │   ├── destroy_azure_resources.sh
+│   │   ├── terraform/
+│   │   │   ├── main.tf
+│   │   │   ├── variables.tf
+│   │   │   ├── outputs.tf
+│   │   │   ├── providers.tf
+│   │   │   ├── backend.tf
+│   │   │   └── versions.tf
+│   │   ├── oidc/
+│   │   │   ├── create_az_oidc.sh
+│   │   │   ├── destroy_az_oidc.sh
+│   │   │   ├── github-oidc-credential.template.json
+│   │   │   └── github-oidc-credential.json
 │   │   ├── scripts/
-│   │   │   ├── validate-cluster-access.sh
-│   │   │   └── inspect-bootstrap.sh
+│   │   │   ├── create_aks_cluster_and_connect_with_kubectl.sh
+│   │   │   └── delete_azure_resource_group_manually.sh
+│   │   └── docs/
+│   │       └── README.md
+│   │
+│   ├── kubernetes-resources/
+│   │   ├── apply_kubernetes_resources.sh
+│   │   ├── destroy_kubernetes_resources.sh
+│   │   ├── terraform/
+│   │   │   ├── main.tf
+│   │   │   ├── variables.tf
+│   │   │   ├── outputs.tf
+│   │   │   ├── providers.tf
+│   │   │   ├── backend.tf
+│   │   │   └── versions.tf
+│   │   ├── scripts/
+│   │   │   └── validate-cluster-access.sh
 │   │   └── docs/
 │   │       └── README.md
 │   │
 │   └── docs/
-│       ├── architecture.md
-│       ├── ownership-model.md
-│       └── platform-runbook.md
+│       └── README.md
 │
 ├── application/
 │   ├── app/
@@ -283,14 +308,42 @@ kubernetes-platform-case/
 ```
 
 ## 6. Infrastructure layer responsability
-| Layer                              | Purpose                                                       | Owner            |
-| ---------------------------------- | ------------------------------------------------------------- | ---------------- |
-| `infrastructure/azure`             | Creates Azure resources like Resource Group and AKS           | Platform team    |
-| `infrastructure/cluster-bootstrap` | Bootstraps namespace, SA, RBAC, baseline ConfigMap inside AKS | Platform team    |
-| `application/`                     | Builds and deploys the Spring Boot service                    | Application team |
+| Layer                                 | Purpose                                                              | Owner            |
+| ------------------------------------- | -------------------------------------------------------------------- | ---------------- |
+| `infrastructure/terraform-backend`    | Creates the shared Azure Storage backend for Terraform state         | Platform team    |
+| `infrastructure/azure`                | Creates Azure resources such as the resource group and AKS cluster   | Platform team    |
+| `infrastructure/kubernetes-resources` | Creates namespace, service account, RBAC, and baseline config in AKS | Platform team    |
+| `application/`                        | Builds and deploys the Spring Boot service                           | Application team |
 
+## 7. Shared environment file
 
-## 7. FAILURE SCENARIOS
+The infrastructure scripts use a shared environment file at:
+
+```bash
+infrastructure/.env
+```
+
+Create it from:
+
+```bash
+cp infrastructure/.env.example infrastructure/.env
+```
+
+## 8. Local platform automation
+
+Provision the full platform locally:
+
+```bash
+./infrastructure/provision_platform.sh
+```
+
+Destroy the full platform locally:
+
+```bash
+./infrastructure/destroy_platform.sh
+```
+
+## 9. FAILURE SCENARIOS
 
 Scenario 1 - Bad readiness probe
 - application is healthy
@@ -305,7 +358,7 @@ Scenario 2 - Bad app config
 - diagnosed via logs, config inspection, pod status
 
 
-## 8. OWNERSHIP MODEL
+## 10. OWNERSHIP MODEL
 
 Infrastructure team owns:
 - Terraform
