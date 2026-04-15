@@ -9,7 +9,7 @@ Important: this project uses a remote Terraform backend in Azure Storage so loca
 
 ## 0. How to use it?
 
-### 0.1 Shared environment file
+### 0.1 Setup the environment file
 
 The infrastructure scripts use a shared environment file at `infrastructure/.env`:
 
@@ -20,10 +20,30 @@ cp infrastructure/.env.example infrastructure/.env
 ```
 
 Fill these values in the `.env`:
+
+| Variable | Required | Example / default | Description |
+| --- | --- | --- | --- |
+| `REPO_OWNER` | Yes | `MarvinAmine` | GitHub user or organization that owns the repository. Used by the Azure OIDC scripts to build the federated credential subject for GitHub Actions. |
+| `SUBSCRIPTION_ID` | Yes | `<your-azure-subscription-id>` | Azure subscription ID used by all local infrastructure scripts, Terraform layers, and the OIDC setup. |
+| `RESOURCE_GROUP` | Yes for Azure and Kubernetes provisioning | `rg-stage1-aks` | Azure resource group name for the AKS platform resources. Passed into the Azure Terraform layer and reused by the Kubernetes validation scripts. |
+| `REPO_NAME` | Yes for OIDC setup | `kubernetes-platform-case` | GitHub repository name used by `infrastructure/azure/oidc/create_az_oidc.sh` when it renders the GitHub federated credential. |
+| `GITHUB_BRANCH` | Yes for OIDC setup | `main` | Git branch allowed to authenticate through the Azure federated credential. |
+| `LOCATION` | Yes for backend and Azure provisioning | `canadacentral` | Azure region for the Terraform backend resource group and AKS infrastructure. This becomes `AKS_LOCATION` in GitHub Actions repo variables. |
+| `APP_NAME` | Recommended | `sp-github-oidc-stage1-platform` | Display name for the Azure Entra application and service principal created for GitHub OIDC. |
+| `ROLE_NAME` | Recommended | `Contributor` | Azure role assigned to the OIDC service principal at subscription scope. |
+| `AKS_CLUSTER_NAME` | Yes for Azure and Kubernetes provisioning | `aks-stage1-platform` | AKS cluster name created by the Azure Terraform layer and later targeted by the Kubernetes resources layer. |
+| `DNS_PREFIX` | Optional | `aks-stage1` | DNS prefix passed to the Azure Terraform layer for the AKS cluster. |
+| `NODE_COUNT` | Optional | `1` | Initial AKS node count passed to Terraform. |
+| `VM_SIZE` | Optional | `Standard_D2as_v6` | AKS node VM size used by local scripts. The GitHub workflow also supports the same value through a repository variable. |
+| `TIER` | Optional | `Free` | AKS SKU tier passed to the Azure Terraform layer. |
+| `TF_BACKEND_RESOURCE_GROUP` | Yes after the first backend bootstrap | `rg-stage1-tfstate` | Azure resource group that hosts the remote Terraform state storage account. Required by local scripts and GitHub Actions. |
+| `TF_BACKEND_STORAGE_ACCOUNT` | Yes after the first backend bootstrap | `<real-storage-account-name>` | Azure Storage Account name used as the remote Terraform backend. This is intentionally blank in the template until the backend is created or known. |
+| `TF_BACKEND_CONTAINER` | Yes after the first backend bootstrap | `tfstate` | Blob container name that stores the Terraform state files. |
+
+Minimal first edit before the initial bootstrap:
+
 ```conf
-# ADD YOUR GITHUB USERNAME e.g. MarvinAmine
 REPO_OWNER=...
-# Your Azure subscription ID
 SUBSCRIPTION_ID=...
 ```
 
@@ -41,34 +61,41 @@ Provision the full platform locally:
 
 On the first run, `infrastructure/provision_platform.sh` bootstraps the remote Terraform backend and prints the backend values that must be copied into `infrastructure/.env`.
 
-Update `.env` with:
-1. `TF_BACKEND_RESOURCE_GROUP="..."`
-2. `TF_BACKEND_STORAGE_ACCOUNT="..."`
-3. `TF_BACKEND_CONTAINER="..."`
+Update `.env` with these real backend values:
 
-Confirm these values are also set in GitHub repository variables:
-1. `TF_BACKEND_RESOURCE_GROUP`
-2. `TF_BACKEND_STORAGE_ACCOUNT`
-3. `TF_BACKEND_CONTAINER`
-4. `RESOURCE_GROUP`
-5. `AKS_LOCATION`
-6. `AKS_CLUSTER_NAME`
-7. `VM_SIZE` (optional override for the AKS node size)
+| Variable | Required after first run | Description |
+| --- | --- | --- |
+| `TF_BACKEND_RESOURCE_GROUP` | Yes | Resource group that hosts the remote Terraform backend. |
+| `TF_BACKEND_STORAGE_ACCOUNT` | Yes | Storage account that stores the Terraform state files. |
+| `TF_BACKEND_CONTAINER` | Yes | Blob container inside the backend storage account, usually `tfstate`. |
 
-If `VM_SIZE` is not set in GitHub repository variables, the workflows default to `Standard_D2as_v6`.
+Confirm these GitHub repository variables are also set:
+
+| Repository variable | Required | Description |
+| --- | --- | --- |
+| `TF_BACKEND_RESOURCE_GROUP` | Yes | Mirrors `infrastructure/.env` so GitHub Actions can initialize the Terraform backend. |
+| `TF_BACKEND_STORAGE_ACCOUNT` | Yes | Mirrors `infrastructure/.env` so GitHub Actions can reach the backend storage account. |
+| `TF_BACKEND_CONTAINER` | Yes | Mirrors `infrastructure/.env` so GitHub Actions can select the Terraform state container. |
+| `RESOURCE_GROUP` | Yes | Resource group expected by the Azure and Kubernetes workflows. Should match `RESOURCE_GROUP` in `infrastructure/.env`. |
+| `AKS_LOCATION` | Yes | Azure region for the AKS layer. This should match `LOCATION` from `infrastructure/.env`. |
+| `AKS_CLUSTER_NAME` | Yes | AKS cluster name expected by the Azure and Kubernetes workflows. Should match `AKS_CLUSTER_NAME` in `infrastructure/.env`. |
+| `VM_SIZE` | Optional | Optional CI override for the AKS node size. If unset, workflows default to `Standard_D2as_v6`. |
 
 ![GitHub Actions repository variables](github_actions_variables.png)
 
 If you also run the Azure OIDC setup, the script `infrastructure/azure/oidc/create_az_oidc.sh` prints the GitHub repository secrets to configure.
 
 Confirm these GitHub repository secrets are set:
-1. `AZURE_SUBSCRIPTION_ID`
-2. `AZURE_CLIENT_ID`
-3. `AZURE_TENANT_ID`
+
+| Repository secret | Required | Description |
+| --- | --- | --- |
+| `AZURE_SUBSCRIPTION_ID` | Yes | Azure subscription used by GitHub Actions. Mirrors `SUBSCRIPTION_ID` from `infrastructure/.env`. |
+| `AZURE_CLIENT_ID` | Yes | Application ID of the Azure Entra app created for GitHub OIDC. |
+| `AZURE_TENANT_ID` | Yes | Azure tenant ID used by `azure/login@v2` during GitHub Actions authentication. |
 
 ![GitHub Actions repository secrets](OIDC_secrets.png)
 
-### GitHub Actions
+### 0.4 GitHub Actions
 
 > Requirements: 
 > 1. The [remote Terraform backend](infrastructure/terraform-backend/docs/README.md) is created.
@@ -82,7 +109,7 @@ On `push`, the workflows run formatting, initialization, validation, and plannin
 
 On `workflow_dispatch`, the Azure provisioning workflow can also run `terraform apply`.
 
-### Destroy the full platform
+### 0.5 Destroy the full platform
 
 > It is important to destroy the resources after use. Azure services such as AKS and VMs can generate ongoing costs if they are left running.
 
@@ -96,6 +123,8 @@ It destroys:
 2. Azure infrastructure
 3. The remote Terraform backend
 4. The Azure OIDC integration, if you choose to remove it
+
+![alt text](iac_lifecycle_dependencies.png)
 
 
 ## 1. ENVIRONMENT BOOTSTRAP PATH MANAGED BY THE INFRASTRUCTURE TEAM 
@@ -298,6 +327,7 @@ kubernetes-platform-case/
 │       ├── azure-provision.yml
 │       ├── azure-destroy.yml
 │       ├── kubernetes-resources-provision.yml
+│       ├── kubernetes-resources-destroy.yml
 │       └── app-delivery.yml
 │
 ├── infrastructure/
