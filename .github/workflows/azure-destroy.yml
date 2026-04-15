@@ -22,7 +22,7 @@ jobs:
             TF_VAR_aks_cluster_name: ${{ vars.AKS_CLUSTER_NAME }}
             TF_VAR_dns_prefix: aks-stage1
             TF_VAR_node_count: "1"
-            TF_VAR_vm_size: Standard_D2as_v6
+            TF_VAR_vm_size: ${{ vars.VM_SIZE || 'Standard_D2as_v6' }}
             TF_VAR_tier: Free
             
             ARM_USE_OIDC: true

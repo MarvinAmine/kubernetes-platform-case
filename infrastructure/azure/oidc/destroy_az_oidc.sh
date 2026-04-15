@@ -20,8 +20,8 @@ set -a
 source "$ENV_FILE"
 set +a
 
-if [[ -z "$REPO_OWNER"  || -z  "$SUBSCRIPTION_ID" ]]; then
-    echo "REPO_OWNER and SUBSCRIPTION_ID shouldn't be empty or unset"
+if [[ -z "$REPO_OWNER"  || -z  "$SUBSCRIPTION_ID" || -z "${TF_BACKEND_RESOURCE_GROUP:-}" || -z "${TF_BACKEND_STORAGE_ACCOUNT:-}" ]]; then
+    echo "REPO_OWNER, SUBSCRIPTION_ID, TF_BACKEND_RESOURCE_GROUP and TF_BACKEND_STORAGE_ACCOUNT shouldn't be empty or unset"
     exit 1
 fi
 
@@ -38,26 +38,48 @@ if [[ -z "$APP_ID" ]]; then
     exit 0
 fi
 
+SP_ID="$(az ad sp show --id "$APP_ID" --query id -o tsv || true)"
+
 echo "Listing federated credentials for '$APP_NAME'..."
-FED_CREDENTIAL_IDS="$(az ad app federeted-credential list --id "$APP_ID" --query '[].name' -o tsv || true)"
+FED_CREDENTIAL_IDS="$(az ad app federated-credential list --id "$APP_ID" --query '[].name' -o tsv || true)"
 
 if [[ -n "$FED_CREDENTIAL_IDS" ]]; then
     while IFS= read -r credential_name; do
         [[ -z "$credential_name" ]] && continue
-        az ad app federeted-credential delete \
+        az ad app federated-credential delete \
             --id "$APP_ID" \
-            --federeted-credential-id "$credential_name"
+            --federated-credential-id "$credential_name"
     done <<< "$FED_CREDENTIAL_IDS"
 fi
 
-echo "Removing role assignments on subsciption..."
-ROLE_ASSIGNMENT_IDS="$(az role assignment list --assignee "$APP_ID" --scope "/subsriptions/$SUBSCRIPTION_ID" --query '[].id' -o tsv || true)"
+if [[ -n "$SP_ID" ]]; then
+    echo "Removing role assignments on subscription..."
+    ROLE_ASSIGNMENT_IDS="$(az role assignment list \
+      --assignee-object-id "$SP_ID" \
+      --scope "/subscriptions/$SUBSCRIPTION_ID" \
+      --query '[].id' -o tsv || true)"
 
-if [[ -n "$ROLE_ASSIGNMENT_IDS" ]]; then
-    while IFS= read -r assignment_id; do
-        [[ -z "$assignment_id" ]] && continue
-        az role assignment delete --ids "$assignment_id"
-    done <<< "$ROLE_ASSIGNMENT_IDS"
+    if [[ -n "$ROLE_ASSIGNMENT_IDS" ]]; then
+        while IFS= read -r assignment_id; do
+            [[ -z "$assignment_id" ]] && continue
+            az role assignment delete --ids "$assignment_id"
+        done <<< "$ROLE_ASSIGNMENT_IDS"
+    fi
+
+    BACKEND_SCOPE="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$TF_BACKEND_RESOURCE_GROUP/providers/Microsoft.Storage/storageAccounts/$TF_BACKEND_STORAGE_ACCOUNT"
+
+    echo "Removing role assignments on backend storage account..."
+    BACKEND_ROLE_ASSIGNMENT_IDS="$(az role assignment list \
+      --assignee-object-id "$SP_ID" \
+      --scope "$BACKEND_SCOPE" \
+      --query '[].id' -o tsv || true)"
+
+    if [[ -n "$BACKEND_ROLE_ASSIGNMENT_IDS" ]]; then
+        while IFS= read -r assignment_id; do
+            [[ -z "$assignment_id" ]] && continue
+            az role assignment delete --ids "$assignment_id"
+        done <<< "$BACKEND_ROLE_ASSIGNMENT_IDS"
+    fi
 fi
 
 echo "GitHub OIDC integration has been removed."

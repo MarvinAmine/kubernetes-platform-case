@@ -20,8 +20,8 @@ set -a
 source "$ENV_FILE"
 set +a
 
-if [[ -z "$REPO_OWNER"  || -z  "$SUBSCRIPTION_ID" ]]; then
-    echo "REPO_OWNER and SUBSCRIPTION_ID shouldn't be empty or unset"
+if [[ -z "$REPO_OWNER"  || -z  "$SUBSCRIPTION_ID" || -z "${TF_BACKEND_RESOURCE_GROUP:-}" || -z "${TF_BACKEND_STORAGE_ACCOUNT:-}" ]]; then
+    echo "REPO_OWNER, SUBSCRIPTION_ID, TF_BACKEND_RESOURCE_GROUP and TF_BACKEND_STORAGE_ACCOUNT shouldn't be empty or unset"
     exit 1
 fi
 
@@ -74,6 +74,27 @@ if [[ -z "$EXISTING_ASSIGNMENT" ]]; then
       --scope "$SCOPE"
 else
     echo "Role assignment already exists."
+fi
+
+BACKEND_SCOPE="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$TF_BACKEND_RESOURCE_GROUP/providers/Microsoft.Storage/storageAccounts/$TF_BACKEND_STORAGE_ACCOUNT"
+BACKEND_ROLE_NAME="Storage Blob Data Owner"
+
+echo "Checking role assignment '$BACKEND_ROLE_NAME' on scope '$BACKEND_SCOPE'"
+EXISTING_BACKEND_ASSIGNMENT="$(az role assignment list \
+  --assignee-object-id "$SP_ID" \
+  --scope "$BACKEND_SCOPE" \
+  --query "[?roleDefinitionName=='$BACKEND_ROLE_NAME'] | [0].id" \
+  -o tsv || true)"
+
+if [[ -z "$EXISTING_BACKEND_ASSIGNMENT" ]]; then
+    echo "Creating backend storage role assignment..."
+    az role assignment create \
+      --assignee-object-id "$SP_ID" \
+      --assignee-principal-type ServicePrincipal \
+      --role "$BACKEND_ROLE_NAME" \
+      --scope "$BACKEND_SCOPE"
+else
+    echo "Backend storage role assignment already exists."
 fi
 
 echo "Replacing the REPO_OWNER, REPO_NAME and GITHUB_BRANCH in the 'github-oidc-credential.json'"

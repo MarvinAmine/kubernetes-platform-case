@@ -26,7 +26,7 @@ jobs:
             TF_VAR_aks_cluster_name: ${{ vars.AKS_CLUSTER_NAME }}
             TF_VAR_dns_prefix: aks-stage1
             TF_VAR_node_count: "1"
-            TF_VAR_vm_size: Standard_D2as_v6
+            TF_VAR_vm_size: ${{ vars.VM_SIZE || 'Standard_D2as_v6' }}
             TF_VAR_tier: Free
 
             TF_BACKEND_RESOURCE_GROUP: ${{ vars.TF_BACKEND_RESOURCE_GROUP }}
@@ -40,13 +40,61 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
+            - name: Preflight repository configuration
+              run: |
+                required_vars=(
+                  TF_BACKEND_RESOURCE_GROUP
+                  TF_BACKEND_STORAGE_ACCOUNT
+                  TF_BACKEND_CONTAINER
+                  RESOURCE_GROUP
+                  AKS_LOCATION
+                  AKS_CLUSTER_NAME
+                )
+                for name in "${required_vars[@]}"; do
+                  if [[ -z "${!name:-}" ]]; then
+                    echo "ERROR: Missing GitHub repository variable: ${name}."
+                    echo "Run infrastructure/provision_platform.sh and configure the repository variables described in README.md"
+                    exit 1
+                  fi
+                done
+
+                required_secrets=(
+                  ARM_CLIENT_ID
+                  ARM_TENANT_ID
+                  ARM_SUBSCRIPTION_ID
+                )
+                for name in "${required_secrets[@]}"; do
+                  if [[ -z "${!name:-}" ]]; then
+                    echo "ERROR: Missing GitHub repository secret backing: ${name}."
+                    echo "Run infrastructure/azure/oidc/create_az_oidc.sh and configure the repository secrets described in README.md."
+                    exit 1
+                  fi
+                done
+
             - name: Azure login with OIDC
               uses: azure/login@v2
               with:
                 client-id: ${{ secrets.AZURE_CLIENT_ID }}
                 tenant-id: ${{ secrets.AZURE_TENANT_ID }}
                 subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
+            
+            - name: Preflight Azure backend access
+              run: |
+                az storage account show \
+                  --name "${TF_BACKEND_STORAGE_ACCOUNT}" \
+                  --resource-group "${TF_BACKEND_RESOURCE_GROUP}" \
+                  --output none
+                
+                az storage container show \
+                  --name "${TF_BACKEND_CONTAINER}" \
+                  --account-name "${TF_BACKEND_STORAGE_ACCOUNT}" \
+                  --auth-mode login \
+                  --output none
+            
+            - name: Preflight Azure resource group
+              run: |
+                az group show --name "${{ vars.RESOURCE_GROUP }}" --output none
+                  
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
 
