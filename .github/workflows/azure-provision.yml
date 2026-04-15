@@ -46,9 +46,9 @@ jobs:
                   TF_BACKEND_RESOURCE_GROUP
                   TF_BACKEND_STORAGE_ACCOUNT
                   TF_BACKEND_CONTAINER
-                  RESOURCE_GROUP
-                  AKS_LOCATION
-                  AKS_CLUSTER_NAME
+                  TF_VAR_resource_group_name
+                  TF_VAR_location
+                  TF_VAR_aks_cluster_name
                 )
                 for name in "${required_vars[@]}"; do
                   if [[ -z "${!name:-}" ]]; then
