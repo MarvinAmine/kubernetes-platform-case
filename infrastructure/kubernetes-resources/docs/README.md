@@ -22,6 +22,18 @@ The Kubernetes resources Terraform creates:
 
 These resources are prepared in advance so the application delivery path can reuse them instead of creating them.
 
+## Scripts
+
+The `scripts/` directory contains operational helpers for this layer.
+
+- `scripts/validate-cluster-access.sh`
+  Validates that Azure CLI is logged into the expected subscription, refreshes
+  AKS credentials, verifies the active `kubectl` context, and confirms basic
+  cluster access before Terraform interacts with the cluster.
+
+This script is intentionally documented here in `docs/` while the executable
+logic stays under `scripts/`.
+
 ## Local Terraform usage
 ```bash
 cp infrastructure/.env.example infrastructure/.env
@@ -29,10 +41,12 @@ cp infrastructure/.env.example infrastructure/.env
 export EXPECTED_SUBSCRIPTION_ID="<your-subscription-id>"
 export EXPECTED_RESOURCE_GROUP="rg-stage1-aks"
 export EXPECTED_AKS_CLUSTER_NAME="aks-stage1-platform"
-# Or: set -a; source <location_of_the_env_file>; set +a
+# Backward-compatible legacy variables also work:
+# export SUBSCRIPTION_ID="<your-subscription-id>"
+# export RESOURCE_GROUP="rg-stage1-aks"
+# export AKS_CLUSTER_NAME="aks-stage1-platform"
 
-./infrastructure/kubernetes-resources/scripts/validate-cluster-
-access.sh
+./infrastructure/kubernetes-resources/scripts/validate-cluster-access.sh
 
 cd infrastructure/kubernetes-resources/terraform
 terraform init \
@@ -45,6 +59,14 @@ terraform validate
 terraform plan
 terraform apply
 ```
+
+The validation script checks:
+
+- the active Azure subscription matches the expected subscription
+- the AKS kubeconfig entry is refreshed with `az aks get-credentials`
+- the current `kubectl` context matches the expected cluster name
+- `kubectl cluster-info` succeeds
+- the `kube-system` namespace is reachable
 
 
 

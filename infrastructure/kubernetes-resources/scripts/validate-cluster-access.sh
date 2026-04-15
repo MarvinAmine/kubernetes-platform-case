@@ -1,14 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# How to run it locally?
-# export EXPECTED_SUBSCRIPTION_ID="<your-subscription-id>"
-# export EXPECTED_RESOURCE_GROUP="rg-stage1-aks"
-# export EXPECTED_AKS_CLUSTER_NAME="aks-stage1-platform"
+# This script validates AKS access for the kubernetes-resources layer.
+#
+# Preferred interface:
+#   EXPECTED_SUBSCRIPTION_ID
+#   EXPECTED_RESOURCE_GROUP
+#   EXPECTED_AKS_CLUSTER_NAME
+#
+# Backward-compatible fallback:
+#   SUBSCRIPTION_ID
+#   RESOURCE_GROUP
+#   AKS_CLUSTER_NAME
 
-EXPECTED_SUBSCRIPTION_ID="${EXPECTED_SUBSCRIPTION_ID:?EXPECTED_SUBSCRIPTION_ID is required}"
-EXPECTED_RESOURCE_GROUP="${EXPECTED_RESOURCE_GROUP:?EXPECTED_RESOURCE_GROUP is required}"
-EXPECTED_AKS_CLUSTER_NAME="${EXPECTED_AKS_CLUSTER_NAME:?EXPECTED_AKS_CLUSTER_NAME is required}"
+EXPECTED_SUBSCRIPTION_ID="${EXPECTED_SUBSCRIPTION_ID:-${SUBSCRIPTION_ID:-}}"
+EXPECTED_RESOURCE_GROUP="${EXPECTED_RESOURCE_GROUP:-${RESOURCE_GROUP:-}}"
+EXPECTED_AKS_CLUSTER_NAME="${EXPECTED_AKS_CLUSTER_NAME:-${AKS_CLUSTER_NAME:-}}"
+
+EXPECTED_SUBSCRIPTION_ID="${EXPECTED_SUBSCRIPTION_ID:?EXPECTED_SUBSCRIPTION_ID is required (or set SUBSCRIPTION_ID for backward compatibility)}"
+EXPECTED_RESOURCE_GROUP="${EXPECTED_RESOURCE_GROUP:?EXPECTED_RESOURCE_GROUP is required (or set RESOURCE_GROUP for backward compatibility)}"
+EXPECTED_AKS_CLUSTER_NAME="${EXPECTED_AKS_CLUSTER_NAME:?EXPECTED_AKS_CLUSTER_NAME is required (or set AKS_CLUSTER_NAME for backward compatibility)}"
 
 echo "Checking Azure account..."
 ACTIVE_SUBSCRIPTION_ID="$(az account show --query id -o tsv)"
@@ -19,6 +30,7 @@ echo "Active subscription id: ${ACTIVE_SUBSCRIPTION_ID}"
 
 if [ "$ACTIVE_SUBSCRIPTION_ID" != "$EXPECTED_SUBSCRIPTION_ID" ]; then
     echo "ERROR: wrong Azure subscription"
+    echo "Expected subscription id: ${EXPECTED_SUBSCRIPTION_ID}"
     exit 1
 fi
 
@@ -34,6 +46,12 @@ echo "Checking kubectl context..."
 CURRENT_CONTEXT="$(kubectl config current-context)"
 echo "Current context: ${CURRENT_CONTEXT}"
 
+if [ "$CURRENT_CONTEXT" != "$EXPECTED_AKS_CLUSTER_NAME" ]; then
+    echo "ERROR: wrong kubectl context"
+    echo "Expected context: ${EXPECTED_AKS_CLUSTER_NAME}"
+    exit 1
+fi
+
 echo
 echo "Checking cluster info..."
 kubectl cluster-info
@@ -44,5 +62,4 @@ kubectl get ns kube-system
 
 echo
 echo "Cluster access validation passed."
-
 
