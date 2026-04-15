@@ -90,10 +90,6 @@ jobs:
                   --account-name "${TF_BACKEND_STORAGE_ACCOUNT}" \
                   --auth-mode login \
                   --output none
-            
-            - name: Preflight Azure resource group
-              run: |
-                az group show --name "${{ vars.RESOURCE_GROUP }}" --output none
                   
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
