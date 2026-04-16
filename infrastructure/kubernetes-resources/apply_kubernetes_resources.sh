@@ -2,9 +2,22 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INFRASTRUCTURE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 ENV_FILE="$SCRIPT_DIR/../.env"
 ENV_FILE_TEMPLATE="$SCRIPT_DIR/../.env.example"
 source "$SCRIPT_DIR/../scripts/wait_for_backend_access.sh"
+source "$SCRIPT_DIR/../scripts/common_logging.sh"
+
+parse_args() {
+    parse_silent_flag "$@"
+    if [[ ${#REMAINING_ARGS[@]} -gt 0 ]]; then
+        echo "Unknown argument: ${REMAINING_ARGS[0]}"
+        exit 1
+    fi
+}
+
+parse_args "$@"
+setup_logging "$INFRASTRUCTURE_ROOT/apply_kubernetes_resources.log"
 
 if [[ ! -f "$ENV_FILE" ]]; then
     echo "Missing $ENV_FILE. Copy $ENV_FILE_TEMPLATE to $ENV_FILE and fill the values first."
@@ -24,19 +37,25 @@ export EXPECTED_SUBSCRIPTION_ID="$SUBSCRIPTION_ID"
 export EXPECTED_RESOURCE_GROUP="$RESOURCE_GROUP"
 export EXPECTED_AKS_CLUSTER_NAME="$AKS_CLUSTER_NAME"
 
-echo "Validating access to the expected AKS cluster..."
-"$SCRIPT_DIR/scripts/validate-cluster-access.sh"
+log_info "Validating access to the expected AKS cluster..."
+run_command_with_context "AKS cluster access validated" \
+    "$SCRIPT_DIR/scripts/validate-cluster-access.sh"
 
 cd "$SCRIPT_DIR/terraform"
 
-terraform_init_with_backend_retry \
+log_info "Initializing Kubernetes Terraform layer..."
+run_command_with_context "Terraform init completed" \
+  terraform_init_with_backend_retry \
   "$TF_BACKEND_RESOURCE_GROUP" \
   "$TF_BACKEND_STORAGE_ACCOUNT" \
   "$TF_BACKEND_CONTAINER" \
   "kubernetes-resources/terraform.tfstate"
 
-terraform validate
-terraform plan
-terraform apply -auto-approve
+log_info "Validating Kubernetes Terraform layer..."
+run_command_with_context "Terraform validate completed" terraform validate
+log_info "Planning Kubernetes Terraform layer..."
+run_command_with_context "Terraform plan completed" terraform plan
+log_info "Applying Kubernetes Terraform layer..."
+run_command_with_context "Terraform apply completed" terraform apply -auto-approve
 
-echo "Kubernetes resources are applied."
+log_success "Kubernetes resources are applied."

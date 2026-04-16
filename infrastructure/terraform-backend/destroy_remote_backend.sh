@@ -2,8 +2,21 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INFRASTRUCTURE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 ENV_FILE="$SCRIPT_DIR/../.env"
 ENV_FILE_TEMPLATE="$SCRIPT_DIR/../.env.example"
+source "$SCRIPT_DIR/../scripts/common_logging.sh"
+
+parse_args() {
+    parse_silent_flag "$@"
+    if [[ ${#REMAINING_ARGS[@]} -gt 0 ]]; then
+        echo "Unknown argument: ${REMAINING_ARGS[0]}"
+        exit 1
+    fi
+}
+
+parse_args "$@"
+setup_logging "$INFRASTRUCTURE_ROOT/destroy_remote_backend.log"
 
 if [[ ! -f "$ENV_FILE" ]]; then
     echo "Missing $ENV_FILE. Copy $ENV_FILE_TEMPLATE to $ENV_FILE and fill the values first."
@@ -26,12 +39,14 @@ export TF_VAR_backend_resource_group_name="$TF_BACKEND_RESOURCE_GROUP"
 export TF_VAR_backend_storage_account_name="$TF_BACKEND_STORAGE_ACCOUNT"
 export TF_VAR_backend_container_name="$TF_BACKEND_CONTAINER"
 
-echo "Checking Azure login..."
-az account show --output table
+log_info "Checking Azure login..."
+run_command_with_context "Azure login verified" az account show --output table
 
 cd "$SCRIPT_DIR/terraform"
 
-terraform init
-terraform destroy -auto-approve
+log_info "Initializing Terraform backend layer..."
+run_command_with_context "Terraform init completed" terraform init
+log_info "Destroying Terraform backend layer..."
+run_command_with_context "Terraform destroy completed" terraform destroy -auto-approve
 
-echo "Remote backend has been destroyed."
+log_success "Remote backend has been destroyed."

@@ -7,7 +7,7 @@ variable "kubeconfig_path" {
 variable "namespace_name" {
   description = "Platform-managed namespace for the application team"
   type        = string
-  default     = "document-processing-stage1"
+  default     = "payment-exception-review-stage1"
 }
 
 variable "app_service_account_name" {

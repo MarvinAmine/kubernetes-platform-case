@@ -1,13 +1,37 @@
-# Stage 1 of 3 - Java microservice backend deployed to AKS using Terraform, GitHub Actions, Helm, and Docker
+# Stage 1 of 3 - Delivery foundation for an internal payment review service on AKS with Terraform, GitHub Actions, Helm, and Docker
 
-Production-style Java Spring Boot microservice packaged with Docker and deployed with Helm to AKS (Azure Kubernetes Service) using GitHub Actions and Azure OIDC federation. The platform includes operational checks, observability, and simulated failure scenarios with documented troubleshooting. Responsibilities are explicitly split between the infrastructure team and the application team.
+This delivery foundation provides a reusable pattern for an internal Java Spring Boot service deployed to Azure Kubernetes Service (AKS). It follows industry practices commonly used in highly regulated organizations to separate infrastructure bootstrap from application delivery through Infrastructure as Code (IaC) with Terraform, GitHub Actions, Docker, Helm, observability, and realistic troubleshooting scenarios.
 
-Important: this project uses a remote Terraform backend in Azure Storage so local runs and CI/CD executions share the same infrastructure state instead of relying on local Terraform state files.
+Structured as a practical platform pattern, this foundation is designed to evolve across later stages.
 
-![alt text](environment_bootstrap_path.png)
-![alt text](app_delivery_path.png)
+> **Important:** This delivery foundation uses a remote Terraform backend in Azure Storage so local executions and CI/CD pipelines share the same infrastructure state instead of relying on local Terraform state files.
 
-## 0. How to use it?
+![Environment bootstrap path](environment_bootstrap_path.png)
+![Application delivery path](app_delivery_path.png)
+
+## Summary for recruiters and hiring managers
+
+Internal teams in a regulated organization may urgently need a secure custom service to support payment review. In practice, the infrastructure work behind that service often takes several weeks across design, bootstrap, provisioning, and operations. This delivery foundation reduces that effort by reusing industry practices already adopted in highly regulated environments.
+
+Delivering that kind of service usually involves more than writing application code. It also requires environment design, infrastructure bootstrap, CI/CD setup, deployment standards, observability, and operational support. In many organizations, that foundation can take weeks to prepare before the application team can deliver safely.
+
+This delivery foundation is built to reduce that setup effort through a reusable and supportable operating model:
+
+- the infrastructure team bootstraps AKS environment resources with Terraform
+- the application team builds and deploys the microservice through GitHub Actions, Docker, and Helm
+- the service exposes health checks, configuration validation, and Prometheus metrics
+- rollout and configuration failure scenarios are documented to demonstrate realistic troubleshooting
+
+This stage focuses on the delivery model behind the service: clear ownership boundaries, deployment safety, observability, incident diagnosis, and repeatable platform practices for regulated environments.
+
+Key capabilities illustrated in this technological environment:
+
+- hands-on work with AKS, Terraform, GitHub Actions, Docker, Helm, and Azure OIDC federation
+- a clear separation between infrastructure ownership and application delivery
+- practical judgment around deployment safety, observability, and incident diagnosis
+- a reusable foundation aligned with Platform Engineer, DevOps, SRE, and Solutions Architect responsibilities in regulated organizations
+
+## 0. HOW TO USE IT?
 
 ### 0.1 Setup the environment file
 
@@ -54,8 +78,11 @@ If you do not have an Azure subscription selected yet, follow the setup steps in
 Provision the full platform locally:
 
 ```bash
+# Use the flag '-s' for silence
 ./infrastructure/provision_platform.sh
 ```
+
+See screen shoot example here: [provision_platform_screenshoots.md](infrastructure/docs/provision_platform_screenshoots.md)
 
 ### 0.3 Complete the environment values and GitHub configuration
 
@@ -127,7 +154,7 @@ It destroys:
 ![alt text](iac_lifecycle_dependencies.png)
 
 
-## 1. ENVIRONMENT BOOTSTRAP PATH MANAGED BY THE INFRASTRUCTURE TEAM 
+## 1. INFRASTRUCTURE BOOTSTRAP PATH MANAGED BY THE INFRASTRUCTURE TEAM 
 
 ```text
 [Infrastructure Team]
@@ -157,7 +184,7 @@ It destroys:
 ┌──────────────────────────────────────────────────────────────┐
 │                   AKS  Kubernetes Cluster                    │
 │--------------------------------------------------------------│
-│ Namespace: document-processing-stage1                        │
+│ Namespace: payment-exception-review-stage1                   │
 │                                                              │
 │  Platform-owned resources:                                   │
 │  ┌──────────────────────────────┐                            │
@@ -235,7 +262,7 @@ It destroys:
 ┌──────────────────────────────────────────────────────────────┐
 │                 AKS Kubernetes Cluster                       │
 │--------------------------------------------------------------│
-│ Namespace: document-processing-stage1                        │
+│ Namespace: payment-exception-review-stage1                   │
 │                                                              │
 │ App-team-owned resources:                                    │
 │  ┌──────────────────────────────┐                            │
@@ -258,7 +285,7 @@ It destroys:
 │  │ App ConfigMap                │                            │
 │  │------------------------------│                            │
 │  │ App-specific config          │                            │
-│  │ example: PROCESSING_MODE     │                            │
+│  │ example: VALIDATION_MODE     │                            │
 │  └──────────────────────────────┘                            │
 │                                                              │
 │  ┌──────────────────────────────┐                            │
@@ -272,21 +299,24 @@ It destroys:
 ## 3. APPLICATION RUNTIME
 
 ```text
-Client
+Client / Internal Consumer
   │
-  ├── GET /api/status
-  │      -> service status, version, processing mode
+  ├── GET /api/payment-exceptions/service-status
+  │      -> service status, version, validation mode
   │
-  ├── GET /api/documents/{id}
-  │      -> fake document state
-  │         RECEIVED / VALIDATING / PROCESSED / REJECTED
+  ├── GET /api/payment-exceptions/{id}/status
+  │      -> fake payment exception lifecycle state
+  │         RECEIVED / VALIDATING / PENDING_REVIEW /
+  │         APPROVED / REJECTED / ESCALATED
   │
-  ├── GET /api/config-check
+  ├── GET /api/payment-exceptions/config-check
   │      -> config validation result
   │
   └── /actuator/*
          -> health / info / prometheus
 ```
+
+
 
 ## 4. OBSERVABILITY PATH
 
@@ -310,6 +340,12 @@ Kubernetes / Application
 │           Grafana            │
 │------------------------------│
 │ Dashboard examples:          │
+│ - service availability       │
+│ - request volume             │
+│ - response latency           │
+│ - pod restarts               │
+│ - validation failures        │
+│ - escalation count           │
 │ - app up/down                │
 │ - request count              │
 │ - response time              │
@@ -396,7 +432,7 @@ kubernetes-platform-case/
 │   │   └── Dockerfile
 │   │
 │   ├── helm/
-│   │   └── document-processing-status/
+│   │   └── payment-exception-review-status/
 │   │       ├── Chart.yaml
 │   │       ├── values.yaml
 │   │       └── templates/
@@ -439,20 +475,22 @@ kubernetes-platform-case/
 | `application/`                        | Builds and deploys the Spring Boot service                           | Application team |
 
 
-
 ## 7. FAILURE SCENARIOS
 
-Scenario 1 - Bad readiness probe
-- application is healthy
-- readiness probe path/port is wrong
+### Scenario 1 - Bad readiness probe
+- application starts correctly
+- readiness probe path or port is wrong
 - pod stays unready
-- rollout affected
-- diagnosed via events, describe, health endpoint
+- rollout appears broken
+- service is not available through standard routing
+- diagnosed through events, `kubectl describe`, rollout status, and health endpoint verification
 
-Scenario 2 - Bad app config
-- PROCESSING_MODE missing or invalid
-- app fails startup or becomes unhealthy
-- diagnosed via logs, config inspection, pod status
+### Scenario 2 - Bad business configuration
+- the app receives an invalid validation configuration
+- example: `VALIDATION_MODE=AGGRESSIVE` when only `STRICT` or `STANDARD` are supported
+- startup validation fails or the application becomes unhealthy
+- issue is visible through logs, pod status, and config-check endpoint
+- demonstrates config governance and safe startup behavior in a regulated service
 
 
 ## 8. OWNERSHIP MODEL
@@ -474,3 +512,43 @@ Application team owns:
 - app Secret usage pattern
 - application rollout
 - app-level runbook notes
+ 
+## 9. THREE-STAGE EVOLUTION
+
+### Stage 1 - Platform bootstrap and controlled delivery
+Focus:
+- AKS
+- Terraform
+- GitHub Actions
+- Docker
+- Helm
+- Spring Boot microservice
+- probes, config validation, and observability
+
+Outcome:
+A platform team bootstraps a governed Kubernetes environment, and an application team deploys the Payment Exception Review Status API into it through a controlled path.
+
+### Stage 2 - Security, identity, and GitOps hardening
+Planned focus:
+- ArgoCD
+- Vault
+- identity federation
+- stronger AppSec controls
+- policy and governance
+- deeper observability with logs and security posture
+
+Outcome:
+The platform evolves from controlled delivery to controlled and secured delivery.
+
+### Stage 3 - Enterprise expansion and hybrid credibility
+Planned focus:
+- hybrid Azure + AWS
+- OpenShift or OKD orientation
+- advanced observability
+- stronger production governance
+- multi-environment promotion
+- enterprise-grade operations narrative
+
+Outcome:
+The platform becomes a broader enterprise platform case aligned with highly regulated environments.
+

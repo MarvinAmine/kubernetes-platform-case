@@ -14,7 +14,7 @@ It does not deploy the application itself.
 
 The Kubernetes resources Terraform creates:
 
-- Namespace: `document-processing-stage1`
+- Namespace: `payment-exception-review-stage1`
 - ServiceAccount: `app-runtime-sa`
 - Role: `app-runtime-role`
 - RoleBinding: `app-runtime-rb`

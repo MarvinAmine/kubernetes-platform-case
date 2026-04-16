@@ -2,9 +2,22 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INFRASTRUCTURE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 ENV_FILE="$SCRIPT_DIR/../.env"
 ENV_FILE_TEMPLATE="$SCRIPT_DIR/../.env.example"
 source "$SCRIPT_DIR/../scripts/wait_for_backend_access.sh"
+source "$SCRIPT_DIR/../scripts/common_logging.sh"
+
+parse_args() {
+    parse_silent_flag "$@"
+    if [[ ${#REMAINING_ARGS[@]} -gt 0 ]]; then
+        echo "Unknown argument: ${REMAINING_ARGS[0]}"
+        exit 1
+    fi
+}
+
+parse_args "$@"
+setup_logging "$INFRASTRUCTURE_ROOT/create_azure_resources.log"
 
 if [[ ! -f "$ENV_FILE" ]]; then
     echo "Missing $ENV_FILE. Copy $ENV_FILE_TEMPLATE to $ENV_FILE and fill the values first."
@@ -29,27 +42,28 @@ export TF_VAR_node_count="${NODE_COUNT:-1}"
 export TF_VAR_vm_size="${VM_SIZE:-Standard_D2as_v6}"
 export TF_VAR_tier="${TIER:-Free}"
 
-echo "Checking Azure login..."
-az account show --output table >/dev/null
+log_info "Checking Azure login..."
+run_command_with_context "Azure login verified" az account show --output table
 
 cd "$SCRIPT_DIR/terraform"
-echo "Init Azure resources..."
-terraform_init_with_backend_retry \
+log_info "Initializing Azure Terraform layer..."
+run_command_with_context "Terraform init completed" \
+  terraform_init_with_backend_retry \
   "$TF_BACKEND_RESOURCE_GROUP" \
   "$TF_BACKEND_STORAGE_ACCOUNT" \
   "$TF_BACKEND_CONTAINER" \
   "azure/terraform.tfstate"
 
-echo "Plan Azure resources..."
-terraform validate
+log_info "Validating Azure Terraform layer..."
+run_command_with_context "Terraform validate completed" terraform validate
 
 echo "If the next step fails because the resource group already exists, run:"
 echo "terraform import azurerm_resource_group.aks \"/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP\""
 
-echo "Planning Azure resources..."
-terraform plan
+log_info "Planning Azure Terraform layer..."
+run_command_with_context "Terraform plan completed" terraform plan
 
-echo "Applying Azure resources..."
-terraform apply -auto-approve
+log_info "Applying Azure Terraform layer..."
+run_command_with_context "Terraform apply completed" terraform apply -auto-approve
 
-echo "Done."
+log_success "Azure resources are ready."

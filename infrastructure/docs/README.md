@@ -2,6 +2,10 @@
 
 > This folder is reserved for the infrastructure team. In highly regulated compagnies, this folder would usually live in its own repository and be accessible by the infrastructure team.
 
+## FIRST USAGE?
+
+Follow the instructions given on the [main README.md](../../README.md)
+
 ## Azure
 
 ### Requirements steps (if not already done):
@@ -150,15 +154,15 @@ terraform apply
 
 Verify the kubernetes resources (here is the official documentation [Terraform_ArchiCorp_Kubernetes_provider](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/namespace))
 ```bash
-kubectl get ns document-processing-stage1
+kubectl get ns payment-exception-review-stage1
 ```
 ```bash
 NAME                         STATUS   AGE
-document-processing-stage1   Active   24m
+payment-exception-review-stage1   Active   24m
 ```
 
 ```bash
-kubectl get serviceaccounts -n document-processing-stage1 
+kubectl get serviceaccounts -n payment-exception-review-stage1 
 ```
 ```bash
 NAME             AGE
@@ -166,7 +170,7 @@ app-runtime-sa   50s
 ```
 
 ```bash
-k get roles.rbac.authorization.k8s.io -n document-processing-stage1
+k get roles.rbac.authorization.k8s.io -n payment-exception-review-stage1
 ```
 ```bash
 NAME               CREATED AT
@@ -174,7 +178,7 @@ app-runtime-role   2026-04-05T19:45:05Z
 ```
 
 ```bash
-k -n document-processing-stage1 get rolebindings.rbac.authorization.k8s.io 
+k -n payment-exception-review-stage1 get rolebindings.rbac.authorization.k8s.io 
 ```
 ```bash
 NAME             ROLE                    AGE
@@ -182,21 +186,21 @@ app-runtime-rb   Role/app-runtime-role   26s
 ```
 
 ```bash
-kubectl auth can-i list configmaps  --as=system:serviceaccount:document-processing-stage1:app-runtime-sa   -n document-processing-stage1
+kubectl auth can-i list configmaps  --as=system:serviceaccount:payment-exception-review-stage1:app-runtime-sa   -n payment-exception-review-stage1
 ```
 ```bash
 yes
 ```
 
 ```bash
-kubectl auth can-i list pods  --as=system:serviceaccount:document-processing-stage1:app-runtime-sa   -n document-processing-stage1
+kubectl auth can-i list pods  --as=system:serviceaccount:payment-exception-review-stage1:app-runtime-sa   -n payment-exception-review-stage1
 ```
 ```bash
 yes
 ```
 
 ```bash
-k -n document-processing-stage1 get configmaps 
+k -n payment-exception-review-stage1 get configmaps 
 ```
 ```bash
 NAME                       DATA   AGE
@@ -206,4 +210,4 @@ platform-baseline-config   3      42s
 
 ## Set GitHub Actions secrets and variables
 ![alt text](../../OIDC_secrets.png)
-![alt text](../../OIDC_variable.png)
+![alt text](../../github_actions_variables.png)

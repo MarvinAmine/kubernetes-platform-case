@@ -4,12 +4,43 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="$SCRIPT_DIR/.env"
 ENV_FILE_TEMPLATE="$SCRIPT_DIR/.env.example"
+source "$SCRIPT_DIR/scripts/common_logging.sh"
+
+usage() {
+    cat <<'EOF'
+Usage: ./infrastructure/provision_platform.sh [--silent|-s] [--help|-h]
+
+Options:
+  -s, --silent   Show concise terminal logs and write detailed command output to log files at the project root.
+  -h, --help     Show this help message.
+
+Default behavior is verbose to make the provisioning flow easier to debug for newcomers.
+EOF
+}
+
+parse_args() {
+    parse_silent_flag "$@"
+
+    if [[ ${#REMAINING_ARGS[@]} -eq 0 ]]; then
+        return 0
+    fi
+
+    case "${REMAINING_ARGS[0]}" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown argument: ${REMAINING_ARGS[0]}"
+            echo
+            usage
+            exit 1
+            ;;
+    esac
+}
 
 print_header() {
-    echo
-    echo "=================================================="
-    echo "$1"
-    echo "=================================================="
+    print_header_block "$1"
 }
 
 print_azure_login_help() {
@@ -71,7 +102,7 @@ ensure_azure_cli_and_login() {
 
 ensure_subscription_id_present() {
     if [[ -z "${SUBSCRIPTION_ID:-}" ]]; then
-        echo "SUBSCRIPTION_ID is missing from $ENV_FILE"
+        log_error "SUBSCRIPTION_ID is missing from $ENV_FILE"
         echo
         echo "Available subscriptions:"
         az account list --output table
@@ -83,9 +114,15 @@ ensure_subscription_id_present() {
 
 register_required_providers() {
     print_header "Registering Azure Resource Providers"
-    az provider register --namespace Microsoft.ContainerService
-    az provider register --namespace Microsoft.Compute
-    az provider register --namespace Microsoft.Network
+    log_info "Registering Microsoft.ContainerService provider"
+    run_command_with_context "Provider Microsoft.ContainerService registered" \
+        az provider register --namespace Microsoft.ContainerService
+    log_info "Registering Microsoft.Compute provider"
+    run_command_with_context "Provider Microsoft.Compute registered" \
+        az provider register --namespace Microsoft.Compute
+    log_info "Registering Microsoft.Network provider"
+    run_command_with_context "Provider Microsoft.Network registered" \
+        az provider register --namespace Microsoft.Network
 }
 
 backend_values_missing() {
@@ -134,34 +171,31 @@ resolve_oidc_secret_values() {
 
 print_first_run_instructions() {
     resolve_oidc_secret_values
-
-    cat <<EOF
-
-Backend created successfully.
-
-Update $ENV_FILE with:
-TF_BACKEND_RESOURCE_GROUP="$BACKEND_RESOURCE_GROUP"
-TF_BACKEND_STORAGE_ACCOUNT="$BACKEND_STORAGE_ACCOUNT"
-TF_BACKEND_CONTAINER="$BACKEND_CONTAINER"
-
-Confirm these values are also set in GitHub repository variables:
-TF_BACKEND_RESOURCE_GROUP=$BACKEND_RESOURCE_GROUP
-TF_BACKEND_STORAGE_ACCOUNT=$BACKEND_STORAGE_ACCOUNT
-TF_BACKEND_CONTAINER=$BACKEND_CONTAINER
-RESOURCE_GROUP=${RESOURCE_GROUP:-rg-stage1-aks}
-AKS_LOCATION=${LOCATION:-canadacentral}
-AKS_CLUSTER_NAME=${AKS_CLUSTER_NAME:-aks-stage1-platform}
-
-Confirm these GitHub repository secrets are set:
-AZURE_SUBSCRIPTION_ID=${SUBSCRIPTION_ID:-<your-subscription-id>}
-AZURE_CLIENT_ID=${RESOLVED_AZURE_CLIENT_ID}
-AZURE_TENANT_ID=${RESOLVED_AZURE_TENANT_ID}
-
-Then load the environment:
-set -a
-source infrastructure/.env
-set +a
-EOF
+    echo
+    highlight_line "Backend created successfully."
+    echo
+    highlight_line "Update $ENV_FILE with:"
+    echo "TF_BACKEND_RESOURCE_GROUP=\"$BACKEND_RESOURCE_GROUP\""
+    echo "TF_BACKEND_STORAGE_ACCOUNT=\"$BACKEND_STORAGE_ACCOUNT\""
+    echo "TF_BACKEND_CONTAINER=\"$BACKEND_CONTAINER\""
+    echo
+    highlight_line "Confirm these values are also set in GitHub repository variables:"
+    echo "TF_BACKEND_RESOURCE_GROUP=$BACKEND_RESOURCE_GROUP"
+    echo "TF_BACKEND_STORAGE_ACCOUNT=$BACKEND_STORAGE_ACCOUNT"
+    echo "TF_BACKEND_CONTAINER=$BACKEND_CONTAINER"
+    echo "RESOURCE_GROUP=${RESOURCE_GROUP:-rg-stage1-aks}"
+    echo "AKS_LOCATION=${LOCATION:-canadacentral}"
+    echo "AKS_CLUSTER_NAME=${AKS_CLUSTER_NAME:-aks-stage1-platform}"
+    echo
+    highlight_line "Confirm these GitHub repository secrets are set:"
+    echo "AZURE_SUBSCRIPTION_ID=${SUBSCRIPTION_ID:-<your-subscription-id>}"
+    echo "AZURE_CLIENT_ID=${RESOLVED_AZURE_CLIENT_ID}"
+    echo "AZURE_TENANT_ID=${RESOLVED_AZURE_TENANT_ID}"
+    echo
+    highlight_line "Then load the environment:"
+    echo "set -a"
+    echo "source infrastructure/.env"
+    echo "set +a"
 }
 
 confirm_continue() {
@@ -177,50 +211,85 @@ print_manual_configuration_block() {
     print_first_run_instructions
 
     echo
-    echo "Required:"
+    highlight_line "Required:"
     echo "- Update $ENV_FILE manually"
     echo "- Set the GitHub repository variables"
     echo "- Ensure GitHub repository secrets exist"
     echo
-    echo "Optional now:"
+    highlight_line "Optional now:"
     echo "- Continue local provisioning if you only want local bootstrap"
     echo "- Stop here and configure GitHub first"
 }
 
 run_first_time_backend_bootstrap() {
     print_header "First Run Detected"
-    echo "STEP 1/4 - Creating or reconciling the remote Terraform backend..."
-    "$SCRIPT_DIR/terraform-backend/create_remote_backend.sh"
+    log_info "STEP 1/4 - Creating or reconciling the remote Terraform backend..."
+    if [[ "$SILENT_MODE" == true ]]; then
+        run_command_with_context "Remote Terraform backend bootstrap" \
+            "$SCRIPT_DIR/terraform-backend/create_remote_backend.sh" --silent
+    else
+        run_command_with_context "Remote Terraform backend bootstrap" \
+            "$SCRIPT_DIR/terraform-backend/create_remote_backend.sh"
+    fi
     read_backend_outputs
 }
 
 run_azure_provisioning() {
     print_header "Azure Infrastructure"
-    echo "STEP 2/4 - Creating or reconciling Azure Infrastructure..."
-    "$SCRIPT_DIR/azure/create_azure_resources.sh"
+    log_info "STEP 2/4 - Creating or reconciling Azure Infrastructure..."
+    if [[ "$SILENT_MODE" == true ]]; then
+        run_command_with_context "Azure infrastructure provisioning" \
+            "$SCRIPT_DIR/azure/create_azure_resources.sh" --silent
+    else
+        run_command_with_context "Azure infrastructure provisioning" \
+            "$SCRIPT_DIR/azure/create_azure_resources.sh"
+    fi
 }
 
 run_kubernetes_provisioning() {
     print_header "Kubernetes Resources"
-    echo "STEP 3/4 - Creating or reconciling Kubernetes resources..."
-    "$SCRIPT_DIR/kubernetes-resources/apply_kubernetes_resources.sh"
+    log_info "STEP 3/4 - Creating or reconciling Kubernetes resources..."
+    if [[ "$SILENT_MODE" == true ]]; then
+        run_command_with_context "Kubernetes resources provisioning" \
+            "$SCRIPT_DIR/kubernetes-resources/apply_kubernetes_resources.sh" --silent
+    else
+        run_command_with_context "Kubernetes resources provisioning" \
+            "$SCRIPT_DIR/kubernetes-resources/apply_kubernetes_resources.sh"
+    fi
 }
 
 run_oidc_setup() {
     echo
     if confirm_continue "Do you also want to create the Azure OIDC federation configuration? Type yes or no: "; then
         print_header "Azure OIDC For GitHub"
-        echo "STEP 4/4 - Creating or reconciling Azure OIDC for GitHub..."
-        "$SCRIPT_DIR/azure/oidc/create_az_oidc.sh"
+        log_info "STEP 4/4 - Creating or reconciling Azure OIDC for GitHub..."
+        if [[ "$SILENT_MODE" == true ]]; then
+            run_command_with_context "Azure OIDC reconciliation" \
+                "$SCRIPT_DIR/azure/oidc/create_az_oidc.sh" --silent
+        else
+            run_command_with_context "Azure OIDC reconciliation" \
+                "$SCRIPT_DIR/azure/oidc/create_az_oidc.sh"
+        fi
     else
-        echo "STEP 4/4 - Skipping the creation or reconciliation of Azure OIDC for GitHub."
+        log_info "STEP 4/4 - Skipping the creation or reconciliation of Azure OIDC for GitHub."
     fi
 }
 
 main() {
     local first_run_detected=false
+    local start_time total_elapsed
+
+    parse_args "$@"
+    setup_logging "$SCRIPT_DIR/provision_platform.log"
+    start_time="$(date +%s)"
 
     print_header "Platform Provisioning Wizard"
+    if [[ "$SILENT_MODE" == true ]]; then
+        log_info "Silent mode enabled. Detailed command output will be written to project-root log files."
+        log_info "Main log file: $LOG_FILE"
+    else
+        log_info "Verbose mode enabled by default to help debug the provisioning flow."
+    fi
 
     ensure_env_file_exists
     load_env
@@ -233,14 +302,14 @@ main() {
         run_first_time_backend_bootstrap
     else
         print_header "Existing Backend Configuration Detected"
-        echo "Backend values already exist in $ENV_FILE."
+        log_info "Backend values already exist in $ENV_FILE."
 
         if backend_exists; then
-            echo "Remote backend exists and is reachable."
+            log_success "Remote backend exists and is reachable."
         else
             first_run_detected=true
-            echo "Remote backend values are set, but the backend does not exist yet or is not reachable."
-            echo "Falling back to STEP 1/4 to create or reconcile the remote Terraform backend."
+            log_info "Remote backend values are set, but the backend does not exist yet or is not reachable."
+            log_info "Falling back to STEP 1/4 to create or reconcile the remote Terraform backend."
             run_first_time_backend_bootstrap
         fi
     fi
@@ -254,7 +323,8 @@ main() {
     fi
 
     print_header "Completed"
-    echo "Platform provisioning completed."
+    total_elapsed=$(( $(date +%s) - start_time ))
+    log_success "Platform provisioning completed in $(format_duration "$total_elapsed")."
 }
 
 main "$@"
