@@ -6,8 +6,8 @@ Structured as a practical platform pattern, this foundation is designed to evolv
 
 > **Important:** This delivery foundation uses a remote Terraform backend in Azure Storage so local executions and CI/CD pipelines share the same infrastructure state instead of relying on local Terraform state files.
 
-![Environment bootstrap path](environment_bootstrap_path.png)
-![Application delivery path](app_delivery_path.png)
+![Environment bootstrap path](/assets/environment_bootstrap_path.png)
+![Application delivery path](/assets/app_delivery_path.png)
 
 ## Summary for recruiters and hiring managers
 
@@ -108,7 +108,7 @@ Confirm these GitHub repository variables are also set:
 | `AKS_CLUSTER_NAME` | Yes | AKS cluster name expected by the Azure and Kubernetes workflows. Should match `AKS_CLUSTER_NAME` in `infrastructure/.env`. |
 | `VM_SIZE` | Optional | Optional CI override for the AKS node size. If unset, workflows default to `Standard_D2as_v6`. |
 
-![GitHub Actions repository variables](github_actions_variables.png)
+![GitHub Actions repository variables](/assets/github_actions_variables.png)
 
 If you also run the Azure OIDC setup, the script `infrastructure/azure/oidc/create_az_oidc.sh` prints the GitHub repository secrets to configure.
 
@@ -120,7 +120,7 @@ Confirm these GitHub repository secrets are set:
 | `AZURE_CLIENT_ID` | Yes | Application ID of the Azure Entra app created for GitHub OIDC. |
 | `AZURE_TENANT_ID` | Yes | Azure tenant ID used by `azure/login@v2` during GitHub Actions authentication. |
 
-![GitHub Actions repository secrets](OIDC_secrets.png)
+![GitHub Actions repository secrets](/assets/OIDC_secrets.png)
 
 ### 0.4 GitHub Actions
 
@@ -151,7 +151,7 @@ It destroys:
 3. The remote Terraform backend
 4. The Azure OIDC integration, if you choose to remove it
 
-![alt text](iac_lifecycle_dependencies.png)
+![alt text](/assets/iac_lifecycle_dependencies.png)
 
 
 ## 1. INFRASTRUCTURE BOOTSTRAP PATH MANAGED BY THE INFRASTRUCTURE TEAM 
@@ -423,7 +423,7 @@ kubernetes-platform-case/
 │       └── README.md
 │
 ├── application/
-│   ├── app/
+│   ├── payment-exception-review-service/
 │   │   ├── src/
 │   │   ├── pom.xml
 │   │   └── README.md
@@ -432,7 +432,7 @@ kubernetes-platform-case/
 │   │   └── Dockerfile
 │   │
 │   ├── helm/
-│   │   └── payment-exception-review-status/
+│   │   └── payment-exception-review-service-status/
 │   │       ├── Chart.yaml
 │   │       ├── values.yaml
 │   │       └── templates/

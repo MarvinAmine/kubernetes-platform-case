@@ -3,7 +3,7 @@ name: Azure Provision
 on:
     push:
         paths:
-            - 'infrastructure/azure/**'
+            - 'infrastructure/azure/terraform/**'
             - '.github/workflows/azure-provision.yml'
     workflow_dispatch:
 

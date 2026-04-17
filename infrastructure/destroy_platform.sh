@@ -59,7 +59,7 @@ main() {
     local start_time total_elapsed
 
     parse_args "$@"
-    setup_logging "$SCRIPT_DIR/destroy_platform.log"
+    setup_logging "$SCRIPT_DIR/logs/destroy_platform.log"
     start_time="$(date +%s)"
 
     print_header "Platform Teardown"

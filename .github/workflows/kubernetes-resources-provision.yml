@@ -3,7 +3,7 @@ name: Kubernetes Resources
 on:
     push:
         paths:
-            - 'infrastructure/kubernetes-resources/**'
+            - 'infrastructure/kubernetes-resources/terraform/**'
             - '.github/workflows/kubernetes-resources-provision.yml'
     workflow_dispatch:
 

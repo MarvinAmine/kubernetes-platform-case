@@ -280,7 +280,7 @@ main() {
     local start_time total_elapsed
 
     parse_args "$@"
-    setup_logging "$SCRIPT_DIR/provision_platform.log"
+    setup_logging "$SCRIPT_DIR/logs/provision_platform.log"
     start_time="$(date +%s)"
 
     print_header "Platform Provisioning Wizard"
