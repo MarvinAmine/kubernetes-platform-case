@@ -63,3 +63,7 @@ application-dev.yaml
 # Helm / Kubernetes generated files
 **/*.rendered.yaml
 **/charts/
+
+
+save.md
+tmp.md

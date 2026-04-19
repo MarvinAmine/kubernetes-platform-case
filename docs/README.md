@@ -1,35 +1,40 @@
-# Stage 1 of 3 - Delivery foundation for an internal payment review service on AKS with Terraform, GitHub Actions, Helm, and Docker
+# Stage 1 of 3 - Governed AKS delivery foundation for an internal payment review service
 
-This delivery foundation provides a reusable pattern for an internal Java Spring Boot service deployed to Azure Kubernetes Service (AKS). It follows industry practices commonly used in highly regulated organizations to separate infrastructure bootstrap from application delivery through Infrastructure as Code (IaC) with Terraform, GitHub Actions, Docker, Helm, observability, and realistic troubleshooting scenarios.
+"I built a Stage 1 Kubernetes delivery foundation on AKS for an internal payment review service. The goal was to reflect a realistic operating model where a platform team bootstraps the infrastructure with Terraform and an application team deploys a Spring Boot service through GitHub Actions, Docker, and Helm. I also included PostgreSQL, health probes, Grafana Prometheus metrics, and failure scenarios so the repeatable operating model demonstrates delivery, observability, and troubleshooting instead of only deployment."
 
-Structured as a practical platform pattern, this foundation is designed to evolve across later stages.
+## Detailed version:
+Production-oriented Kubernetes delivery foundation for highly regulated environments, where internal service delivery is often slowed by infrastructure setup, deployment standards, observability requirements, and operational risk.
 
-> **Important:** This delivery foundation uses a remote Terraform backend in Azure Storage so local executions and CI/CD pipelines share the same infrastructure state instead of relying on local Terraform state files.
+Stage 1 focuses on one expensive problem: turning governed internal service delivery from a fragile, manual, multi-team effort into a repeatable operating model.
 
-![Environment bootstrap path](/assets/environment_bootstrap_path.png)
+This stage uses a clear 2-team model:
+
+- **Infrastructure team** bootstraps the AKS infrastructure with **Terraform (IaC)**
+- **Application team** builds and deploys a **Spring Boot** microservice through **GitHub Actions**, **Docker**, and **Helm**
+
+![Intrastructure bootstrap path](/assets/infrastructure_bootstrap_path.png)
 ![Application delivery path](/assets/app_delivery_path.png)
 
-## Summary for recruiters and hiring managers
+The operating model foundation delivers:
 
-Internal teams in a regulated organization may urgently need a secure custom service to support payment review. In practice, the infrastructure work behind that service often takes several weeks across design, bootstrap, provisioning, and operations. This delivery foundation reduces that effort by reusing industry practices already adopted in highly regulated environments.
+- **governed AKS delivery foundation**
+- **postgreSQL-backed internal payment review service**
+- **controlled GitHub Actions CI/CD path**
+- **observable runtime path** through health checks, configuration validation, and Grafana Prometheus metrics
+- **documented rollout and misconfiguration failure scenarios** to demonstrate realistic incident diagnosis
 
-Delivering that kind of service usually involves more than writing application code. It also requires environment design, infrastructure bootstrap, CI/CD setup, deployment standards, observability, and operational support. In many organizations, that foundation can take weeks to prepare before the application team can deliver safely.
+What this demonstrates:
 
-This delivery foundation is built to reduce that setup effort through a reusable and supportable operating model:
+- repeatable infrastructure provisioning and controlled application delivery
+- clear separation between infrastructure ownership and application deployment
+- support for stateful services with database dependencies
+- enough observability to support safe operations and recurring troubleshooting scenarios
+- hands-on experience aligned with **Platform Engineer, DevOps, SRE, and CI/CD platform roles** in regulated environments
 
-- the infrastructure team bootstraps AKS environment resources with Terraform
-- the application team builds and deploys the microservice through GitHub Actions, Docker, and Helm
-- the service exposes health checks, configuration validation, and Prometheus metrics
-- rollout and configuration failure scenarios are documented to demonstrate realistic troubleshooting
+> **Important:** This delivery foundation uses a **remote Terraform backend in Azure Storage** so local executions and CI/CD pipelines share the same infrastructure state instead of relying on local Terraform state files.
 
-This stage focuses on the delivery model behind the service: clear ownership boundaries, deployment safety, observability, incident diagnosis, and repeatable platform practices for regulated environments.
+This foundation later evolves toward stronger GitOps, security, secrets management, policy enforcement, and hybrid-cloud platform credibility.
 
-Key capabilities illustrated in this technological environment:
-
-- hands-on work with AKS, Terraform, GitHub Actions, Docker, Helm, and Azure OIDC federation
-- a clear separation between infrastructure ownership and application delivery
-- practical judgment around deployment safety, observability, and incident diagnosis
-- a reusable foundation aligned with Platform Engineer, DevOps, SRE, and Solutions Architect responsibilities in regulated organizations
 
 ## 0. HOW TO USE IT?
 
@@ -151,8 +156,7 @@ It destroys:
 3. The remote Terraform backend
 4. The Azure OIDC integration, if you choose to remove it
 
-![alt text](/assets/iac_lifecycle_dependencies.png)
-
+![iac_lifecycle_dependencies](/assets/iac_lifecycle_dependencies.png)
 
 ## 1. INFRASTRUCTURE BOOTSTRAP PATH MANAGED BY THE INFRASTRUCTURE TEAM 
 
@@ -239,17 +243,26 @@ It destroys:
 │ 1. Checkout code                           │
 │ 2. Build Spring Boot app                   │
 │ 3. Run tests                               │
-│ 4. Package JAR                             │
-│ 5. Build Docker image                      │
-│ 6. Validate Helm chart                     │
-│ 7. Deploy with Helm                        │
-│ 8. Post-deploy validation                  │
+│ 4. Run database migration validation       │
+│ 5. Package JAR                             │
+│ 6. Build Docker image                      │
+│ 7. Validate Helm chart                     │
+│ 8. Deploy with Helm                        │
+│ 9. Post-deploy validation                  │
 └────────────────────────────────────────────┘
       │
-      ├───────────────────────────────┐
-      │                               │
-      │ builds                        │ uses
-      ▼                               ▼
+      ├──────────────────────────────────────────────────────┐
+      │                                                      │
+      |      ┌──────────────────────────────────────┐        │
+      |      │ Azure Database for PostgreSQL        │        │
+      |      │--------------------------------------│        │
+      |      │ Stores payment review records        │        │
+      |      │ Persistent relational data store     │        │
+      |      └──────────────────────────────────────┘        │
+      |                   ▲                                  │
+      |                   |                                  │
+      │ builds            | connects to                      │ uses
+      ▼                   |                                  ▼
 ┌──────────────────────────────┐   ┌──────────────────────────────┐
 │         Docker Image         │   │             Helm             │
 │------------------------------│   │------------------------------│
@@ -295,6 +308,21 @@ It destroys:
 │  └──────────────────────────────┘                            │
 └──────────────────────────────────────────────────────────────┘
 ```
+
+### 2.1 Data persistence used by the service
+
+The Stage 1 service is backed by PostgreSQL so the workload behaves like a real internal enterprise service rather than a stateless API shell.
+
+The database stores payment review records such as:
+
+- payment reference
+- review status
+- review reason
+- source system
+- assigned queue
+- timestamps
+
+This makes Stage 1 more credible for regulated environments because the service must validate, persist, expose, and troubleshoot a real dependency.
 
 ## 3. APPLICATION RUNTIME
 
@@ -466,18 +494,27 @@ kubernetes-platform-case/
 │   └── interview-notes.md
 ```
 
-## 6. Infrastructure layer responsability
-| Layer                                 | Purpose                                                              | Owner            |
+## 6. Infrastructure layer responsibility
+| Layer                                 | Responsibility                                                       | Owner            |
 | ------------------------------------- | -------------------------------------------------------------------- | ---------------- |
 | `infrastructure/terraform-backend`    | Creates the shared Azure Storage backend for Terraform state         | Platform team    |
-| `infrastructure/azure`                | Creates Azure resources such as the resource group and AKS cluster   | Platform team    |
-| `infrastructure/kubernetes-resources` | Creates namespace, service account, RBAC, and baseline config in AKS | Platform team    |
-| `application/`                        | Builds and deploys the Spring Boot service                           | Application team |
+| `infrastructure/azure`                | Provisions Azure resources such as the resource group and AKS cluster| Platform team    |
+| `infrastructure/kubernetes-resources` | Bootstraps namespace, service account, RBAC, and baseline config     | Platform team    |
+| `application/`                        | Builds, packages, and deploys the Spring Boot service                | Application team |
 
 
-## 7. FAILURE SCENARIOS
+## 7. FAILURE SCENARIOS USED TO DEMONSTRATE OPERATIONAL TROUBLESHOOTING
 
-### Scenario 1 - Bad readiness probe
+**Operational skills demonstrated**
+
+- reasoning about observability, probes, and deployment safety
+- diagnosing rollout failures in Kubernetes
+- validating application health and runtime configuration
+- reading and structuring Terraform layers
+- understanding ownership boundaries between platform and application teams
+- handling a service with a real database dependency
+
+#### Scenario 1 - Bad readiness probe
 - application starts correctly
 - readiness probe path or port is wrong
 - pod stays unready
@@ -485,7 +522,7 @@ kubernetes-platform-case/
 - service is not available through standard routing
 - diagnosed through events, `kubectl describe`, rollout status, and health endpoint verification
 
-### Scenario 2 - Bad business configuration
+#### Scenario 2 - Bad business configuration
 - the app receives an invalid validation configuration
 - example: `VALIDATION_MODE=AGGRESSIVE` when only `STRICT` or `STANDARD` are supported
 - startup validation fails or the application becomes unhealthy
@@ -493,29 +530,30 @@ kubernetes-platform-case/
 - demonstrates config governance and safe startup behavior in a regulated service
 
 
+
 ## 8. OWNERSHIP MODEL
 
-Infrastructure team owns:
-- Terraform
-- namespace
+**Platform team owns:**
+- Terraform layers
+- namespace bootstrap
 - service account
-- role / rolebinding
+- role and rolebinding
 - baseline ConfigMap convention
 - environment standards
 
-Application team owns:
+**Application team owns:**
 - Spring Boot code
 - Dockerfile
 - Helm chart
-- Deployment / Service
-- app ConfigMap values
-- app Secret usage pattern
-- application rollout
-- app-level runbook notes
+- Deployment and Service manifests
+- application ConfigMap values
+- application Secret usage pattern
+- application rollout behavior
+- application runbook notes
  
-## 9. THREE-STAGE EVOLUTION
+## 9. THREE-STAGE PLATFORM EVOLUTION
 
-### Stage 1 - Platform bootstrap and controlled delivery
+### Stage 1 — Governed delivery foundation
 Focus:
 - AKS
 - Terraform
@@ -528,7 +566,7 @@ Focus:
 Outcome:
 A platform team bootstraps a governed Kubernetes environment, and an application team deploys the Payment Exception Review Status API into it through a controlled path.
 
-### Stage 2 - Security, identity, and GitOps hardening
+### Stage 2 — Governance, security, and shared-platform hardening
 Planned focus:
 - ArgoCD
 - Vault
@@ -540,7 +578,7 @@ Planned focus:
 Outcome:
 The platform evolves from controlled delivery to controlled and secured delivery.
 
-### Stage 3 - Enterprise expansion and hybrid credibility
+### Stage 3 — Enterprise hybrid platform expansion
 Planned focus:
 - hybrid Azure + AWS
 - OpenShift or OKD orientation
