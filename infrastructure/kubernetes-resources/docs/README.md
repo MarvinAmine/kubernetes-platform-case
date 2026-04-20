@@ -1,6 +1,6 @@
 # Kubernetes Resources
 
-This Terraform layer is managed by the infrastructure team.
+This Terraform layer is managed by the platform team.
 
 Its purpose is to create the platform-managed Kubernetes resources inside AKS before the application team deploys the Spring Boot service.
 

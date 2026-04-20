@@ -12,12 +12,23 @@
 
 **Payment Exception Review Status API**
 
+## Related ADRs
+
+The main Stage 1 design decisions are captured in:
+
+- [docs/adrs/ADR-001-three-team-stage1-operating-model.md](/home/marvin/Documents/dev/kubernetes/docs/adrs/ADR-001-three-team-stage1-operating-model.md)
+- [docs/adrs/ADR-002-separate-infrastructure-and-platform-terraform-responsibilities.md](/home/marvin/Documents/dev/kubernetes/docs/adrs/ADR-002-separate-infrastructure-and-platform-terraform-responsibilities.md)
+- [docs/adrs/ADR-003-controlled-application-delivery-path.md](/home/marvin/Documents/dev/kubernetes/docs/adrs/ADR-003-controlled-application-delivery-path.md)
+- [docs/adrs/ADR-004-observability-and-failure-scenarios-as-core-scope.md](/home/marvin/Documents/dev/kubernetes/docs/adrs/ADR-004-observability-and-failure-scenarios-as-core-scope.md)
+- [docs/adrs/ADR-005-staged-maturity-evolution.md](/home/marvin/Documents/dev/kubernetes/docs/adrs/ADR-005-staged-maturity-evolution.md)
+
 ## 1. Stage 1 purpose
 
-Stage 1 demonstrates how a **central platform team** and an **application team** collaborate in a controlled Kubernetes environment similar to what is expected in regulated organizations such as banks, insurers, and government-adjacent institutions.
+Stage 1 demonstrates how an **infrastructure team**, a **platform team**, and an **application team** collaborate in a controlled Kubernetes environment similar to what is expected in regulated organizations such as banks, insurers, and government-adjacent institutions.
 
 The goal is not to build a customer-facing payment platform. The goal is to show a credible enterprise operating model where:
-- the platform team bootstraps a governed Kubernetes environment
+- the infrastructure team provisions the foundational Azure and AKS estate
+- the platform team provisions a governed Kubernetes application boundary on top of that foundation
 - the application team deploys a Java microservice into that environment
 - delivery is automated through CI/CD
 - the service exposes health, metrics, and realistic operational signals
@@ -50,7 +61,7 @@ Its purpose is to let internal systems and operators:
 
 ## 3. Stage 1 objective
 
-Demonstrate that a central platform team can provision a governed Kubernetes application boundary with Terraform, and that an application team can deliver a Java microservice into that boundary through a controlled GitHub Actions + Helm deployment path.
+Demonstrate that an infrastructure team can provision the foundational Azure and AKS estate with Terraform, that a platform team can provision a governed Kubernetes application boundary on top of it, and that an application team can deliver a Java microservice into that boundary through a controlled GitHub Actions + Helm deployment path.
 
 This stage proves practical understanding of:
 - Kubernetes operating model
@@ -59,7 +70,7 @@ This stage proves practical understanding of:
 - containerized Java services
 - probes and rollout behavior
 - observability basics
-- platform team vs app team ownership boundaries
+- infrastructure, platform, and application ownership boundaries
 - production-like troubleshooting
 
 ## 4. Why this project is credible
@@ -82,7 +93,7 @@ It creates direct discussion points around:
 - rollout troubleshooting
 - observability
 - production support mindset
-- separation of responsibilities between platform and application teams
+- separation of responsibilities between infrastructure, platform, and application teams
 
 ### For technical interviews
 
@@ -99,7 +110,8 @@ It gives realistic stories such as:
 
 - AKS cluster already created
 - Terraform-managed Kubernetes bootstrap resources
-- central platform team bootstrap path
+- infrastructure team foundation path
+- platform team bootstrap path
 - application team delivery path
 - Java Spring Boot microservice
 - Docker image build
@@ -128,30 +140,45 @@ These are intentionally deferred to later stages:
 
 ## 6. Actors and ownership model
 
-### 1. Central platform team
+### 1. Infrastructure team
 
-Owns the bootstrap path and the governed runtime foundation.
+Owns the foundational technical estate required before the governed runtime exists.
 
 Responsibilities:
 - Terraform
+- resource group provisioning
+- AKS cluster provisioning
+- remote Terraform backend
+- managed PostgreSQL foundation
+- infrastructure-level access prerequisites
+- environment connectivity and base infrastructure consistency
+
+### 2. Platform team
+
+Owns the governed Kubernetes application boundary and runtime conventions built on top of the infrastructure foundation.
+
+Responsibilities:
 - namespace creation
 - service account creation
 - role and rolebinding
 - baseline ConfigMap
 - baseline Secret pattern
+- shared observability services such as Prometheus and Grafana
 - platform-controlled workflow
 - environment consistency
 
-### 2. Application team
+### 3. Application team
 
 Owns the business service and its delivery path.
 
 Responsibilities:
 - Spring Boot application code
+- schema usage and persistence logic
 - Dockerfile
 - Helm chart
 - deployment values
 - probes
+- actuator endpoints and custom metrics
 - business configuration
 - application delivery workflow
 - app-level metrics exposure
@@ -279,7 +306,7 @@ The platform team uses Terraform to create or reconcile Kubernetes environment r
 - baseline ConfigMap
 - baseline secret structure
 
-This represents the **environment bootstrap path managed by the infrastructure/platform team**.
+This represents the **platform bootstrap path managed by the platform team on top of infrastructure prepared by the infrastructure team**.
 
 ### Application delivery path
 
@@ -408,7 +435,7 @@ No manual snowflake deployment.
 
 ### 3. Clear ownership boundaries
 
-Platform team and application team responsibilities are separated.
+Infrastructure, platform, and application responsibilities are separated.
 
 ### 4. Config-driven behavior
 
@@ -438,11 +465,12 @@ Design Stage 1 so it can later absorb:
 
 Stage 1 proves that you understand how to work in a production-shaped operating model where:
 - environment creation is governed
+- foundational infrastructure and governed platform responsibilities are distinct
 - application delivery is separated from cluster bootstrapping
 - application behavior is containerized and observable
 - rollout failures can be analyzed
 - configuration mistakes are surfaced early
-- platform and application responsibilities are clearly separated
+- infrastructure, platform, and application responsibilities are clearly separated
 
 That is much stronger than just showing “I deployed a Java app on Kubernetes.”
 
@@ -450,7 +478,7 @@ That is much stronger than just showing “I deployed a Java app on Kubernetes.�
 
 You can describe Stage 1 like this:
 
-**Stage 1 of the Regulated Payment Exception Review Platform simulates how a bank-like organization operates an internal payment exception service in Kubernetes. A central platform team bootstraps a governed AKS environment with Terraform, while an application team delivers a Spring Boot microservice through GitHub Actions, Docker, and Helm. The service exposes payment exception status, service health, config validation, and operational metrics, and includes realistic rollout and misconfiguration failure scenarios.**
+**Stage 1 of the Regulated Payment Exception Review Platform simulates how a bank-like organization operates an internal payment exception service in Kubernetes. An infrastructure team provisions the Azure and AKS foundation with Terraform, a platform team provisions a governed Kubernetes application boundary on top of it, and an application team delivers a Spring Boot microservice through GitHub Actions, Docker, and Helm. The service exposes payment exception status, service health, config validation, and operational metrics, and includes realistic rollout and misconfiguration failure scenarios.**
 
 ## 18. Recommended repo naming
 

@@ -1,7 +1,7 @@
 ## Stage 1 — Governed delivery foundation
 
 **Main purpose:**
-Prove that a platform team can bootstrap a governed Kubernetes environment and that an application team can safely deliver one stateful internal service into it through a controlled path.
+Prove that an infrastructure team can bootstrap the foundation, a platform team can provision a governed Kubernetes environment on top of it, and an application team can safely deliver one stateful internal service into it through a controlled path.
 
 **Technologies:**
 
@@ -24,7 +24,7 @@ Prove that a platform team can bootstrap a governed Kubernetes environment and t
 
 * environment bootstrap
 * app delivery path
-* separation between infrastructure team and application team
+* separation between infrastructure team, platform team, and application team
 * repeatable provisioning
 * controlled deployment
 * health checks, metrics, and troubleshooting

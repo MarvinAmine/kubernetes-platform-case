@@ -22,7 +22,9 @@ Stage 2 extends that base into a shared platform model by introducing:
 
 This stage continues to use a clear separation of responsibilities:
 
-- The **platform team** governs the cluster foundation, shared services, platform controls, and operational standards
+- The **infrastructure team** continues to own the foundational cloud and cluster estate
+- The **platform team** governs the shared services, platform controls, secrets integration points, and operational standards built on top of that estate
+- The **security and IAM team** becomes an explicit actor for identity, access, and secrets governance
 - The **application team** delivers and promotes workloads through controlled delivery mechanisms approved by the platform model
 
 This is the point where the platform starts to look less like a single application deployment lab and more like an internal shared service used by multiple delivery teams.
@@ -109,5 +111,5 @@ This stage is meant to show a platform that can:
 ### Position in the overall progression
 
 - **Stage 1** established delivery credibility
-- **Stage 2** establishes governance and shared-platform credibility
+- **Stage 2** establishes governance and shared-platform credibility, with Security and IAM becoming explicit in the operating model
 - **Stage 3** will extend this model toward enterprise-ready hybrid cloud and on-prem platform architecture

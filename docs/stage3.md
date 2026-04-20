@@ -21,9 +21,12 @@ Stage 3 extends that model by introducing:
 
 ### Operating model in this stage
 
-This stage keeps the separation of responsibilities between platform and application teams, but now under a broader enterprise scope:
+This stage keeps the separation of responsibilities between infrastructure, platform, security, reliability, and application concerns, but now under a broader enterprise scope:
 
-- The **platform team** defines and governs the standards, controls, observability model, identity patterns, and shared services across cloud and on-prem environments
+- The **infrastructure team** continues to own the foundational estates across cloud and on-prem environments
+- The **platform team** defines and governs the standards, controls, observability model, identity patterns, and shared services across those environments
+- The **security and IAM team** governs identity, access, and secrets controls
+- The **SRE / Production Engineering team** becomes explicit for production reliability, operability, and incident-readiness concerns
 - The **application team** continues to deliver workloads through controlled delivery mechanisms while conforming to the platform operating model
 
 At this stage, the platform is no longer presented as a single-cluster implementation. It is presented as an enterprise-ready architecture direction able to support different hosting realities without losing governance and operational consistency.

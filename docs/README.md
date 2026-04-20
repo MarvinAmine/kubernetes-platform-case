@@ -1,15 +1,16 @@
 # Stage 1 of 3 - Governed AKS delivery foundation for an internal payment review service
 
-"I built a Stage 1 Kubernetes delivery foundation on AKS for an internal payment review service. The goal was to reflect a realistic operating model where a platform team bootstraps the infrastructure with Terraform and an application team deploys a Spring Boot service through GitHub Actions, Docker, and Helm. I also included PostgreSQL, health probes, Grafana Prometheus metrics, and failure scenarios so the repeatable operating model demonstrates delivery, observability, and troubleshooting instead of only deployment."
+"I built a Stage 1 Kubernetes delivery foundation on AKS for an internal payment review service. The goal was to reflect a realistic operating model where an infrastructure team bootstraps the resource group, AKS cluster, remote Terraform backend, and managed PostgreSQL foundation with Terraform, a platform team provisions the governed Kubernetes application boundary and shared observability services such as Prometheus and Grafana on top of that foundation, and an application team deploys a Spring Boot service through GitHub Actions, Docker, and Helm. I also designed the service around PostgreSQL persistence, health probes, observability, and failure scenarios so the repeatable operating model demonstrates delivery, observability, and troubleshooting instead of only deployment."
 
 ## Detailed version:
 Production-oriented Kubernetes delivery foundation for highly regulated environments, where internal service delivery is often slowed by infrastructure setup, deployment standards, observability requirements, and operational risk.
 
 Stage 1 focuses on one expensive problem: turning governed internal service delivery from a fragile, manual, multi-team effort into a repeatable operating model.
 
-This stage uses a clear 2-team model:
+This stage uses a clear 3-team model:
 
-- **Infrastructure team** bootstraps the AKS infrastructure with **Terraform (IaC)**
+- **Infrastructure team** bootstraps the resource group, AKS cluster, remote Terraform backend, and managed PostgreSQL foundation with **Terraform (IaC)**
+- **Platform team** provisions the governed Kubernetes application boundary, runtime conventions, and shared observability services such as **Prometheus** and **Grafana** on top of that foundation
 - **Application team** builds and deploys a **Spring Boot** microservice through **GitHub Actions**, **Docker**, and **Helm**
 
 ![Intrastructure bootstrap path](/assets/infrastructure_bootstrap_path.png)
@@ -26,7 +27,7 @@ The operating model foundation delivers:
 What this demonstrates:
 
 - repeatable infrastructure provisioning and controlled application delivery
-- clear separation between infrastructure ownership and application deployment
+- clear separation between infrastructure, platform, and application ownership
 - support for stateful services with database dependencies
 - enough observability to support safe operations and recurring troubleshooting scenarios
 - hands-on experience aligned with **Platform Engineer, DevOps, SRE, and CI/CD platform roles** in regulated environments
@@ -34,6 +35,12 @@ What this demonstrates:
 > **Important:** This delivery foundation uses a **remote Terraform backend in Azure Storage** so local executions and CI/CD pipelines share the same infrastructure state instead of relying on local Terraform state files.
 
 This foundation later evolves toward stronger GitOps, security, secrets management, policy enforcement, and hybrid-cloud platform credibility.
+
+For the cross-stage team structure used in this repository, see [docs/project_team_ownership_model.md](/home/marvin/Documents/dev/kubernetes/docs/project_team_ownership_model.md).
+
+For a reusable non-project-specific reference, see [docs/generic_team_ownership_model.md](/home/marvin/Documents/dev/kubernetes/docs/generic_team_ownership_model.md).
+
+For root-level platform-case decisions, see [docs/adrs/README.md](/home/marvin/Documents/dev/kubernetes/docs/adrs/README.md).
 
 
 ## 0. HOW TO USE IT?
@@ -497,8 +504,8 @@ kubernetes-platform-case/
 ## 6. Infrastructure layer responsibility
 | Layer                                 | Responsibility                                                       | Owner            |
 | ------------------------------------- | -------------------------------------------------------------------- | ---------------- |
-| `infrastructure/terraform-backend`    | Creates the shared Azure Storage backend for Terraform state         | Platform team    |
-| `infrastructure/azure`                | Provisions Azure resources such as the resource group and AKS cluster| Platform team    |
+| `infrastructure/terraform-backend`    | Creates the shared Azure Storage backend for Terraform state         | Infrastructure team |
+| `infrastructure/azure`                | Provisions Azure resources such as the resource group and AKS cluster| Infrastructure team |
 | `infrastructure/kubernetes-resources` | Bootstraps namespace, service account, RBAC, and baseline config     | Platform team    |
 | `application/`                        | Builds, packages, and deploys the Spring Boot service                | Application team |
 
@@ -511,7 +518,7 @@ kubernetes-platform-case/
 - diagnosing rollout failures in Kubernetes
 - validating application health and runtime configuration
 - reading and structuring Terraform layers
-- understanding ownership boundaries between platform and application teams
+- understanding ownership boundaries between infrastructure, platform, and application teams
 - handling a service with a real database dependency
 
 #### Scenario 1 - Bad readiness probe
@@ -533,16 +540,28 @@ kubernetes-platform-case/
 
 ## 8. OWNERSHIP MODEL
 
+**Infrastructure team owns:**
+- Azure resource group
+- Terraform backend
+- AKS cluster provisioning
+- managed Azure PostgreSQL service
+- network and infrastructure prerequisites
+- infrastructure-level foundation standards
+
 **Platform team owns:**
-- Terraform layers
+- Kubernetes bootstrap layer
 - namespace bootstrap
 - service account
 - role and rolebinding
 - baseline ConfigMap convention
-- environment standards
+- shared observability services such as Prometheus and Grafana
+- runtime standards for app consumption of DB, secrets, and metrics
+- governed runtime standards
 
 **Application team owns:**
 - Spring Boot code
+- database schema usage and persistence logic
+- actuator endpoints and custom metrics
 - Dockerfile
 - Helm chart
 - Deployment and Service manifests
@@ -564,7 +583,7 @@ Focus:
 - probes, config validation, and observability
 
 Outcome:
-A platform team bootstraps a governed Kubernetes environment, and an application team deploys the Payment Exception Review Status API into it through a controlled path.
+An infrastructure team bootstraps the foundation, a platform team provisions a governed Kubernetes environment on top of it, and an application team deploys the Payment Exception Review Status API into it through a controlled path.
 
 ### Stage 2 — Governance, security, and shared-platform hardening
 Planned focus:
@@ -576,7 +595,7 @@ Planned focus:
 - deeper observability with logs and security posture
 
 Outcome:
-The platform evolves from controlled delivery to controlled and secured delivery.
+The platform evolves from controlled delivery to controlled and secured delivery, with Security and IAM becoming an explicit part of the operating model.
 
 ### Stage 3 — Enterprise hybrid platform expansion
 Planned focus:
@@ -584,9 +603,9 @@ Planned focus:
 - OpenShift or OKD orientation
 - advanced observability
 - stronger production governance
+- SRE / Production Engineering visibility
 - multi-environment promotion
 - enterprise-grade operations narrative
 
 Outcome:
 The platform becomes a broader enterprise platform case aligned with highly regulated environments.
-
