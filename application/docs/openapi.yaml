@@ -1,0 +1,308 @@
+openapi: 3.0.3
+info:
+  title: Payment Exception Review Service API
+  version: 0.0.1
+  description: >
+    Stage 1 internal API contract for the Payment Exception Review Service.
+    This service exposes business status lookup, service-status visibility,
+    configuration validation visibility, and operational Actuator endpoints.
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+
+tags:
+  - name: Payment Exceptions
+    description: Business and operational endpoints for the internal payment exception review service
+  - name: Actuator
+    description: Operational endpoints used for health and observability
+
+paths:
+  /api/payment-exceptions/{id}/status:
+    get:
+      tags:
+        - Payment Exceptions
+      summary: Get payment exception review status
+      description: Return the current lifecycle status for a payment exception review.
+      operationId: getPaymentExceptionStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Payment exception review identifier
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          description: Review status returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentExceptionStatusResponse'
+              examples:
+                default:
+                  value:
+                    reviewId: payexc-100045
+                    status: PENDING_REVIEW
+                    validationMode: STANDARD
+                    escalationEnabled: true
+                    region: CA-QC
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidId:
+                  value:
+                    error: INVALID_REQUEST
+                    message: Payment exception review id must not be blank.
+        '500':
+          description: Internal service failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                internalFailure:
+                  value:
+                    error: INTERNAL_ERROR
+                    message: Unable to resolve the payment exception review status.
+
+  /api/payment-exceptions/service-status:
+    get:
+      tags:
+        - Payment Exceptions
+      summary: Get service operational status
+      description: Return service metadata and effective runtime configuration.
+      operationId: getServiceStatus
+      responses:
+        '200':
+          description: Service operational status returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceStatusResponse'
+              examples:
+                default:
+                  value:
+                    service: payment-exception-review-service
+                    version: 0.0.1-SNAPSHOT
+                    environmentName: stage1
+                    infrastructureOwner: infrastructure-team
+                    platformOwner: platform-team
+                    validationMode: STANDARD
+                    escalationEnabled: true
+                    riskAmountThreshold: 10000
+                    region: CA-QC
+                    logLevel: INFO
+        '500':
+          description: Internal service failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/payment-exceptions/config-check:
+    get:
+      tags:
+        - Payment Exceptions
+      summary: Check active business configuration
+      description: Return whether the active business configuration is valid and visible at runtime.
+      operationId: getConfigCheck
+      responses:
+        '200':
+          description: Configuration check returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigCheckResponse'
+              examples:
+                default:
+                  value:
+                    status: VALID
+                    validationMode: STANDARD
+                    escalationEnabled: true
+                    riskAmountThreshold: 10000
+                    region: CA-QC
+                    environmentName: stage1
+        '500':
+          description: Internal service failure or startup validation issue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /actuator/health:
+    get:
+      tags:
+        - Actuator
+      summary: Get service health
+      description: Return the overall health status of the application.
+      operationId: getHealth
+      responses:
+        '200':
+          description: Health returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActuatorHealthResponse'
+
+  /actuator/info:
+    get:
+      tags:
+        - Actuator
+      summary: Get service info
+      description: Return basic runtime and application metadata.
+      operationId: getInfo
+      responses:
+        '200':
+          description: Info returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+  /actuator/prometheus:
+    get:
+      tags:
+        - Actuator
+      summary: Get Prometheus metrics
+      description: Return Prometheus-formatted service metrics.
+      operationId: getPrometheusMetrics
+      responses:
+        '200':
+          description: Prometheus metrics returned successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+
+components:
+  schemas:
+    PaymentReviewStatus:
+      type: string
+      enum:
+        - RECEIVED
+        - VALIDATING
+        - PENDING_REVIEW
+        - APPROVED
+        - REJECTED
+        - ESCALATED
+
+    ValidationMode:
+      type: string
+      enum:
+        - STRICT
+        - STANDARD
+
+    ConfigValidationStatus:
+      type: string
+      enum:
+        - VALID
+
+    PaymentExceptionStatusResponse:
+      type: object
+      required:
+        - reviewId
+        - status
+        - validationMode
+        - escalationEnabled
+        - region
+      properties:
+        reviewId:
+          type: string
+        status:
+          $ref: '#/components/schemas/PaymentReviewStatus'
+        validationMode:
+          $ref: '#/components/schemas/ValidationMode'
+        escalationEnabled:
+          type: boolean
+        region:
+          type: string
+
+    ServiceStatusResponse:
+      type: object
+      required:
+        - service
+        - version
+        - environmentName
+        - infrastructureOwner
+        - platformOwner
+        - validationMode
+        - escalationEnabled
+        - riskAmountThreshold
+        - region
+        - logLevel
+      properties:
+        service:
+          type: string
+        version:
+          type: string
+        environmentName:
+          type: string
+        infrastructureOwner:
+          type: string
+        platformOwner:
+          type: string
+        validationMode:
+          $ref: '#/components/schemas/ValidationMode'
+        escalationEnabled:
+          type: boolean
+        riskAmountThreshold:
+          type: integer
+          minimum: 1
+        region:
+          type: string
+        logLevel:
+          type: string
+
+    ConfigCheckResponse:
+      type: object
+      required:
+        - status
+        - validationMode
+        - escalationEnabled
+        - riskAmountThreshold
+        - region
+        - environmentName
+      properties:
+        status:
+          $ref: '#/components/schemas/ConfigValidationStatus'
+        validationMode:
+          $ref: '#/components/schemas/ValidationMode'
+        escalationEnabled:
+          type: boolean
+        riskAmountThreshold:
+          type: integer
+          minimum: 1
+        region:
+          type: string
+        environmentName:
+          type: string
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+
+    ActuatorHealthResponse:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          example: UP
+        components:
+          type: object
+          additionalProperties: true
