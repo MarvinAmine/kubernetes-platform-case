@@ -2,10 +2,10 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-INFRASTRUCTURE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-ENV_FILE="$SCRIPT_DIR/../.env"
-ENV_FILE_TEMPLATE="$SCRIPT_DIR/../.env.example"
-source "$SCRIPT_DIR/../scripts/common_logging.sh"
+PLATFORM_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+ENV_FILE="$SCRIPT_DIR/../../.env"
+ENV_FILE_TEMPLATE="$SCRIPT_DIR/../../.env.example"
+source "$SCRIPT_DIR/../../commons/scripts/common_logging.sh"
 
 parse_args() {
     parse_silent_flag "$@"
@@ -16,7 +16,7 @@ parse_args() {
 }
 
 parse_args "$@"
-setup_logging "$INFRASTRUCTURE_ROOT/destroy_kubernetes_resources.log"
+setup_logging "$PLATFORM_ROOT/../logs/destroy_kubernetes_resources.log"
 
 if [[ ! -f "$ENV_FILE" ]]; then
     echo "Missing $ENV_FILE. Copy $ENV_FILE_TEMPLATE to $ENV_FILE and fill the values first."
@@ -58,7 +58,7 @@ run_command_with_context "Terraform init completed" \
   -backend-config="resource_group_name=$TF_BACKEND_RESOURCE_GROUP" \
   -backend-config="storage_account_name=$TF_BACKEND_STORAGE_ACCOUNT" \
   -backend-config="container_name=$TF_BACKEND_CONTAINER" \
-  -backend-config="key=kubernetes-resources/terraform.tfstate" \
+  -backend-config="key=platform/kubernetes-resources/terraform.tfstate" \
   -backend-config="use_azuread_auth=true"
 
 log_info "Destroying Kubernetes Terraform resources..."

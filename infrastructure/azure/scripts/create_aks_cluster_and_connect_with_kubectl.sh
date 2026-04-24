@@ -2,8 +2,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ENV_FILE="$SCRIPT_DIR/../../.env"
-ENV_FILE_TEMPLATE="$SCRIPT_DIR/../../.env.example"
+ENV_FILE="$SCRIPT_DIR/../../../.env"
+ENV_FILE_TEMPLATE="$SCRIPT_DIR/../../../.env.example"
 cd "$SCRIPT_DIR/.."
 
 if [[ ! -f "$ENV_FILE" ]]; then

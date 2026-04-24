@@ -2,11 +2,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-INFRASTRUCTURE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-ENV_FILE="$SCRIPT_DIR/../.env"
-ENV_FILE_TEMPLATE="$SCRIPT_DIR/../.env.example"
-source "$SCRIPT_DIR/../scripts/wait_for_backend_access.sh"
-source "$SCRIPT_DIR/../scripts/common_logging.sh"
+PLATFORM_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+ENV_FILE="$SCRIPT_DIR/../../.env"
+ENV_FILE_TEMPLATE="$SCRIPT_DIR/../../.env.example"
+source "$SCRIPT_DIR/../../commons/scripts/wait_for_backend_access.sh"
+source "$SCRIPT_DIR/../../commons/scripts/common_logging.sh"
 
 parse_args() {
     parse_silent_flag "$@"
@@ -17,7 +17,7 @@ parse_args() {
 }
 
 parse_args "$@"
-setup_logging "$INFRASTRUCTURE_ROOT/apply_kubernetes_resources.log"
+setup_logging "$PLATFORM_ROOT/../logs/apply_kubernetes_resources.log"
 
 if [[ ! -f "$ENV_FILE" ]]; then
     echo "Missing $ENV_FILE. Copy $ENV_FILE_TEMPLATE to $ENV_FILE and fill the values first."
@@ -49,7 +49,7 @@ run_command_with_context "Terraform init completed" \
   "$TF_BACKEND_RESOURCE_GROUP" \
   "$TF_BACKEND_STORAGE_ACCOUNT" \
   "$TF_BACKEND_CONTAINER" \
-  "kubernetes-resources/terraform.tfstate"
+  "platform/kubernetes-resources/terraform.tfstate"
 
 log_info "Validating Kubernetes Terraform layer..."
 run_command_with_context "Terraform validate completed" terraform validate

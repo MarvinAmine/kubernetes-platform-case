@@ -2,11 +2,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/scripts/common_logging.sh"
+source "$SCRIPT_DIR/commons/scripts/common_logging.sh"
 
 usage() {
     cat <<'EOF'
-Usage: ./infrastructure/destroy_platform.sh [--silent|-s] [--help|-h]
+Usage: ./destroy_infrastructure_and_platform.sh [--silent|-s] [--help|-h]
 
 Options:
   -s, --silent   Show concise terminal logs and write detailed command output to log files in infrastructure/.
@@ -59,12 +59,12 @@ main() {
     local start_time total_elapsed
 
     parse_args "$@"
-    setup_logging "$SCRIPT_DIR/logs/destroy_platform.log"
+    setup_logging "$SCRIPT_DIR/logs/destroy_infrastructure_and_platform.log"
     start_time="$(date +%s)"
 
     print_header "Platform Teardown"
     if [[ "$SILENT_MODE" == true ]]; then
-        log_info "Silent mode enabled. Detailed command output will be written to log files in infrastructure/."
+        log_info "Silent mode enabled. Detailed command output will be written to log files in logs/."
         log_info "Main log file: $LOG_FILE"
     else
         log_info "Verbose mode enabled by default to help debug the teardown flow."
@@ -73,17 +73,17 @@ main() {
     print_header "Kubernetes Resources"
     log_info "STEP 1/4 - Destroying Kubernetes resources..."
     run_child_step "Kubernetes resources destruction" \
-        "$SCRIPT_DIR/kubernetes-resources/destroy_kubernetes_resources.sh"
+        "$SCRIPT_DIR/platform/kubernetes-resources/destroy_kubernetes_resources.sh"
 
     print_header "Azure Infrastructure"
     log_info "STEP 2/4 - Destroying Azure infrastructure..."
     run_child_step "Azure infrastructure destruction" \
-        "$SCRIPT_DIR/azure/destroy_azure_resources.sh"
+        "$SCRIPT_DIR/infrastructure/azure/destroy_azure_resources.sh"
 
     print_header "Terraform Backend"
     log_info "STEP 3/4 - Destroying the remote Terraform backend..."
     run_child_step "Remote Terraform backend destruction" \
-        "$SCRIPT_DIR/terraform-backend/destroy_remote_backend.sh"
+        "$SCRIPT_DIR/infrastructure/terraform-backend/destroy_remote_backend.sh"
 
     echo
 
@@ -93,7 +93,7 @@ main() {
         print_header "Azure OIDC"
         log_info "STEP 4/4 - Destroying Azure OIDC for GitHub..."
         run_child_step "Azure OIDC destruction" \
-            "$SCRIPT_DIR/azure/oidc/destroy_az_oidc.sh"
+            "$SCRIPT_DIR/infrastructure/azure/oidc/destroy_az_oidc.sh"
     else
         log_info "STEP 4/4 - Skipping Azure OIDC federation destruction."
     fi

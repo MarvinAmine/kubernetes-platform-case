@@ -3,7 +3,7 @@ name: Kubernetes Resources
 on:
     push:
         paths:
-            - 'infrastructure/kubernetes-resources/terraform/**'
+            - 'platform/kubernetes-resources/terraform/**'
             - '.github/workflows/kubernetes-resources-provision.yml'
     workflow_dispatch:
 
@@ -17,7 +17,7 @@ jobs:
 
         defaults:
             run:
-                working-directory: infrastructure/kubernetes-resources/terraform
+                working-directory: platform/kubernetes-resources/terraform
         
         env:
             TF_BACKEND_RESOURCE_GROUP: ${{ vars.TF_BACKEND_RESOURCE_GROUP }}
@@ -124,7 +124,7 @@ jobs:
                   -backend-config="resource_group_name=${TF_BACKEND_RESOURCE_GROUP}" \
                   -backend-config="storage_account_name=${TF_BACKEND_STORAGE_ACCOUNT}" \
                   -backend-config="container_name=${TF_BACKEND_CONTAINER}" \
-                  -backend-config="key=kubernetes-resources/terraform.tfstate" \
+                  -backend-config="key=platform/kubernetes-resources/terraform.tfstate" \
                   -backend-config="use_oidc=true" \
                   -backend-config="use_azuread_auth=true" \
                   -backend-config="client_id=${ARM_CLIENT_ID}" \

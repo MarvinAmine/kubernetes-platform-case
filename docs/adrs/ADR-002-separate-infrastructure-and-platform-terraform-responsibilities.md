@@ -19,7 +19,7 @@ Earlier wording treated these as one generic Terraform domain. That was inaccura
 Terraform responsibilities are split by layer:
 
 - `infrastructure/terraform-backend` and `infrastructure/azure` belong to the **Infrastructure team**
-- `infrastructure/kubernetes-resources` belongs to the **Platform team**
+- `platform/kubernetes-resources` belongs to the **Platform team**
 
 The platform layer is intentionally modeled as a consumer of prepared infrastructure rather than the creator of the raw cloud estate.
 

@@ -16,10 +16,10 @@ At the end of the process, the script prints the GitHub repository secrets that 
 From the repository root:
 
 ```bash
-cp infrastructure/.env.example infrastructure/.env
+cp .env.example .env
 ```
 
-Fill `infrastructure/.env` with at least these values:
+Fill `.env` at the repository root with at least these values:
 
 ```conf
 REPO_OWNER="<your-github-org-or-user>"
@@ -56,7 +56,7 @@ Run the helper from the repository root:
 The script will:
 
 1. verify Azure login
-2. load `infrastructure/.env`
+2. load `.env`
 3. check whether the Entra application already exists
 4. create the Entra application if needed
 5. create the service principal if needed
@@ -86,7 +86,7 @@ The federated credential is rendered from:
 
 [github-oidc-credential.template.json](/home/marvin/Documents/dev/kubernetes/infrastructure/azure/oidc/github-oidc-credential.template.json)
 
-The script replaces these placeholders using `infrastructure/.env`:
+The script replaces these placeholders using `.env` from the repository root:
 
 - `<REPO_OWNER>`
 - `<REPO_NAME>`
@@ -97,8 +97,8 @@ That means the resulting federated credential is scoped to the configured reposi
 ## Example First-Time Flow
 
 ```bash
-cp infrastructure/.env.example infrastructure/.env
-# edit infrastructure/.env
+cp .env.example .env
+# edit .env
 az login
 az account set --subscription "<YOUR_SUBSCRIPTION_NAME_OR_ID>"
 ./infrastructure/azure/oidc/create_az_oidc.sh

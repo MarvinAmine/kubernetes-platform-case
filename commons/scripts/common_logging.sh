@@ -4,6 +4,7 @@ SILENT_MODE=false
 LOG_FILE=""
 REMAINING_ARGS=()
 HEARTBEAT_INTERVAL_SECONDS=30
+SENSITIVE_LOGGING_MODE=false
 COLOR_RESET=""
 COLOR_BOLD=""
 COLOR_INFO=""
@@ -29,8 +30,13 @@ parse_silent_flag() {
     done
 }
 
+enable_sensitive_logging() {
+    SENSITIVE_LOGGING_MODE=true
+}
+
 setup_logging() {
     LOG_FILE="$1"
+    mkdir -p "$(dirname "$LOG_FILE")"
 
     if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
         COLOR_RESET=$'\033[0m'
@@ -46,6 +52,22 @@ setup_logging() {
     if [[ "$SILENT_MODE" == true ]]; then
         : >"$LOG_FILE"
     fi
+}
+
+sanitize_stream() {
+    perl -pe '
+        s/((?:clientSecret|client_secret|password|secret|accessToken|access_token|refreshToken|refresh_token|connectionString|connection_string|accountKey|account_key|sasToken|sas_token|token)\s*[=:]\s*)(["'\'']?)[^"'\'',\s]+(\2)/$1$2[REDACTED]$3/ig;
+        s/(Authorization:\s*Bearer\s+)[A-Za-z0-9._-]+/$1[REDACTED]/ig;
+        s/(SharedAccessSignature\s+)[^&\s]+/$1[REDACTED]/ig;
+        s/(AccountKey=)[^;]+/$1[REDACTED]/ig;
+        s/(SharedAccessSignature=)[^;]+/$1[REDACTED]/ig;
+        s/("clientSecret"\s*:\s*")[^"]+(")/$1[REDACTED]$2/ig;
+        s/("password"\s*:\s*")[^"]+(")/$1[REDACTED]$2/ig;
+        s/("secret"\s*:\s*")[^"]+(")/$1[REDACTED]$2/ig;
+        s/("accessToken"\s*:\s*")[^"]+(")/$1[REDACTED]$2/ig;
+        s/("refreshToken"\s*:\s*")[^"]+(")/$1[REDACTED]$2/ig;
+        s/("connectionString"\s*:\s*")[^"]+(")/$1[REDACTED]$2/ig;
+    '
 }
 
 log_info() {
@@ -110,7 +132,7 @@ run_command_capture() {
 
     tmp_output="$(mktemp)"
     if [[ "$SILENT_MODE" == true ]]; then
-        if "$@" >"$tmp_output" 2>>"$LOG_FILE"; then
+        if "$@" >"$tmp_output" 2> >(sanitize_stream >>"$LOG_FILE"); then
             status=0
         else
             status=$?
@@ -136,7 +158,7 @@ run_command_with_context() {
     start_time="$(date +%s)"
 
     if [[ "$SILENT_MODE" == true ]]; then
-        "$@" >>"$LOG_FILE" 2>&1 &
+        "$@" > >(sanitize_stream >>"$LOG_FILE") 2> >(sanitize_stream >>"$LOG_FILE") &
         command_pid=$!
         start_heartbeat "$description" "$start_time" &
         heartbeat_pid=$!
@@ -165,8 +187,12 @@ run_command_with_context() {
     log_error "$description failed after $(format_duration "$elapsed")."
     if [[ "$SILENT_MODE" == true ]]; then
         echo "See detailed logs in: $LOG_FILE"
-        echo "Last 40 log lines:"
-        tail -n 40 "$LOG_FILE" || true
+        if [[ "$SENSITIVE_LOGGING_MODE" == true ]]; then
+            echo "Sensitive logging mode is enabled, so log tails are not printed automatically."
+        else
+            echo "Last 40 log lines:"
+            tail -n 40 "$LOG_FILE" || true
+        fi
     fi
     exit "$status"
 }

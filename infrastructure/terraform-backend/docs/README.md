@@ -38,13 +38,13 @@ az storage container show \
 ```
 
 ## 3. Fill backend values
-Now your `infrastructure/.env` values become real:
+Now your root `.env` values become real:
 ```conf
 TF_BACKEND_RESOURCE_GROUP="rg-stage1-tfstate"
 TF_BACKEND_STORAGE_ACCOUNT="<real-storage-account-name>"
 TF_BACKEND_CONTAINER="tfstate"
 ```
-Source your shared env file with `set -a; source infrastructure/.env; set +a`
+Source your shared env file with `set -a; source .env; set +a`
 
 ## 4. Test Azure infrastructure stack against remote backend
 Optional `export TF_VAR_subscription_id="<your-subscription-id>"`
@@ -77,4 +77,4 @@ The wrapper scripts stay at the layer root:
 - `infrastructure/terraform-backend/create_remote_backend.sh`
 - `infrastructure/terraform-backend/destroy_remote_backend.sh`
 
-They load `infrastructure/.env` and run Terraform from `infrastructure/terraform-backend/terraform`.
+They load `.env` from the repository root and run Terraform from `infrastructure/terraform-backend/terraform`.

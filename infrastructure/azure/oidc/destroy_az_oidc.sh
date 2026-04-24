@@ -3,11 +3,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INFRASTRUCTURE_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-ENV_FILE="$SCRIPT_DIR/../../.env"
-ENV_FILE_TEMPLATE="$SCRIPT_DIR/../../.env.example"
+ENV_FILE="$SCRIPT_DIR/../../../.env"
+ENV_FILE_TEMPLATE="$SCRIPT_DIR/../../../.env.example"
 TEMPLATE_FILE="$SCRIPT_DIR/github-oidc-credential.template.json"
 OUTPUT_FILE="$SCRIPT_DIR/github-oidc-credential.json"
-source "$SCRIPT_DIR/../../scripts/common_logging.sh"
+source "$SCRIPT_DIR/../../../commons/scripts/common_logging.sh"
 
 parse_args() {
     parse_silent_flag "$@"
@@ -20,7 +20,8 @@ parse_args() {
 
 cd "$SCRIPT_DIR"
 parse_args "$@"
-setup_logging "$INFRASTRUCTURE_ROOT/destroy_az_oidc.log"
+setup_logging "$INFRASTRUCTURE_ROOT/../logs/destroy_az_oidc.log"
+enable_sensitive_logging
 
 if [[ ! -f "$ENV_FILE" ]]; then
     echo "Missing $ENV_FILE file. Copy $ENV_FILE_TEMPLATE to $ENV_FILE and fill the environment variables."

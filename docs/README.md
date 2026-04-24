@@ -1,6 +1,6 @@
 # Stage 1 of 3 - Governed AKS delivery foundation for an internal payment review service
 
-"I built a Stage 1 Kubernetes delivery foundation on AKS for an internal payment review service. The goal was to reflect a realistic operating model where an infrastructure team bootstraps the resource group, AKS cluster, remote Terraform backend, and managed PostgreSQL foundation with Terraform, a platform team provisions the governed Kubernetes application boundary and shared observability services such as Prometheus and Grafana on top of that foundation, and an application team deploys a Spring Boot service through GitHub Actions, Docker, and Helm. I also designed the service around PostgreSQL persistence, health probes, observability, and failure scenarios so the repeatable operating model demonstrates delivery, observability, and troubleshooting instead of only deployment."
+"Kubernetes delivery foundation on AKS for an internal payment review service. The goal was to reflect a realistic operating model where an infrastructure team bootstraps the resource group, AKS cluster, remote Terraform backend, and managed PostgreSQL foundation with Terraform, a platform team provisions the governed Kubernetes application boundary and shared observability services such as Prometheus and Grafana on top of that foundation, and an application team deploys a Spring Boot service through GitHub Actions, Docker, and Helm. I also designed the service around PostgreSQL persistence, health probes, observability, and failure scenarios so the repeatable operating model demonstrates delivery, observability, and troubleshooting instead of only deployment."
 
 ## Detailed version:
 Production-oriented Kubernetes delivery foundation for highly regulated environments, where internal service delivery is often slowed by infrastructure setup, deployment standards, observability requirements, and operational risk.
@@ -14,6 +14,7 @@ This stage uses a clear 3-team model:
 - **Application team** builds and deploys a **Spring Boot** microservice through **GitHub Actions**, **Docker**, and **Helm**
 
 ![Intrastructure bootstrap path](/assets/infrastructure_bootstrap_path.png)
+![Platform provision path](/assets/platform_provision_path.png)
 ![Application delivery path](/assets/app_delivery_path.png)
 
 The operating model foundation delivers:
@@ -47,12 +48,12 @@ For root-level platform-case decisions, see [docs/adrs/README.md](/home/marvin/D
 
 ### 0.1 Setup the environment file
 
-The infrastructure scripts use a shared environment file at `infrastructure/.env`:
+The infrastructure and platform scripts use a shared environment file at the repository root: `.env`
 
 Create it from:
 
 ```bash
-cp infrastructure/.env.example infrastructure/.env
+cp .env.example .env
 ```
 
 Fill these values in the `.env`:
@@ -91,14 +92,14 @@ Provision the full platform locally:
 
 ```bash
 # Use the flag '-s' for silence
-./infrastructure/provision_platform.sh
+./bootstrap_infrastructure_and_provision_platform.sh
 ```
 
 See screen shoot example here: [provision_platform_screenshoots.md](infrastructure/docs/provision_platform_screenshoots.md)
 
 ### 0.3 Complete the environment values and GitHub configuration
 
-On the first run, `infrastructure/provision_platform.sh` bootstraps the remote Terraform backend and prints the backend values that must be copied into `infrastructure/.env`.
+On the first run, `bootstrap_infrastructure_and_provision_platform.sh` bootstraps the remote Terraform backend and prints the backend values that must be copied into `.env`.
 
 Update `.env` with these real backend values:
 
@@ -112,12 +113,12 @@ Confirm these GitHub repository variables are also set:
 
 | Repository variable | Required | Description |
 | --- | --- | --- |
-| `TF_BACKEND_RESOURCE_GROUP` | Yes | Mirrors `infrastructure/.env` so GitHub Actions can initialize the Terraform backend. |
-| `TF_BACKEND_STORAGE_ACCOUNT` | Yes | Mirrors `infrastructure/.env` so GitHub Actions can reach the backend storage account. |
-| `TF_BACKEND_CONTAINER` | Yes | Mirrors `infrastructure/.env` so GitHub Actions can select the Terraform state container. |
-| `RESOURCE_GROUP` | Yes | Resource group expected by the Azure and Kubernetes workflows. Should match `RESOURCE_GROUP` in `infrastructure/.env`. |
-| `AKS_LOCATION` | Yes | Azure region for the AKS layer. This should match `LOCATION` from `infrastructure/.env`. |
-| `AKS_CLUSTER_NAME` | Yes | AKS cluster name expected by the Azure and Kubernetes workflows. Should match `AKS_CLUSTER_NAME` in `infrastructure/.env`. |
+| `TF_BACKEND_RESOURCE_GROUP` | Yes | Mirrors `.env` so GitHub Actions can initialize the Terraform backend. |
+| `TF_BACKEND_STORAGE_ACCOUNT` | Yes | Mirrors `.env` so GitHub Actions can reach the backend storage account. |
+| `TF_BACKEND_CONTAINER` | Yes | Mirrors `.env` so GitHub Actions can select the Terraform state container. |
+| `RESOURCE_GROUP` | Yes | Resource group expected by the Azure and Kubernetes workflows. Should match `RESOURCE_GROUP` in `.env`. |
+| `AKS_LOCATION` | Yes | Azure region for the AKS layer. This should match `LOCATION` from `.env`. |
+| `AKS_CLUSTER_NAME` | Yes | AKS cluster name expected by the Azure and Kubernetes workflows. Should match `AKS_CLUSTER_NAME` in `.env`. |
 | `VM_SIZE` | Optional | Optional CI override for the AKS node size. If unset, workflows default to `Standard_D2as_v6`. |
 
 ![GitHub Actions repository variables](/assets/github_actions_variables.png)
@@ -128,7 +129,7 @@ Confirm these GitHub repository secrets are set:
 
 | Repository secret | Required | Description |
 | --- | --- | --- |
-| `AZURE_SUBSCRIPTION_ID` | Yes | Azure subscription used by GitHub Actions. Mirrors `SUBSCRIPTION_ID` from `infrastructure/.env`. |
+| `AZURE_SUBSCRIPTION_ID` | Yes | Azure subscription used by GitHub Actions. Mirrors `SUBSCRIPTION_ID` from `.env`. |
 | `AZURE_CLIENT_ID` | Yes | Application ID of the Azure Entra app created for GitHub OIDC. |
 | `AZURE_TENANT_ID` | Yes | Azure tenant ID used by `azure/login@v2` during GitHub Actions authentication. |
 
@@ -154,7 +155,7 @@ On `workflow_dispatch`, the Azure provisioning workflow can also run `terraform 
 
 You can destroy the platform with this command:
 ```bash
-./infrastructure/destroy_platform.sh
+./destroy_infrastructure_and_platform.sh
 ```
 
 It destroys:
@@ -404,8 +405,8 @@ kubernetes-platform-case/
 ├── infrastructure/
 │   ├── .env
 │   ├── .env.example
-│   ├── provision_platform.sh
-│   ├── destroy_platform.sh
+│   ├── bootstrap_infrastructure_and_provision_platform.sh
+│   ├── destroy_infrastructure_and_platform.sh
 │   ├── terraform-backend/
 │   │   ├── create_remote_backend.sh
 │   │   ├── destroy_remote_backend.sh
@@ -506,7 +507,7 @@ kubernetes-platform-case/
 | ------------------------------------- | -------------------------------------------------------------------- | ---------------- |
 | `infrastructure/terraform-backend`    | Creates the shared Azure Storage backend for Terraform state         | Infrastructure team |
 | `infrastructure/azure`                | Provisions Azure resources such as the resource group and AKS cluster| Infrastructure team |
-| `infrastructure/kubernetes-resources` | Bootstraps namespace, service account, RBAC, and baseline config     | Platform team    |
+| `platform/kubernetes-resources` | Bootstraps namespace, service account, RBAC, and baseline config     | Platform team    |
 | `application/`                        | Builds, packages, and deploys the Spring Boot service                | Application team |
 
 

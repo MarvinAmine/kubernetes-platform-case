@@ -3,9 +3,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INFRASTRUCTURE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-ENV_FILE="$SCRIPT_DIR/../.env"
-ENV_FILE_TEMPLATE="$SCRIPT_DIR/../.env.example"
-source "$SCRIPT_DIR/../scripts/common_logging.sh"
+ENV_FILE="$SCRIPT_DIR/../../.env"
+ENV_FILE_TEMPLATE="$SCRIPT_DIR/../../.env.example"
+source "$SCRIPT_DIR/../../commons/scripts/common_logging.sh"
 
 parse_args() {
     parse_silent_flag "$@"
@@ -16,7 +16,8 @@ parse_args() {
 }
 
 parse_args "$@"
-setup_logging "$INFRASTRUCTURE_ROOT/destroy_remote_backend.log"
+setup_logging "$INFRASTRUCTURE_ROOT/../logs/destroy_remote_backend.log"
+enable_sensitive_logging
 
 if [[ ! -f "$ENV_FILE" ]]; then
     echo "Missing $ENV_FILE. Copy $ENV_FILE_TEMPLATE to $ENV_FILE and fill the values first."

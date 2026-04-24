@@ -37,10 +37,10 @@ az provider register --namespace Microsoft.Network
 
 #### Shared environment file
 ```bash
-cp infrastructure/.env.example infrastructure/.env
+cp .env.example .env
 ```
 
-Fill `infrastructure/.env` before running the infrastructure scripts.
+Fill the repository-root `.env` before running the infrastructure scripts.
 
 #### Bootstrap the Terraform backend to ensure constant synchronization of the states between each local, bootstrap and GitHub Actions configuration state file
 
@@ -126,13 +126,13 @@ terraform apply
 Initialize and validate the Kubernetes resources Terraform files:
 ```bash
 # From the root directory
-cd infrastructure/kubernetes-resources/terraform
+cd platform/kubernetes-resources/terraform
 
 terraform init \
 -backend-config="resource_group_name=<tf-backend-rg>" \
 -backend-config="storage_account_name=<tf-backend-storage-account>" \
 -backend-config="container_name=tfstate" \
--backend-config="key=kubernetes-resources/terraform.tfstate" \
+-backend-config="key=platform/kubernetes-resources/terraform.tfstate" \
 -backend-config="use_azuread_auth=true"
 
 terraform validate

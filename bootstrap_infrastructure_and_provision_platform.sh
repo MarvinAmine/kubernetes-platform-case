@@ -4,11 +4,11 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="$SCRIPT_DIR/.env"
 ENV_FILE_TEMPLATE="$SCRIPT_DIR/.env.example"
-source "$SCRIPT_DIR/scripts/common_logging.sh"
+source "$SCRIPT_DIR/commons/scripts/common_logging.sh"
 
 usage() {
     cat <<'EOF'
-Usage: ./infrastructure/provision_platform.sh [--silent|-s] [--help|-h]
+Usage: ./bootstrap_infrastructure_and_provision_platform.sh [--silent|-s] [--help|-h]
 
 Options:
   -s, --silent   Show concise terminal logs and write detailed command output to log files at the project root.
@@ -67,7 +67,7 @@ Azure CLI login is required before provisioning.
 5. Verify the active subscription:
    az account show --output table
 
-Then update infrastructure/.env and rerun this script.
+Then update .env at the repository root and rerun this script.
 EOF
 }
 
@@ -143,7 +143,7 @@ backend_exists() {
 }
 
 read_backend_outputs() {
-    local backend_output_dir="$SCRIPT_DIR/terraform-backend/terraform"
+    local backend_output_dir="$SCRIPT_DIR/infrastructure/terraform-backend/terraform"
 
     BACKEND_RESOURCE_GROUP="$(terraform -chdir="$backend_output_dir" output -raw backend_resource_group_name)"
     BACKEND_STORAGE_ACCOUNT="$(terraform -chdir="$backend_output_dir" output -raw backend_storage_account_name)"
@@ -194,7 +194,7 @@ print_first_run_instructions() {
     echo
     highlight_line "Then load the environment:"
     echo "set -a"
-    echo "source infrastructure/.env"
+    echo "source .env"
     echo "set +a"
 }
 
@@ -222,14 +222,14 @@ print_manual_configuration_block() {
 }
 
 run_first_time_backend_bootstrap() {
-    print_header "First Run Detected"
+    print_header "Remote Terraform Backend: First Run Detected"
     log_info "STEP 1/4 - Creating or reconciling the remote Terraform backend..."
     if [[ "$SILENT_MODE" == true ]]; then
         run_command_with_context "Remote Terraform backend bootstrap" \
-            "$SCRIPT_DIR/terraform-backend/create_remote_backend.sh" --silent
+            "$SCRIPT_DIR/infrastructure/terraform-backend/create_remote_backend.sh" --silent
     else
         run_command_with_context "Remote Terraform backend bootstrap" \
-            "$SCRIPT_DIR/terraform-backend/create_remote_backend.sh"
+            "$SCRIPT_DIR/infrastructure/terraform-backend/create_remote_backend.sh"
     fi
     read_backend_outputs
 }
@@ -239,10 +239,10 @@ run_azure_provisioning() {
     log_info "STEP 2/4 - Creating or reconciling Azure Infrastructure..."
     if [[ "$SILENT_MODE" == true ]]; then
         run_command_with_context "Azure infrastructure provisioning" \
-            "$SCRIPT_DIR/azure/create_azure_resources.sh" --silent
+            "$SCRIPT_DIR/infrastructure/azure/create_azure_resources.sh" --silent
     else
         run_command_with_context "Azure infrastructure provisioning" \
-            "$SCRIPT_DIR/azure/create_azure_resources.sh"
+            "$SCRIPT_DIR/infrastructure/azure/create_azure_resources.sh"
     fi
 }
 
@@ -251,10 +251,10 @@ run_kubernetes_provisioning() {
     log_info "STEP 3/4 - Creating or reconciling Kubernetes resources..."
     if [[ "$SILENT_MODE" == true ]]; then
         run_command_with_context "Kubernetes resources provisioning" \
-            "$SCRIPT_DIR/kubernetes-resources/apply_kubernetes_resources.sh" --silent
+            "$SCRIPT_DIR/platform/kubernetes-resources/apply_kubernetes_resources.sh" --silent
     else
         run_command_with_context "Kubernetes resources provisioning" \
-            "$SCRIPT_DIR/kubernetes-resources/apply_kubernetes_resources.sh"
+            "$SCRIPT_DIR/platform/kubernetes-resources/apply_kubernetes_resources.sh"
     fi
 }
 
@@ -265,10 +265,10 @@ run_oidc_setup() {
         log_info "STEP 4/4 - Creating or reconciling Azure OIDC for GitHub..."
         if [[ "$SILENT_MODE" == true ]]; then
             run_command_with_context "Azure OIDC reconciliation" \
-                "$SCRIPT_DIR/azure/oidc/create_az_oidc.sh" --silent
+                "$SCRIPT_DIR/infrastructure/azure/oidc/create_az_oidc.sh" --silent
         else
             run_command_with_context "Azure OIDC reconciliation" \
-                "$SCRIPT_DIR/azure/oidc/create_az_oidc.sh"
+                "$SCRIPT_DIR/infrastructure/azure/oidc/create_az_oidc.sh"
         fi
     else
         log_info "STEP 4/4 - Skipping the creation or reconciliation of Azure OIDC for GitHub."
@@ -280,7 +280,7 @@ main() {
     local start_time total_elapsed
 
     parse_args "$@"
-    setup_logging "$SCRIPT_DIR/logs/provision_platform.log"
+    setup_logging "$SCRIPT_DIR/logs/bootstrap_infrastructure_and_provision_platform.log"
     start_time="$(date +%s)"
 
     print_header "Platform Provisioning Wizard"

@@ -25,10 +25,10 @@ These resources provide the base environment on which the Kubernetes bootstrap l
 From the repository root:
 
 ```bash
-cp infrastructure/.env.example infrastructure/.env
+cp .env.example .env
 ```
 
-Fill `infrastructure/.env` before using the local scripts.
+Fill the repository-root `.env` before using the local scripts.
 
 ```bash
 cd infrastructure/azure/terraform

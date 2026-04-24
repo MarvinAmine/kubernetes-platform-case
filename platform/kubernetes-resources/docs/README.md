@@ -36,7 +36,7 @@ logic stays under `scripts/`.
 
 ## Local Terraform usage
 ```bash
-cp infrastructure/.env.example infrastructure/.env
+cp .env.example .env
 
 export EXPECTED_SUBSCRIPTION_ID="<your-subscription-id>"
 export EXPECTED_RESOURCE_GROUP="rg-stage1-aks"
@@ -46,14 +46,14 @@ export EXPECTED_AKS_CLUSTER_NAME="aks-stage1-platform"
 # export RESOURCE_GROUP="rg-stage1-aks"
 # export AKS_CLUSTER_NAME="aks-stage1-platform"
 
-./infrastructure/kubernetes-resources/scripts/validate-cluster-access.sh
+./platform/kubernetes-resources/scripts/validate-cluster-access.sh
 
-cd infrastructure/kubernetes-resources/terraform
+cd platform/kubernetes-resources/terraform
 terraform init \
   -backend-config="resource_group_name=<tf-backend-rg>" \
   -backend-config="storage_account_name=<tf-backend-storage-account>" \
   -backend-config="container_name=<tf-backend-container>" \
-  -backend-config="key=kubernetes-resources/terraform.tfstate" \
+  -backend-config="key=platform/kubernetes-resources/terraform.tfstate" \
   -backend-config="use_azuread_auth=true"
 terraform validate
 terraform plan
