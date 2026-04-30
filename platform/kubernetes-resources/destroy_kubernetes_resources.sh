@@ -6,6 +6,7 @@ PLATFORM_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 ENV_FILE="$SCRIPT_DIR/../../.env"
 ENV_FILE_TEMPLATE="$SCRIPT_DIR/../../.env.example"
 source "$SCRIPT_DIR/../../commons/scripts/common_logging.sh"
+source "$SCRIPT_DIR/../../commons/scripts/wait_for_backend_access.sh"
 source "$SCRIPT_DIR/../../commons/scripts/load_terraform_env.sh"
 
 parse_args() {
@@ -47,12 +48,11 @@ cd "$SCRIPT_DIR/terraform"
 
 log_info "Initializing Kubernetes Terraform layer..."
 run_command_with_context "Terraform init completed" \
-  terraform init \
-  -backend-config="resource_group_name=$TF_BACKEND_RESOURCE_GROUP" \
-  -backend-config="storage_account_name=$TF_BACKEND_STORAGE_ACCOUNT" \
-  -backend-config="container_name=$TF_BACKEND_CONTAINER" \
-  -backend-config="key=platform/kubernetes-resources/terraform.tfstate" \
-  -backend-config="use_azuread_auth=true"
+  terraform_init_with_backend_retry \
+  "$TF_BACKEND_RESOURCE_GROUP" \
+  "$TF_BACKEND_STORAGE_ACCOUNT" \
+  "$TF_BACKEND_CONTAINER" \
+  "platform/kubernetes-resources/terraform.tfstate"
 
 log_info "Destroying Kubernetes Terraform resources..."
 run_command_with_context "Terraform destroy completed" terraform destroy -auto-approve
