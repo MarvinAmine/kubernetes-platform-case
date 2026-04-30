@@ -13,7 +13,7 @@ Prove that an infrastructure team can bootstrap the foundation, a platform team 
 * Docker
 * Helm
 * Java Spring Boot
-* PostgreSQL
+* PostgreSQL (Azure and Local)
 * Prometheus
 * Grafana
 * Azure OIDC / federated CI authentication
@@ -29,6 +29,11 @@ Prove that an infrastructure team can bootstrap the foundation, a platform team 
 * controlled deployment
 * health checks, metrics, and troubleshooting
 * stateful service credibility
+
+**Best place to formalize:**
+
+* **local**
+* **dev**
 
 ---
 
@@ -152,8 +157,8 @@ To make it powerful for hiring managers, the stages should feel like this:
 
 **Stage 1**
 
-* local
-* dev
+* local development path
+* first governed cloud delivery environment (`dev`)
 
 **Stage 2**
 
@@ -164,7 +169,7 @@ To make it powerful for hiring managers, the stages should feel like this:
 **Stage 3**
 
 * local / dev / prod fully formalized
-* hybrid Azure + AWS + Onprem
+* hybrid Azure + AWS + on-prem
 
 ---
 

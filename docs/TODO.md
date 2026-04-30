@@ -1,0 +1,2 @@
+- Document the manual trigger in the github actions
+- Create the Architectural diagram of the prod with the private subnet

@@ -21,9 +21,12 @@ These ADRs capture the structural decisions behind Stage 1 of the repository:
 - [ADR-007 - Use the main infrastructure workflow for managed Azure PostgreSQL](./ADR-007-use-the-main-infrastructure-workflow-for-managed-azure-postgresql.md)
 - [ADR-008 - Create a GitHub Actions workflow for the Azure foundation](./ADR-008-create-a-github-actions-workflow-for-the-azure-foundation.md)
 - [ADR-009 - Default to Standard_D2als_v6 while documenting Standard_B2als_v2 as the lower-cost fallback](./ADR-009-default-to-standard-d2als-v6-while-documenting-standard-b2als-v2-as-the-lower-cost-fallback.md)
+- [ADR-010 - Use local PostgreSQL for local development and managed Azure PostgreSQL for cloud](./ADR-010-use-local-postgresql-for-local-development-and-managed-azure-postgresql-for-cloud.md)
+- [ADR-011 - Prefer private networking for Azure PostgreSQL in the governed cloud environment](./ADR-011-prefer-private-networking-for-azure-postgresql-in-the-governed-cloud-environment.md)
+- [ADR-012 - Defer advanced PostgreSQL capabilities to later stages](./ADR-012-defer-advanced-postgresql-capabilities-to-later-stages.md)
 
 ## Related ADRs
 
 Application-specific ADRs remain under:
 
-- [application/payment-exception-review-service/docs/adrs/README.md](/home/marvin/Documents/dev/kubernetes/application/payment-exception-review-service/docs/adrs/README.md)
+- [application/docs/adrs/README.md](../../application/docs/adrs/README.md)

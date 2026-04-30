@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stage 1 — Dev Environment Solution Architecture</title>
+
+  <style>
+    :root {
+      --ms-blue: #0078d4;
+      --ms-blue-dark: #005a9e;
+      --ms-blue-soft: #eff6fc;
+      --ms-blue-border: #8cc8ff;
+
+      --ms-gray-10: #faf9f8;
+      --ms-gray-20: #f3f2f1;
+      --ms-gray-30: #edebe9;
+      --ms-gray-60: #c8c6c4;
+      --ms-gray-90: #a19f9d;
+      --ms-gray-130: #605e5c;
+      --ms-gray-160: #323130;
+      --ms-gray-190: #201f1e;
+
+      --ms-purple: #5c2d91;
+      --ms-purple-soft: #f4f0fb;
+      --ms-green: #107c10;
+      --ms-green-soft: #f1f8f1;
+      --ms-orange: #ca5010;
+      --ms-orange-soft: #fff4ec;
+      --ms-yellow: #ffb900;
+      --ms-yellow-soft: #fff8df;
+
+      --border: #d2d0ce;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.10);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+
+      --font: "Segoe UI", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--ms-gray-190);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(0, 120, 212, 0.10), transparent 30%),
+        radial-gradient(circle at 90% 12%, rgba(16, 124, 16, 0.08), transparent 30%),
+        linear-gradient(180deg, #ffffff 0%, var(--ms-gray-10) 42%, var(--ms-gray-20) 100%);
+    }
+
+    .page {
+      width: min(1480px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 44px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 22px;
+    }
+
+    .header h1 {
+      margin: 0;
+      color: var(--ms-gray-190);
+      font-size: clamp(1.45rem, 2.6vw, 2.65rem);
+      line-height: 1.08;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+
+    .header p {
+      margin: 10px 0 0;
+      max-width: 880px;
+      color: var(--ms-gray-130);
+      font-size: clamp(0.96rem, 1.2vw, 1.05rem);
+      line-height: 1.58;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 13px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      color: var(--ms-blue-dark);
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .tag-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--ms-blue);
+      box-shadow: 0 0 0 4px rgba(0, 120, 212, 0.12);
+    }
+
+    .architecture-shell {
+      position: relative;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow-md);
+      padding: clamp(16px, 2vw, 28px);
+      overflow: hidden;
+    }
+
+    .architecture-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 120, 212, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 120, 212, 0.04) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+
+    .architecture {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 18px;
+    }
+
+    .top-paths {
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .path-panel {
+      display: grid;
+      gap: 12px;
+      justify-items: center;
+      padding: 16px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .path-panel.delivery {
+      border-top: 5px solid var(--ms-purple);
+      background: linear-gradient(180deg, #ffffff, var(--ms-purple-soft));
+    }
+
+    .path-panel.access {
+      border-top: 5px solid var(--ms-green);
+      background: linear-gradient(180deg, #ffffff, var(--ms-green-soft));
+      height: 100%;
+    }
+
+    .path-title {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 30px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--ms-gray-160);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.055em;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .node {
+      width: 100%;
+      max-width: 470px;
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 14px 15px;
+      border-radius: var(--radius-md);
+      background: #ffffff;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.055);
+    }
+
+    .node.centered {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .node.delivery-node {
+      border-left: 5px solid var(--ms-purple);
+    }
+
+    .node.access-node {
+      border-left: 5px solid var(--ms-green);
+    }
+
+    .node.azure-node {
+      border-left: 5px solid var(--ms-blue);
+    }
+
+    .node.data-node {
+      border-left: 5px solid var(--ms-orange);
+    }
+
+    .node.obs-node {
+      border-left: 5px solid #f25022;
+    }
+
+    .node.storage-node {
+      border-left: 5px solid var(--ms-yellow);
+    }
+
+    .node:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 9px 20px rgba(0, 0, 0, 0.09);
+    }
+
+    .node-icon {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .node-icon.small {
+      width: 34px;
+      height: 34px;
+    }
+
+    .node-icon.large {
+      width: 52px;
+      height: 52px;
+    }
+
+    .node-text {
+      min-width: 0;
+    }
+
+    .node-name {
+      font-size: 0.98rem;
+      line-height: 1.2;
+      color: var(--ms-gray-190);
+      font-weight: 750;
+      letter-spacing: -0.015em;
+    }
+
+    .node-sub {
+      margin-top: 5px;
+      color: var(--ms-gray-130);
+      font-size: 0.82rem;
+      line-height: 1.34;
+    }
+
+    .arrow-down {
+      position: relative;
+      width: 2px;
+      height: 28px;
+      background: var(--ms-gray-90);
+      border-radius: 999px;
+    }
+
+    .arrow-down::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -1px;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-top: 10px solid var(--ms-gray-90);
+    }
+
+    .arrow-down.delivery-arrow {
+      background: var(--ms-purple);
+    }
+
+    .arrow-down.delivery-arrow::after {
+      border-top-color: var(--ms-purple);
+    }
+
+    .arrow-down.access-arrow {
+      background: var(--ms-green);
+    }
+
+    .arrow-down.access-arrow::after {
+      border-top-color: var(--ms-green);
+    }
+
+    .entry-arrows {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      margin-top: -2px;
+      margin-bottom: -16px;
+      padding: 0 16px;
+      pointer-events: none;
+      position: relative;
+      z-index: 5;
+    }
+
+    .entry-arrow-wrap {
+      display: flex;
+      justify-content: center;
+    }
+
+    .entry-arrow {
+      height: 58px;
+    }
+
+    .azure-environment {
+      position: relative;
+      z-index: 4;
+      border: 2px solid var(--ms-blue);
+      border-radius: 24px;
+      background:
+        linear-gradient(180deg, rgba(239, 246, 252, 0.98), rgba(255, 255, 255, 0.96));
+      padding: 22px;
+      box-shadow: 0 10px 26px rgba(0, 120, 212, 0.09);
+    }
+
+    .azure-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .azure-title {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .azure-title h2 {
+      margin: 0;
+      color: var(--ms-blue-dark);
+      font-size: clamp(1.14rem, 1.7vw, 1.45rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+    }
+
+    .azure-title p {
+      margin: 4px 0 0;
+      color: var(--ms-gray-130);
+      font-size: 0.88rem;
+      line-height: 1.35;
+    }
+
+    .environment-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid var(--ms-blue-border);
+      color: var(--ms-blue-dark);
+      font-weight: 800;
+      font-size: 0.84rem;
+      white-space: nowrap;
+    }
+
+    .resource-group {
+      border: 2px dashed rgba(0, 120, 212, 0.46);
+      background: rgba(255, 255, 255, 0.82);
+      border-radius: 20px;
+      padding: 16px;
+    }
+
+    .resource-group + .resource-group {
+      margin-top: 16px;
+    }
+
+    .resource-group.tfstate {
+      border-color: rgba(255, 185, 0, 0.72);
+      background: rgba(255, 248, 223, 0.52);
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 13px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--ms-gray-160);
+      font-weight: 800;
+      font-size: 0.82rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .private-vnet {
+      position: relative;
+      border: 2px solid rgba(50, 49, 48, 0.38);
+      background:
+        linear-gradient(180deg, #ffffff, #f7fbff);
+      border-radius: 18px;
+      padding: 16px;
+      overflow: visible;
+    }
+
+    .vnet-grid {
+      display: grid;
+      grid-template-columns: minmax(180px, 0.78fr) minmax(280px, 1.1fr) minmax(210px, 0.86fr);
+      gap: 18px;
+      align-items: center;
+    }
+
+    .edge-entry {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-left: -16px;
+    }
+
+    .edge-entry .node {
+      border-left-width: 7px;
+      margin-left: 10px;
+    }
+
+    .h-arrow {
+      position: absolute;
+      left: calc(100% - 2px);
+      top: 50%;
+      width: 32px;
+      height: 2px;
+      background: var(--ms-blue);
+      transform: translateY(-50%);
+      border-radius: 999px;
+      z-index: 6;
+    }
+
+    .h-arrow::after {
+      content: "";
+      position: absolute;
+      right: -2px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+      border-left: 10px solid var(--ms-blue);
+    }
+
+    .aks-platform {
+      position: relative;
+      min-height: 213px;
+      border: 2px solid #326ce5;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(50, 108, 229, 0.10), transparent 35%),
+        linear-gradient(180deg, #ffffff, #f3f7ff);
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+
+    .aks-header {
+      position: absolute;
+      left: 50%;
+      top: 10%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: #2559c7;
+      font-weight: 850;
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+
+    .right-services {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .right-services .node {
+      position: relative;
+      z-index: 2;
+    }
+
+    .aks-platform .azure-node {
+      position: relative;
+      z-index: 4;
+      overflow: visible;
+    }
+
+    .aks-platform .azure-node::after {
+      content: "";
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      width: calc(((20vw - 32px) / 3) * 0.34);
+      height: 2px;
+      background: var(--ms-orange);
+      transform: translateY(-50%);
+      border-radius: 999px;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .aks-platform .azure-node::before {
+      content: "";
+      position: absolute;
+      left: calc(100% + min(max(calc(((20vw - 32px) / 3) * 0.34)), 120px) - 2px);
+      top: 50%;
+      transform: translateY(-50%);
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+      border-left: 10px solid var(--ms-orange);
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    .service-arrow {
+      display: none;
+    }
+
+    .observability {
+      margin-top: 16px;
+    }
+
+    .observability .node {
+      max-width: none;
+      justify-content: center;
+    }
+
+    .storage-account {
+      border: 2px solid rgba(255, 185, 0, 0.72);
+      background: linear-gradient(180deg, #ffffff, #fffaf0);
+      border-radius: 16px;
+      padding: 15px;
+    }
+
+    .storage-account .node {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--ms-gray-130);
+      font-size: 0.82rem;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+
+    .legend-line {
+      width: 28px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--ms-blue);
+    }
+
+    .legend-line.purple {
+      background: var(--ms-purple);
+    }
+
+    .legend-line.green {
+      background: var(--ms-green);
+    }
+
+    .legend-line.orange {
+      background: var(--ms-orange);
+    }
+
+    .legend-box {
+      width: 24px;
+      height: 14px;
+      border: 2px dashed var(--ms-blue);
+      border-radius: 4px;
+      background: #ffffff;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 1160px) {
+      .top-paths {
+        grid-template-columns: 1fr;
+      }
+
+      .entry-arrows {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .entry-arrows .entry-arrow-wrap:first-child {
+        display: none;
+      }
+
+      .vnet-grid {
+        grid-template-columns: 1fr;
+        justify-items: center;
+      }
+
+      .edge-entry,
+      .aks-platform,
+      .right-services {
+        min-height: unset;
+      }
+
+      .edge-entry {
+        margin-left: 0;
+      }
+
+      .edge-entry .node {
+        border-top-left-radius: var(--radius-md);
+        border-bottom-left-radius: var(--radius-md);
+        border-left-width: 5px;
+        margin-left: 10px;
+      }
+
+      .h-arrow {
+        display: none;
+      }
+
+      .aks-header {
+        position: static;
+        transform: none;
+      }
+
+      .aks-platform {
+        display: grid;
+        align-content: center;
+        gap: 13px;
+      }
+
+      .aks-platform .azure-node::before,
+      .aks-platform .azure-node::after {
+        display: none;
+      }
+
+      .right-services {
+        display: grid;
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 14px;
+      }
+
+      .service-arrow {
+        display: block;
+        position: relative;
+        left: auto;
+        top: auto;
+        width: 2px;
+        height: 28px;
+        background: var(--ms-orange);
+        transform: none;
+        border-radius: 999px;
+      }
+
+      .service-arrow::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        right: auto;
+        top: auto;
+        bottom: -1px;
+        transform: translateX(-50%);
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-top: 10px solid var(--ms-orange);
+        border-bottom: 0;
+      }
+    }
+
+    @media (max-width: 780px) {
+      .page {
+        width: min(100% - 18px, 1480px);
+        padding-top: 18px;
+      }
+
+      .header {
+        flex-direction: column;
+      }
+
+      .architecture-shell {
+        border-radius: 18px;
+        padding: 12px;
+      }
+
+      .azure-environment,
+      .resource-group,
+      .private-vnet,
+      .aks-platform,
+      .storage-account,
+      .path-panel {
+        border-radius: 16px;
+        padding: 12px;
+      }
+
+      .azure-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .node {
+        min-height: auto;
+        padding: 12px;
+      }
+
+      .node-icon {
+        width: 36px;
+        height: 36px;
+      }
+
+      .node-name {
+        font-size: 0.92rem;
+      }
+
+      .node-sub {
+        font-size: 0.78rem;
+      }
+    }
+
+    @media (max-width: 460px) {
+      .node {
+        align-items: flex-start;
+      }
+
+      .node.centered {
+        align-items: center;
+      }
+
+      .azure-title {
+        align-items: flex-start;
+      }
+
+      .legend {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <header class="header">
+      <div>
+        <h1>Stage 1 — Dev Environment Solution Architecture</h1>
+        <p>
+          High-level Microsoft Azure architecture view for a governed AKS delivery foundation:
+          controlled CI/CD delivery path, private internal access path, private networking, AKS runtime,
+          managed PostgreSQL, observability, and isolated Terraform remote state.
+        </p>
+      </div>
+
+      <div class="tag">
+        <span class="tag-dot"></span>
+        Azure · AKS · Terraform · Helm
+      </div>
+    </header>
+
+    <section class="architecture-shell" aria-label="Stage 1 dev environment solution architecture">
+      <div class="architecture">
+
+        <section class="top-paths" aria-label="External architecture paths">
+          <div class="path-panel delivery">
+            <div class="path-title">
+              <span>Controlled Delivery Path</span>
+            </div>
+
+            <article class="node delivery-node">
+              <img class="node-icon" src="https://cdn.simpleicons.org/github/181717" alt="GitHub icon" />
+              <div class="node-text">
+                <div class="node-name">GitHub Repository</div>
+                <div class="node-sub">Source of truth for infrastructure, platform, application, and documentation.</div>
+              </div>
+            </article>
+
+            <div class="arrow-down delivery-arrow" aria-hidden="true"></div>
+
+            <article class="node delivery-node">
+              <img class="node-icon" src="https://cdn.simpleicons.org/githubactions/2088FF" alt="GitHub Actions icon" />
+              <div class="node-text">
+                <div class="node-name">GitHub Actions</div>
+                <div class="node-sub">CI/CD workflow entry point for provisioning and application delivery.</div>
+              </div>
+            </article>
+
+            <div class="arrow-down delivery-arrow" aria-hidden="true"></div>
+
+            <article class="node delivery-node">
+              <svg class="node-icon" viewBox="0 0 64 64" role="img" aria-label="Microsoft Entra ID icon">
+                <path fill="#0078D4" d="M32 4 10 13v16c0 14.5 9.4 25.6 22 31 12.6-5.4 22-16.5 22-31V13L32 4Z"/>
+                <path fill="#50A0DC" d="M32 10.6 16 17.1v12.5c0 10.5 6.5 19.2 16 24 9.5-4.8 16-13.5 16-24V17.1l-16-6.5Z"/>
+                <path fill="#ffffff" d="M25.4 32.8h13.2v4.8H25.4v-4.8Zm2.1-8.4h9l5.6 17.2h-5.2l-1-3.7h-7.8l-1 3.7h-5.2l5.6-17.2Zm1.8 9.1h5.4L32 28.2l-2.7 5.3Z"/>
+              </svg>
+              <div class="node-text">
+                <div class="node-name">Microsoft Entra ID / OIDC</div>
+                <div class="node-sub">Federated authentication from GitHub Actions to Azure.</div>
+              </div>
+            </article>
+
+            <div class="arrow-down delivery-arrow" aria-hidden="true"></div>
+
+            <article class="node delivery-node">
+              <img class="node-icon" src="https://cdn.simpleicons.org/terraform/844FBA" alt="Terraform icon" />
+              <div class="node-text">
+                <div class="node-name">Terraform / Helm Delivery</div>
+                <div class="node-sub">Infrastructure provisioning and controlled Helm release delivery.</div>
+              </div>
+            </article>
+          </div>
+
+          <div class="path-panel access">
+            <div class="path-title">
+              <span>Internal Access Path</span>
+            </div>
+
+            <article class="node access-node">
+              <img class="node-icon" src="https://api.iconify.design/fluent:people-team-24-filled.svg?color=%23107c10" alt="Internal consumer icon" />
+              <div class="node-text">
+                <div class="node-name">Internal Consumer</div>
+                <div class="node-sub">Internal operator, support workflow, back-office tool, or trusted internal system.</div>
+              </div>
+            </article>
+
+            <div class="arrow-down access-arrow" aria-hidden="true"></div>
+
+            <article class="node access-node">
+              <img class="node-icon" src="https://api.iconify.design/fluent:shield-lock-24-filled.svg?color=%23107c10" alt="Corporate network icon" />
+              <div class="node-text">
+                <div class="node-name">Corporate Network / VPN</div>
+                <div class="node-sub">Private enterprise connectivity into the Azure dev environment.</div>
+              </div>
+            </article>
+
+            <div class="arrow-down access-arrow" aria-hidden="true"></div>
+
+            <article class="node access-node">
+              <img class="node-icon" src="https://api.iconify.design/fluent:globe-shield-24-filled.svg?color=%23107c10" alt="Private DNS icon" />
+              <div class="node-text">
+                <div class="node-name">Private DNS</div>
+                <div class="node-sub">Internal name resolution for the private application endpoint.</div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <div class="entry-arrows" aria-hidden="true">
+          <div class="entry-arrow-wrap">
+            <div class="arrow-down delivery-arrow entry-arrow"></div>
+          </div>
+          <div class="entry-arrow-wrap">
+            <div class="arrow-down access-arrow entry-arrow"></div>
+          </div>
+        </div>
+
+        <section class="azure-environment" aria-label="Azure Dev Environment">
+          <div class="azure-header">
+            <div class="azure-title">
+              <svg class="node-icon large" viewBox="0 0 64 64" role="img" aria-label="Microsoft Azure icon">
+                <path fill="#0078D4" d="M34.7 6 18.4 42.9h14.9l23.4 0L34.7 6Z"/>
+                <path fill="#005A9E" d="M29.3 12.4 7.2 50.7h18.1l4-7.8H18.4L34.7 6l-5.4 6.4Z"/>
+                <path fill="#50A0DC" d="m33.3 42.9 8.8 14.7 14.6-14.7H33.3Z"/>
+              </svg>
+              <div>
+                <h2>Azure Dev Environment</h2>
+                <p>Cloud boundary receiving both the governed delivery path and the private runtime access path.</p>
+              </div>
+            </div>
+
+            <div class="environment-chip">
+              <span aria-hidden="true">●</span>
+              Dev
+            </div>
+          </div>
+
+          <section class="resource-group" aria-label="Resource Group rg-stage1-aks">
+            <div class="section-label">
+              <img class="node-icon small" src="https://api.iconify.design/fluent:folder-24-filled.svg?color=%230078d4" alt="" />
+              Resource Group: rg-stage1-aks
+            </div>
+
+            <section class="private-vnet" aria-label="Private Virtual Network">
+              <div class="section-label">
+                <img class="node-icon small" src="https://api.iconify.design/fluent:branch-fork-24-filled.svg?color=%23323130" alt="" />
+                Private Virtual Network
+              </div>
+
+              <div class="vnet-grid">
+                <div class="edge-entry">
+                  <article class="node access-node">
+                    <img class="node-icon" src="https://api.iconify.design/lucide:route.svg?color=%230078d4" alt="Internal Application Gateway icon" />
+                    <div class="node-text">
+                      <div class="node-name">Internal App Gateway</div>
+                      <div class="node-sub">Private HTTP entry point at the VNet edge.</div>
+                    </div>
+                  </article>
+                  <div class="h-arrow" aria-hidden="true"></div>
+                </div>
+
+                <section class="aks-platform" aria-label="AKS Platform">
+                  <div class="aks-header">
+                    <img class="node-icon small" src="https://cdn.simpleicons.org/kubernetes/326CE5" alt="Kubernetes icon" />
+                    AKS Platform
+                  </div>
+
+                  <article class="node azure-node centered">
+                    <img class="node-icon" src="https://cdn.simpleicons.org/springboot/6DB33F" alt="Spring Boot icon" />
+                    <div class="node-text">
+                      <div class="node-name">Payment Exception API</div>
+                      <div class="node-sub">Internal Spring Boot backend running as a Kubernetes workload.</div>
+                    </div>
+                  </article>
+                </section>
+
+                <div class="right-services">
+                  <div class="service-arrow" aria-hidden="true"></div>
+
+                  <article class="node data-node">
+                    <img class="node-icon" src="https://cdn.simpleicons.org/postgresql/4169E1" alt="PostgreSQL icon" />
+                    <div class="node-text">
+                      <div class="node-name">Azure PostgreSQL</div>
+                      <div class="node-sub">Managed relational database used by the API.</div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+
+              <div class="observability">
+                <article class="node obs-node">
+                  <img class="node-icon" src="https://cdn.simpleicons.org/prometheus/E6522C" alt="Prometheus icon" />
+                  <img class="node-icon" src="https://cdn.simpleicons.org/grafana/F46800" alt="Grafana icon" />
+                  <div class="node-text">
+                    <div class="node-name">Prometheus / Grafana</div>
+                    <div class="node-sub">Platform observability for metrics and operational dashboards.</div>
+                  </div>
+                </article>
+              </div>
+            </section>
+          </section>
+
+          <section class="resource-group tfstate" aria-label="Resource Group rg-stage1-tfstate">
+            <div class="section-label">
+              <img class="node-icon small" src="https://api.iconify.design/mdi:folder-lock-outline.svg?color=%235e35b1" alt="" />
+              Resource Group: rg-stage1-tfstate
+            </div>
+
+            <section class="storage-account" aria-label="Azure Storage Account">
+              <div class="section-label">
+                <img class="node-icon small" src="https://api.iconify.design/fluent:database-24-filled.svg?color=%23ca5010" alt="" />
+                Azure Storage Account
+              </div>
+
+              <article class="node storage-node">
+                <img class="node-icon" src="https://cdn.simpleicons.org/terraform/844FBA" alt="Terraform icon" />
+                <div class="node-text">
+                  <div class="node-name">Terraform Remote State</div>
+                  <div class="node-sub">Blob-backed Terraform state for the Azure foundation and cluster bootstrap.</div>
+                </div>
+              </article>
+            </section>
+          </section>
+        </section>
+
+        <footer class="legend" aria-label="Legend">
+          <div class="legend-item"><span class="legend-line purple"></span> Delivery path</div>
+          <div class="legend-item"><span class="legend-line green"></span> Private access path</div>
+          <div class="legend-item"><span class="legend-line"></span> Internal runtime flow</div>
+          <div class="legend-item"><span class="legend-line orange"></span> Data / telemetry flow</div>
+          <div class="legend-item"><span class="legend-box"></span> Azure resource group</div>
+        </footer>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -16,11 +16,11 @@
 
 The main Stage 1 design decisions are captured in:
 
-- [docs/adrs/ADR-001-three-team-stage1-operating-model.md](/home/marvin/Documents/dev/kubernetes/docs/adrs/ADR-001-three-team-stage1-operating-model.md)
-- [docs/adrs/ADR-002-separate-infrastructure-and-platform-terraform-responsibilities.md](/home/marvin/Documents/dev/kubernetes/docs/adrs/ADR-002-separate-infrastructure-and-platform-terraform-responsibilities.md)
-- [docs/adrs/ADR-003-controlled-application-delivery-path.md](/home/marvin/Documents/dev/kubernetes/docs/adrs/ADR-003-controlled-application-delivery-path.md)
-- [docs/adrs/ADR-004-observability-and-failure-scenarios-as-core-scope.md](/home/marvin/Documents/dev/kubernetes/docs/adrs/ADR-004-observability-and-failure-scenarios-as-core-scope.md)
-- [docs/adrs/ADR-005-staged-maturity-evolution.md](/home/marvin/Documents/dev/kubernetes/docs/adrs/ADR-005-staged-maturity-evolution.md)
+- [ADR-001 - Use a three-team Stage 1 operating model](./adrs/ADR-001-three-team-stage1-operating-model.md)
+- [ADR-002 - Separate infrastructure and platform Terraform responsibilities](./adrs/ADR-002-separate-infrastructure-and-platform-terraform-responsibilities.md)
+- [ADR-003 - Controlled application delivery path](./adrs/ADR-003-controlled-application-delivery-path.md)
+- [ADR-004 - Observability and failure scenarios as core scope](./adrs/ADR-004-observability-and-failure-scenarios-as-core-scope.md)
+- [ADR-005 - Staged maturity evolution](./adrs/ADR-005-staged-maturity-evolution.md)
 
 ## 1. Stage 1 purpose
 
@@ -105,6 +105,17 @@ It gives realistic stories such as:
 - operational metrics exposed for monitoring and troubleshooting
 
 ## 5. Scope
+
+## Environment model for Stage 1
+
+Stage 1 covers:
+
+- a **local development path**
+- a first governed cloud delivery environment that behaves like **dev**
+
+It does not yet represent a fully formalized multi-environment enterprise model.
+
+That stronger environment separation is introduced in later stages.
 
 ### In scope for Stage 1
 

@@ -2,6 +2,102 @@
 
 "Kubernetes delivery foundation on AKS for an internal payment review service. The goal was to reflect a realistic operating model where an infrastructure team bootstraps the resource group, AKS cluster, remote Terraform backend, and managed PostgreSQL foundation with Terraform, a platform team provisions the governed Kubernetes application boundary and shared observability services such as Prometheus and Grafana on top of that foundation, and an application team deploys a Spring Boot service through GitHub Actions, Docker, and Helm. I also designed the service around PostgreSQL persistence, health probes, observability, and failure scenarios so the repeatable operating model demonstrates delivery, observability, and troubleshooting instead of only deployment."
 
+```mermaid
+flowchart TB
+
+  %% =========================
+  %% External / Control Paths
+  %% =========================
+
+  subgraph DELIVERY["Controlled Delivery Path"]
+    GH["GitHub Repository"]
+    GHA["GitHub Actions"]
+    ENTRA["Microsoft Entra ID / OIDC"]
+    DELIVERY_PATH["Terraform / Helm Delivery"]
+
+    GH --> GHA
+    GHA --> ENTRA
+    ENTRA --> DELIVERY_PATH
+  end
+
+  subgraph ACCESS["Internal Access Path"]
+    CONSUMER["Internal Consumer"]
+    CORP["Corporate Network / VPN"]
+    DNS["Private DNS"]
+
+    CONSUMER --> CORP
+    CORP --> DNS
+  end
+
+  %% =========================
+  %% Azure Environment
+  %% =========================
+
+  subgraph AZURE["Azure Dev Environment"]
+    direction TB
+
+    subgraph RG_AKS["Resource Group:rg-stage1-aks"]
+      direction TB
+
+      subgraph VNET["Private Virtual Network"]
+        direction LR
+
+        APPGW["Internal App Gateway"]
+
+        subgraph AKS["AKS Platform"]
+          direction TB
+          API["Java Spring Boot Payment Exception API"]
+        end
+
+        POSTGRES["Azure PostgreSQL"]
+
+        OBS["Prometheus / Grafana"]
+
+        APPGW --> AKS
+        AKS --> POSTGRES
+        AKS --> OBS
+      end
+    end
+
+    subgraph RG_TFSTATE["Resource Group:rg-stage1-tfstate"]
+      direction TB
+
+      subgraph STORAGE["Azure Storage Account"]
+        TFSTATE["Terraform Remote State"]
+      end
+    end
+  end
+
+  %% =========================
+  %% Path Entry Points
+  %% =========================
+
+  DELIVERY_PATH ----> AZURE
+  DNS --> APPGW
+
+  %% =========================
+  %% Styling
+  %% =========================
+
+  classDef azure fill:#e8f3ff,stroke:#0078d4,stroke-width:2px,color:#172033;
+  classDef rg fill:#FFFFFFBF,stroke:#0078d4,stroke-width:2px,stroke-dasharray: 6 4,color:#172033;
+  classDef vnet fill:#f7faff,stroke:#172033,stroke-width:1.5px,color:#172033;
+  classDef aks fill:#eef4ff,stroke:#326ce5,stroke-width:2px,color:#172033;
+  classDef delivery fill:#f0ebfb,stroke:#5e35b1,stroke-width:1.5px,color:#172033;
+  classDef access fill:#eaf6ed,stroke:#2e7d32,stroke-width:1.5px,color:#172033;
+  classDef data fill:#fff1e6,stroke:#c75b12,stroke-width:1.5px,color:#172033;
+  classDef obs fill:#fff1e6,stroke:#f46800,stroke-width:1.5px,color:#172033;
+
+  class AZURE azure;
+  class RG_AKS,RG_TFSTATE rg;
+  class VNET vnet;
+  class AKS aks;
+  class GH,GHA,ENTRA,DELIVERY_PATH delivery;
+  class CONSUMER,CORP,DNS,APPGW access;
+  class POSTGRES,STORAGE,TFSTATE data;
+  class OBS obs;
+```
+
 ## Detailed version:
 Production-oriented Kubernetes delivery foundation for highly regulated environments, where internal service delivery is often slowed by infrastructure setup, deployment standards, observability requirements, and operational risk.
 
@@ -37,11 +133,11 @@ What this demonstrates:
 
 This foundation later evolves toward stronger GitOps, security, secrets management, policy enforcement, and hybrid-cloud platform credibility.
 
-For the cross-stage team structure used in this repository, see [docs/project_team_ownership_model.md](/home/marvin/Documents/dev/kubernetes/docs/project_team_ownership_model.md).
+For the cross-stage team structure used in this repository, see [project_team_ownership_model.md](./project_team_ownership_model.md).
 
-For a reusable non-project-specific reference, see [docs/generic_team_ownership_model.md](/home/marvin/Documents/dev/kubernetes/docs/generic_team_ownership_model.md).
+For a reusable non-project-specific reference, see [generic_team_ownership_model.md](./generic_team_ownership_model.md).
 
-For root-level platform-case decisions, see [docs/adrs/README.md](/home/marvin/Documents/dev/kubernetes/docs/adrs/README.md).
+For root-level platform-case decisions, see [Architecture Decision Records](./adrs/README.md).
 
 
 ## 0. HOW TO USE IT?
@@ -56,26 +152,9 @@ Create it from:
 cp .env.example .env
 ```
 
-Fill these values in the `.env`:
+The full variable reference lives here:
 
-| Variable | Required | Example / default | Description |
-| --- | --- | --- | --- |
-| `REPO_OWNER` | Yes | `MarvinAmine` | GitHub user or organization that owns the repository. Used by the Azure OIDC scripts to build the federated credential subject for GitHub Actions. |
-| `SUBSCRIPTION_ID` | Yes | `<your-azure-subscription-id>` | Azure subscription ID used by all local infrastructure scripts, Terraform layers, and the OIDC setup. |
-| `RESOURCE_GROUP` | Yes for Azure and Kubernetes provisioning | `rg-stage1-aks` | Azure resource group name for the AKS platform resources. Passed into the Azure Terraform layer and reused by the Kubernetes validation scripts. |
-| `REPO_NAME` | Yes for OIDC setup | `kubernetes-platform-case` | GitHub repository name used by `infrastructure/azure/oidc/create_az_oidc.sh` when it renders the GitHub federated credential. |
-| `GITHUB_BRANCH` | Yes for OIDC setup | `main` | Git branch allowed to authenticate through the Azure federated credential. |
-| `LOCATION` | Yes for backend and Azure provisioning | `canadacentral` | Azure region for the Terraform backend resource group and AKS infrastructure. This becomes `AKS_LOCATION` in GitHub Actions repo variables. |
-| `APP_NAME` | Recommended | `sp-github-oidc-stage1-platform` | Display name for the Azure Entra application and service principal created for GitHub OIDC. |
-| `ROLE_NAME` | Recommended | `Contributor` | Azure role assigned to the OIDC service principal at subscription scope. |
-| `AKS_CLUSTER_NAME` | Yes for Azure and Kubernetes provisioning | `aks-stage1-platform` | AKS cluster name created by the Azure Terraform layer and later targeted by the Kubernetes resources layer. |
-| `DNS_PREFIX` | Optional | `aks-stage1` | DNS prefix passed to the Azure Terraform layer for the AKS cluster. |
-| `NODE_COUNT` | Optional | `1` | Initial AKS node count passed to Terraform. |
-| `VM_SIZE` | Optional | `Standard_D2as_v6` | AKS node VM size used by local scripts. The GitHub workflow also supports the same value through a repository variable. |
-| `TIER` | Optional | `Free` | AKS SKU tier passed to the Azure Terraform layer. |
-| `TF_BACKEND_RESOURCE_GROUP` | Yes after the first backend bootstrap | `rg-stage1-tfstate` | Azure resource group that hosts the remote Terraform state storage account. Required by local scripts and GitHub Actions. |
-| `TF_BACKEND_STORAGE_ACCOUNT` | Yes after the first backend bootstrap | `<real-storage-account-name>` | Azure Storage Account name used as the remote Terraform backend. This is intentionally blank in the template until the backend is created or known. |
-| `TF_BACKEND_CONTAINER` | Yes after the first backend bootstrap | `tfstate` | Blob container name that stores the Terraform state files. |
+- [Configuration reference](./configuration-reference.md)
 
 Minimal first edit before the initial bootstrap:
 
@@ -101,25 +180,13 @@ See screen shoot example here: [provision_platform_screenshoots.md](infrastructu
 
 On the first run, `bootstrap_infrastructure_and_provision_platform.sh` bootstraps the remote Terraform backend and prints the backend values that must be copied into `.env`.
 
-Update `.env` with these real backend values:
+Update `.env` with the real backend values described in:
 
-| Variable | Required after first run | Description |
-| --- | --- | --- |
-| `TF_BACKEND_RESOURCE_GROUP` | Yes | Resource group that hosts the remote Terraform backend. |
-| `TF_BACKEND_STORAGE_ACCOUNT` | Yes | Storage account that stores the Terraform state files. |
-| `TF_BACKEND_CONTAINER` | Yes | Blob container inside the backend storage account, usually `tfstate`. |
+- [Configuration reference](./configuration-reference.md#repository-root-env)
 
 Confirm these GitHub repository variables are also set:
 
-| Repository variable | Required | Description |
-| --- | --- | --- |
-| `TF_BACKEND_RESOURCE_GROUP` | Yes | Mirrors `.env` so GitHub Actions can initialize the Terraform backend. |
-| `TF_BACKEND_STORAGE_ACCOUNT` | Yes | Mirrors `.env` so GitHub Actions can reach the backend storage account. |
-| `TF_BACKEND_CONTAINER` | Yes | Mirrors `.env` so GitHub Actions can select the Terraform state container. |
-| `RESOURCE_GROUP` | Yes | Resource group expected by the Azure and Kubernetes workflows. Should match `RESOURCE_GROUP` in `.env`. |
-| `AKS_LOCATION` | Yes | Azure region for the AKS layer. This should match `LOCATION` from `.env`. |
-| `AKS_CLUSTER_NAME` | Yes | AKS cluster name expected by the Azure and Kubernetes workflows. Should match `AKS_CLUSTER_NAME` in `.env`. |
-| `VM_SIZE` | Optional | Optional CI override for the AKS node size. If unset, workflows default to `Standard_D2as_v6`. |
+- [Configuration reference](./configuration-reference.md#github-repository-variables)
 
 ![GitHub Actions repository variables](/assets/github_actions_variables.png)
 
@@ -127,11 +194,7 @@ If you also run the Azure OIDC setup, the script `infrastructure/azure/oidc/crea
 
 Confirm these GitHub repository secrets are set:
 
-| Repository secret | Required | Description |
-| --- | --- | --- |
-| `AZURE_SUBSCRIPTION_ID` | Yes | Azure subscription used by GitHub Actions. Mirrors `SUBSCRIPTION_ID` from `.env`. |
-| `AZURE_CLIENT_ID` | Yes | Application ID of the Azure Entra app created for GitHub OIDC. |
-| `AZURE_TENANT_ID` | Yes | Azure tenant ID used by `azure/login@v2` during GitHub Actions authentication. |
+- [Configuration reference](./configuration-reference.md#github-repository-secrets)
 
 ![GitHub Actions repository secrets](/assets/OIDC_secrets.png)
 
@@ -140,8 +203,8 @@ Confirm these GitHub repository secrets are set:
 > Requirements: 
 > 1. The [remote Terraform backend](infrastructure/terraform-backend/docs/README.md) is created.
 > 2. The [Azure OIDC credentials for GitHub Actions](infrastructure/azure/docs/OIDC.md) are created.
-> 3. The 6 GitHub repository variables are set and valid. `VM_SIZE` is optional and defaults to `Standard_D2as_v6`.
-> 4. The 3 GitHub repository secrets are set and valid.
+> 3. The required GitHub repository variables from [Configuration reference](./configuration-reference.md#github-repository-variables) are set and valid.
+> 4. The required GitHub repository secrets from [Configuration reference](./configuration-reference.md#github-repository-secrets) are set and valid.
 
 When changes are pushed to the tracked infrastructure paths, GitHub Actions automatically runs Terraform checks for the corresponding layer.
 
@@ -402,11 +465,16 @@ kubernetes-platform-case/
 │       ├── kubernetes-resources-destroy.yml
 │       └── app-delivery.yml
 │
+├── .env.example
+├── bootstrap_infrastructure_and_provision_platform.sh
+├── destroy_infrastructure_and_platform.sh
+├── commons/
+│   └── scripts/
+│       ├── common_logging.sh
+│       └── wait_for_backend_access.sh
+├── logs/
+│
 ├── infrastructure/
-│   ├── .env
-│   ├── .env.example
-│   ├── bootstrap_infrastructure_and_provision_platform.sh
-│   ├── destroy_infrastructure_and_platform.sh
 │   ├── terraform-backend/
 │   │   ├── create_remote_backend.sh
 │   │   ├── destroy_remote_backend.sh
@@ -423,7 +491,9 @@ kubernetes-platform-case/
 │   │   ├── create_azure_resources.sh
 │   │   ├── destroy_azure_resources.sh
 │   │   ├── terraform/
-│   │   │   ├── main.tf
+│   │   │   ├── resource-group.tf
+│   │   │   ├── aks.tf
+│   │   │   ├── postgresql.tf
 │   │   │   ├── variables.tf
 │   │   │   ├── outputs.tf
 │   │   │   ├── providers.tf
@@ -438,25 +508,24 @@ kubernetes-platform-case/
 │   │   │   ├── create_aks_cluster_and_connect_with_kubectl.sh
 │   │   │   └── delete_azure_resource_group_manually.sh
 │   │   └── docs/
+│   │       ├── OIDC.md
 │   │       └── README.md
-│   │
-│   ├── kubernetes-resources/
-│   │   ├── apply_kubernetes_resources.sh
-│   │   ├── destroy_kubernetes_resources.sh
-│   │   ├── terraform/
-│   │   │   ├── main.tf
-│   │   │   ├── variables.tf
-│   │   │   ├── outputs.tf
-│   │   │   ├── providers.tf
-│   │   │   ├── backend.tf
-│   │   │   └── versions.tf
-│   │   ├── scripts/
-│   │   │   └── validate-cluster-access.sh
-│   │   └── docs/
-│   │       └── README.md
-│   │
-│   └── docs/
-│       └── README.md
+│
+├── platform/
+│   └── kubernetes-resources/
+│       ├── apply_kubernetes_resources.sh
+│       ├── destroy_kubernetes_resources.sh
+│       ├── terraform/
+│       │   ├── main.tf
+│       │   ├── variables.tf
+│       │   ├── outputs.tf
+│       │   ├── providers.tf
+│       │   ├── backend.tf
+│       │   └── versions.tf
+│       ├── scripts/
+│       │   └── validate-cluster-access.sh
+│       └── docs/
+│           └── README.md
 │
 ├── application/
 │   ├── payment-exception-review-service/
