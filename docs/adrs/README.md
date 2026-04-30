@@ -24,6 +24,7 @@ These ADRs capture the structural decisions behind Stage 1 of the repository:
 - [ADR-010 - Use local PostgreSQL for local development and managed Azure PostgreSQL for cloud](./ADR-010-use-local-postgresql-for-local-development-and-managed-azure-postgresql-for-cloud.md)
 - [ADR-011 - Prefer private networking for Azure PostgreSQL in the governed cloud environment](./ADR-011-prefer-private-networking-for-azure-postgresql-in-the-governed-cloud-environment.md)
 - [ADR-012 - Defer advanced PostgreSQL capabilities to later stages](./ADR-012-defer-advanced-postgresql-capabilities-to-later-stages.md)
+- [ADR-013 - Use the repository-root `.env` file as the single local configuration source](./ADR-013-use-the-repository-root-env-file-as-the-single-local-configuration-source.md)
 
 ## Related ADRs
 

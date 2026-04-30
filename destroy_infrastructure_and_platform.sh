@@ -9,7 +9,7 @@ usage() {
 Usage: ./destroy_infrastructure_and_platform.sh [--silent|-s] [--help|-h]
 
 Options:
-  -s, --silent   Show concise terminal logs and write detailed command output to log files in infrastructure/.
+  -s, --silent   Show concise terminal logs and write detailed command output to log files in logs/.
   -h, --help     Show this help message.
 
 Default behavior is verbose to make the teardown flow easier to debug.
@@ -76,8 +76,8 @@ main() {
         "$SCRIPT_DIR/platform/kubernetes-resources/destroy_kubernetes_resources.sh"
 
     print_header "Azure Infrastructure"
-    log_info "STEP 2/4 - Destroying Azure infrastructure..."
-    run_child_step "Azure infrastructure destruction" \
+    log_info "STEP 2/4 - Destroying Azure infrastructure (AKS + PostgreSQL)..."
+    run_child_step "Azure infrastructure destruction (AKS + PostgreSQL)" \
         "$SCRIPT_DIR/infrastructure/azure/destroy_azure_resources.sh"
 
     print_header "Terraform Backend"

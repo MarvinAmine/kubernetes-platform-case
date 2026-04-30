@@ -211,6 +211,7 @@ When changes are pushed to the tracked infrastructure paths, GitHub Actions auto
 On `push`, the workflows run formatting, initialization, validation, and planning steps.
 
 On `workflow_dispatch`, the Azure provisioning workflow can also run `terraform apply`.
+![github_workflows](../assets/github_workflows.png)
 
 ### 0.5 Destroy the full platform
 

@@ -97,7 +97,9 @@ Initialize and validate the Azure Terraform files:
 # From the root directory
 cd infrastructure/azure/terraform
 
-export TF_VAR_subscription_id="<your-subscription-id>"
+source ../../../commons/scripts/load_terraform_env.sh
+load_repo_env ../../../.env ../../../.env.example
+export_azure_infra_tf_vars
 
 terraform init \
 -backend-config="resource_group_name=<tf-backend-rg>" \
@@ -127,6 +129,9 @@ Initialize and validate the Kubernetes resources Terraform files:
 ```bash
 # From the root directory
 cd platform/kubernetes-resources/terraform
+
+source ../../../commons/scripts/load_terraform_env.sh
+load_repo_env ../../../.env ../../../.env.example
 
 terraform init \
 -backend-config="resource_group_name=<tf-backend-rg>" \

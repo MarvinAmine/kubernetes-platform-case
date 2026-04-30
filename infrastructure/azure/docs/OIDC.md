@@ -84,7 +84,7 @@ The GitHub Actions workflows in this repository expect those exact secret names.
 
 The federated credential is rendered from:
 
-[github-oidc-credential.template.json](/home/marvin/Documents/dev/kubernetes/infrastructure/azure/oidc/github-oidc-credential.template.json)
+[github-oidc-credential.template.json](../oidc/github-oidc-credential.template.json)
 
 The script replaces these placeholders using `.env` from the repository root:
 

@@ -38,13 +38,8 @@ logic stays under `scripts/`.
 ```bash
 cp .env.example .env
 
-export EXPECTED_SUBSCRIPTION_ID="<your-subscription-id>"
-export EXPECTED_RESOURCE_GROUP="rg-stage1-aks"
-export EXPECTED_AKS_CLUSTER_NAME="aks-stage1-platform"
-# Backward-compatible legacy variables also work:
-# export SUBSCRIPTION_ID="<your-subscription-id>"
-# export RESOURCE_GROUP="rg-stage1-aks"
-# export AKS_CLUSTER_NAME="aks-stage1-platform"
+source commons/scripts/load_terraform_env.sh
+load_repo_env .env .env.example
 
 ./platform/kubernetes-resources/scripts/validate-cluster-access.sh
 

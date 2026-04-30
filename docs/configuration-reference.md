@@ -10,6 +10,12 @@ Create the local environment file from the repository root:
 cp .env.example .env
 ```
 
+The repository-root `.env` is the single local configuration source. Local wrapper scripts derive the Terraform-specific `TF_VAR_*` names from it through:
+
+- `commons/scripts/load_terraform_env.sh`
+
+So the root `.env` should keep the generic operational names only. Do not add duplicate `TF_VAR_*` aliases there.
+
 ### Core local variables
 
 | Variable | Required | Example / default | Description |

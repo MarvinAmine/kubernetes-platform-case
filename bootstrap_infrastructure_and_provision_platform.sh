@@ -11,7 +11,7 @@ usage() {
 Usage: ./bootstrap_infrastructure_and_provision_platform.sh [--silent|-s] [--help|-h]
 
 Options:
-  -s, --silent   Show concise terminal logs and write detailed command output to log files at the project root.
+  -s, --silent   Show concise terminal logs and write detailed command output to log files in logs/.
   -h, --help     Show this help message.
 
 Default behavior is verbose to make the provisioning flow easier to debug for newcomers.
@@ -186,11 +186,20 @@ print_first_run_instructions() {
     echo "RESOURCE_GROUP=${RESOURCE_GROUP:-rg-stage1-aks}"
     echo "AKS_LOCATION=${LOCATION:-canadacentral}"
     echo "AKS_CLUSTER_NAME=${AKS_CLUSTER_NAME:-aks-stage1-platform}"
+    echo "POSTGRES_SERVER_NAME=${POSTGRES_SERVER_NAME:-psql-stage1-platform}"
+    echo "POSTGRES_DATABASE_NAME=${POSTGRES_DATABASE_NAME:-payment_exception_review}"
+    echo "POSTGRES_ADMIN_USERNAME=${POSTGRES_ADMIN_USERNAME:-pgadminmarvin}"
+    echo "POSTGRES_VERSION=${POSTGRES_VERSION:-16}"
+    echo "POSTGRES_SKU_NAME=${POSTGRES_SKU_NAME:-Standard_B1ms}"
+    echo "POSTGRES_STORAGE_MB=${POSTGRES_STORAGE_MB:-32768}"
+    echo "POSTGRES_BACKUP_RETENTION_DAYS=${POSTGRES_BACKUP_RETENTION_DAYS:-7}"
+    echo "POSTGRES_ZONE=${POSTGRES_ZONE:-1}"
     echo
     highlight_line "Confirm these GitHub repository secrets are set:"
     echo "AZURE_SUBSCRIPTION_ID=${SUBSCRIPTION_ID:-<your-subscription-id>}"
     echo "AZURE_CLIENT_ID=${RESOLVED_AZURE_CLIENT_ID}"
     echo "AZURE_TENANT_ID=${RESOLVED_AZURE_TENANT_ID}"
+    echo "POSTGRES_ADMIN_PASSWORD=<set this as a GitHub secret>"
     echo
     highlight_line "Then load the environment:"
     echo "set -a"
@@ -236,12 +245,12 @@ run_first_time_backend_bootstrap() {
 
 run_azure_provisioning() {
     print_header "Azure Infrastructure"
-    log_info "STEP 2/4 - Creating or reconciling Azure Infrastructure..."
+    log_info "STEP 2/4 - Creating or reconciling Azure infrastructure (AKS + PostgreSQL)..."
     if [[ "$SILENT_MODE" == true ]]; then
-        run_command_with_context "Azure infrastructure provisioning" \
+        run_command_with_context "Azure infrastructure provisioning (AKS + PostgreSQL)" \
             "$SCRIPT_DIR/infrastructure/azure/create_azure_resources.sh" --silent
     else
-        run_command_with_context "Azure infrastructure provisioning" \
+        run_command_with_context "Azure infrastructure provisioning (AKS + PostgreSQL)" \
             "$SCRIPT_DIR/infrastructure/azure/create_azure_resources.sh"
     fi
 }

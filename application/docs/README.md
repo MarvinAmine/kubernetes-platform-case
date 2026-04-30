@@ -10,6 +10,7 @@ This folder contains the design artifacts for the Stage 1 application-team servi
 - [Stage 1 implementation process](./implementation-process.md)
 - [Domain model](./domain-model.md)
 - [Persistence model](./persistence-model.md)
+- [Local PostgreSQL setup](./local-postgresql.md)
 - [Architecture decision records](./adrs/README.md)
 - [Application architecture](./architecture.md)
 - [Configuration ownership](./config-ownership.md)

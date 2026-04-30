@@ -4,6 +4,9 @@
 
 ```bash
 cd infrastructure/terraform-backend/terraform
+source ../../../commons/scripts/load_terraform_env.sh
+load_repo_env ../../../.env ../../../.env.example
+export_backend_bootstrap_tf_vars
 terraform init
 terraform validate
 terraform plan
@@ -44,13 +47,15 @@ TF_BACKEND_RESOURCE_GROUP="rg-stage1-tfstate"
 TF_BACKEND_STORAGE_ACCOUNT="<real-storage-account-name>"
 TF_BACKEND_CONTAINER="tfstate"
 ```
-Source your shared env file with `set -a; source .env; set +a`
+The local scripts and manual Terraform examples use `commons/scripts/load_terraform_env.sh` to derive the `TF_VAR_*` names from the repository-root `.env`.
 
 ## 4. Test Azure infrastructure stack against remote backend
-Optional `export TF_VAR_subscription_id="<your-subscription-id>"`
-
 From infrastructure/azure/terraform:
 ```bash
+source ../../../commons/scripts/load_terraform_env.sh
+load_repo_env ../../../.env ../../../.env.example
+export_azure_infra_tf_vars
+
 terraform init -migrate-state \
 -backend-config="resource_group_name=<tf-backend-rg>" \
 -backend-config="storage_account_name=<tf-backend-storage-account>" \

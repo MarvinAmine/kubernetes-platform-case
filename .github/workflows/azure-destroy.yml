@@ -24,6 +24,23 @@ jobs:
             TF_VAR_node_count: "1"
             TF_VAR_vm_size: ${{ vars.VM_SIZE || 'Standard_D2as_v6' }}
             TF_VAR_tier: Free
+            TF_VAR_vnet_name: ${{ vars.VNET_NAME || 'vnet-stage1-platform' }}
+            TF_VAR_vnet_address_space: ${{ vars.VNET_ADDRESS_SPACE || '10.20.0.0/16' }}
+            TF_VAR_aks_subnet_name: ${{ vars.AKS_SUBNET_NAME || 'snet-stage1-aks' }}
+            TF_VAR_aks_subnet_prefix: ${{ vars.AKS_SUBNET_PREFIX || '10.20.1.0/24' }}
+            TF_VAR_postgres_server_name: ${{ vars.POSTGRES_SERVER_NAME }}
+            TF_VAR_postgres_database_name: ${{ vars.POSTGRES_DATABASE_NAME }}
+            TF_VAR_postgres_admin_username: ${{ vars.POSTGRES_ADMIN_USERNAME }}
+            TF_VAR_postgres_admin_password: ${{ secrets.POSTGRES_ADMIN_PASSWORD }}
+            TF_VAR_postgres_version: ${{ vars.POSTGRES_VERSION || '16' }}
+            TF_VAR_postgres_sku_name: ${{ vars.POSTGRES_SKU_NAME }}
+            TF_VAR_postgres_storage_mb: ${{ vars.POSTGRES_STORAGE_MB || '32768' }}
+            TF_VAR_postgres_backup_retention_days: ${{ vars.POSTGRES_BACKUP_RETENTION_DAYS || '7' }}
+            TF_VAR_postgres_zone: ${{ vars.POSTGRES_ZONE || '1' }}
+            TF_VAR_postgres_subnet_name: ${{ vars.POSTGRES_SUBNET_NAME || 'snet-stage1-postgres' }}
+            TF_VAR_postgres_subnet_prefix: ${{ vars.POSTGRES_SUBNET_PREFIX || '10.20.2.0/28' }}
+            TF_VAR_postgres_private_dns_zone_name: ${{ vars.POSTGRES_PRIVATE_DNS_ZONE_NAME || 'stage1-platform.postgres.database.azure.com' }}
+            TF_VAR_postgres_private_dns_zone_link_name: ${{ vars.POSTGRES_PRIVATE_DNS_ZONE_LINK_NAME || 'stage1-platform-postgres-dns-link' }}
             
             ARM_USE_OIDC: true
             ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -47,11 +64,23 @@ jobs:
                   TF_VAR_resource_group_name
                   TF_VAR_location
                   TF_VAR_aks_cluster_name
+                  TF_VAR_vnet_name
+                  TF_VAR_vnet_address_space
+                  TF_VAR_aks_subnet_name
+                  TF_VAR_aks_subnet_prefix
+                  TF_VAR_postgres_server_name
+                  TF_VAR_postgres_database_name
+                  TF_VAR_postgres_admin_username
+                  TF_VAR_postgres_sku_name
+                  TF_VAR_postgres_subnet_name
+                  TF_VAR_postgres_subnet_prefix
+                  TF_VAR_postgres_private_dns_zone_name
+                  TF_VAR_postgres_private_dns_zone_link_name
                 )
                 for name in "${required_vars[@]}"; do
                   if [[ -z "${!name:-}" ]]; then
                     echo "ERROR: Missing GitHub repository variable: ${name}."
-                    echo "Run infrastructure/provision_platform.sh and configure the repository variables described in README.md."
+                    echo "Run ./bootstrap_infrastructure_and_provision_platform.sh and configure the repository variables described in README.md."
                     exit 1
                   fi
                 done
@@ -60,6 +89,7 @@ jobs:
                   ARM_CLIENT_ID
                   ARM_TENANT_ID
                   ARM_SUBSCRIPTION_ID
+                  TF_VAR_postgres_admin_password
                 )
                 for name in "${required_secrets[@]}"; do
                   if [[ -z "${!name:-}" ]]; then

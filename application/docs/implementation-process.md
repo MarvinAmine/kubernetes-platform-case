@@ -160,7 +160,7 @@ It records choices such as:
 
 References:
 - [Application ADRs](./adrs/README.md)
-- [Root platform-case ADRs](/home/marvin/Documents/dev/kubernetes/docs/adrs/README.md)
+- [Root platform-case ADRs](../../docs/adrs/README.md)
 
 ### 7. Application architecture diagram
 
@@ -253,4 +253,3 @@ It prevents jumping directly into code before:
 - runtime expectations
 - failure behavior
 - persistence shape
-
