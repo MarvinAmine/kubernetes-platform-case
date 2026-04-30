@@ -35,15 +35,16 @@ terraform_init_with_backend_retry() {
     local storage_account="$2"
     local container_name="$3"
     local state_key="$4"
-    local max_attempts="${5:-10}"
-    local delay="${6:-15}"
+    local init_mode="${5:--reconfigure}"
+    local max_attempts="${6:-10}"
+    local delay="${7:-15}"
     local attempt=1
 
     wait_for_backend_access "$storage_account" "$container_name"
 
     while true; do
         echo "Terraform init attempt ${attempt}/${max_attempts}..."
-        if terraform init \
+        if terraform init "$init_mode" \
             -backend-config="resource_group_name=$resource_group" \
             -backend-config="storage_account_name=$storage_account" \
             -backend-config="container_name=$container_name" \

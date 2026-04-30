@@ -129,16 +129,12 @@ jobs:
 
             - name: Terraform Init
               run: |
-                terraform init \
+                terraform init -reconfigure \
                   -backend-config="resource_group_name=${TF_BACKEND_RESOURCE_GROUP}" \
                   -backend-config="storage_account_name=${TF_BACKEND_STORAGE_ACCOUNT}" \
                   -backend-config="container_name=${TF_BACKEND_CONTAINER}" \
                   -backend-config="key=azure/terraform.tfstate" \
-                  -backend-config="use_oidc=true" \
-                  -backend-config="use_azuread_auth=true" \
-                  -backend-config="client_id=${ARM_CLIENT_ID}" \
-                  -backend-config="tenant_id=${ARM_TENANT_ID}" \
-                  -backend-config="subscription_id=${ARM_SUBSCRIPTION_ID}"
+                  -backend-config="use_azuread_auth=true"
 
             - name: Terraform Validate
               run: terraform validate
