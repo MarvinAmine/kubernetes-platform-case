@@ -108,6 +108,7 @@ Show that the platform can evolve into an enterprise-ready model with stronger i
 * Ansible
 * Azure
 * AWS
+* EKS
 * OnPrem
 * Linux / Red Hat
 * GitHub
