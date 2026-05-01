@@ -16,6 +16,16 @@ The repository-root `.env` is the single local configuration source. Local wrapp
 
 So the root `.env` should keep the generic operational names only. Do not add duplicate `TF_VAR_*` aliases there.
 
+Important distinction:
+
+- `TF_VAR_*` is for normal Terraform input variables used by resources and modules.
+- Terraform backend settings are different. They are loaded before normal input variables.
+- Because of that, backend settings should not be modeled as regular Terraform `variable` inputs.
+- In this repository, backend settings are handled through a combination of:
+  - required static shape in `backend.tf`
+  - `terraform init -backend-config=...`
+  - local wrapper scripts and GitHub Actions workflow init steps
+
 ### Core local variables
 
 | Variable | Required | Example / default | Description |

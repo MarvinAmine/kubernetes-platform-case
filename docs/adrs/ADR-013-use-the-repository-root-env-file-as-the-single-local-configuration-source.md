@@ -46,6 +46,14 @@ Instead, local wrapper scripts and manual Terraform workflows derive the require
 
 - `commons/scripts/load_terraform_env.sh`
 
+This decision applies to normal Terraform input variables only.
+
+Terraform backend settings are treated separately because backend initialization happens before normal Terraform input variables are evaluated. For that reason, backend settings remain defined through:
+
+- the `backend` block shape in `backend.tf`
+- `terraform init -backend-config=...`
+- local wrapper scripts and CI workflow init steps
+
 This helper is responsible for:
 
 - loading the repository-root `.env`

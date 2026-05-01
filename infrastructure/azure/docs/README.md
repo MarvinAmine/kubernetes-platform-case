@@ -73,6 +73,12 @@ The shared repository-root `.env` must include both the AKS inputs and the Postg
 
 The shared helper `commons/scripts/load_terraform_env.sh` converts these generic `.env` values into the `TF_VAR_*` names expected by Terraform.
 
+Backend note:
+
+- `TF_VAR_*` covers normal Terraform input variables for the Azure resources.
+- The remote backend is configured separately through `backend.tf` plus `terraform init -backend-config=...`.
+- This is intentional because backend settings are initialized before normal Terraform input variables are evaluated.
+
 To destroy the Azure infrastructure manually:
 
 ```bash

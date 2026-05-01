@@ -49,6 +49,12 @@ TF_BACKEND_CONTAINER="tfstate"
 ```
 The local scripts and manual Terraform examples use `commons/scripts/load_terraform_env.sh` to derive the `TF_VAR_*` names from the repository-root `.env`.
 
+Backend note:
+
+- `TF_VAR_*` is only for normal Terraform input variables.
+- The remote backend itself is configured separately during `terraform init`.
+- That is why the consumer stacks use `-backend-config=...` instead of trying to pass backend settings through normal Terraform variables.
+
 ## 4. Test Azure infrastructure stack against remote backend
 From infrastructure/azure/terraform:
 ```bash
@@ -65,6 +71,8 @@ terraform init -migrate-state \
 ```
 
 Because key-based authentication is disabled on the backend storage account, local `terraform init` must include `use_azuread_auth=true`.
+
+The Azure and Kubernetes consumer stacks also keep a structurally complete `backend "azurerm"` block in `backend.tf` so `terraform validate` works cleanly in CI. The real environment-specific backend values are still provided through `terraform init -backend-config=...`.
 
 
 ```bash
