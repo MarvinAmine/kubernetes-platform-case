@@ -106,6 +106,10 @@ Cloud database validation should not normally depend on:
 - public firewall rules for a developer laptop
 - direct `psql` access from the internet
 
+For the operational runbook and common mistakes encountered during in-cluster PostgreSQL validation, see:
+
+- [Application failure scenarios](../../../application/docs/failure-scenarios.md#scenario-3---private-postgresql-connectivity-validation-from-aks)
+
 ## Relationship to local development
 
 The local developer workflow remains separate:
