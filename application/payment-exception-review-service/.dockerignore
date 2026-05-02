@@ -1,0 +1,8 @@
+.git
+.gitignore
+target/
+README.md
+*.iml
+.idea/
+.vscode/
+compose.yaml

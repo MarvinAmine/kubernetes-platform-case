@@ -28,6 +28,18 @@ It is the simplest option because:
 - it keeps the local setup reproducible
 - it is easy to destroy and recreate
 
+This local setup intentionally separates:
+
+- `compose.yaml` for the local PostgreSQL dependency only
+- `run_containerized_app.sh` for containerized application validation
+
+The application is not included in `compose.yaml` at this stage.
+
+That separation keeps two local workflows clean:
+
+- normal development with PostgreSQL in Docker and the app started through Maven
+- runtime validation with PostgreSQL in Docker and the app started as a container
+
 ## Recommended local Compose usage
 
 From:
@@ -107,6 +119,30 @@ This runbook is the simplest validated local path for the service:
 2. run the Spring Boot application
 3. let Flyway create and seed the schema
 4. call the persisted endpoint
+
+If you want to validate the containerized application path locally, use:
+
+```bash
+./run_containerized_app.sh
+```
+
+from:
+
+```bash
+application/payment-exception-review-service
+```
+
+This script:
+
+- starts the local PostgreSQL Compose service if needed
+- rebuilds the local application image
+- removes any previous local application container with the same name
+- runs the application container against the local PostgreSQL instance
+
+This is intentionally separate from `compose.yaml` so newcomers can choose between:
+
+- `docker compose up -d` + `./mvnw spring-boot:run` for normal local development
+- `./run_containerized_app.sh` for a reproducible container-runtime validation path
 
 ### 1. Start local PostgreSQL
 
@@ -257,6 +293,12 @@ Check:
 Stop the application:
 
 - `Ctrl+C`
+
+If you started the containerized app with `./run_containerized_app.sh`, stop it with:
+
+```bash
+docker stop payment-exception-review-service-local
+```
 
 Stop PostgreSQL:
 

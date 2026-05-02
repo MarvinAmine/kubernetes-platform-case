@@ -26,3 +26,35 @@ These documents define the minimum design baseline before implementation:
 - how it persists data
 - how it fits into the governed AKS platform
 - which technical decisions are locked for Stage 1
+
+## Local quick start
+
+From `application/payment-exception-review-service`:
+
+1. start local PostgreSQL
+
+```bash
+docker compose up -d
+```
+
+2. run the application through Maven
+
+```bash
+./mvnw spring-boot:run
+```
+
+3. validate the persisted endpoint
+
+```bash
+curl http://localhost:8080/api/payment-exceptions/payexc-100045/status
+```
+
+If you want to validate the containerized application path instead of the Maven path:
+
+```bash
+./run_containerized_app.sh
+```
+
+For the detailed local database and container runtime runbook, see:
+
+- [Local PostgreSQL setup](./local-postgresql.md)
