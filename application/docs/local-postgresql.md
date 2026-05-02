@@ -28,7 +28,38 @@ It is the simplest option because:
 - it keeps the local setup reproducible
 - it is easy to destroy and recreate
 
-## Example local container
+## Recommended local Compose usage
+
+From:
+
+```bash
+application/payment-exception-review-service
+```
+
+start PostgreSQL with:
+
+```bash
+docker compose up -d
+```
+
+This starts the `payment-review-postgres` service defined in `compose.yaml`.
+
+## Verify the container
+
+```bash
+docker compose ps
+docker compose logs payment-review-postgres
+```
+
+If you want to connect interactively:
+
+```bash
+docker exec -it payment-review-postgres psql -U postgres -d payment_exception_review
+```
+
+## Optional equivalent standalone container
+
+If you do not want to use Docker Compose, this is the equivalent `docker run` command:
 
 ```bash
 docker run --name payment-review-postgres \
@@ -45,19 +76,6 @@ This creates:
 - username: `postgres`
 - password: `postgres`
 - host port: `5432`
-
-## Verify the container
-
-```bash
-docker ps
-docker logs payment-review-postgres
-```
-
-If you want to connect interactively:
-
-```bash
-docker exec -it payment-review-postgres psql -U postgres -d payment_exception_review
-```
 
 ## Local Spring Boot connection values
 
@@ -80,6 +98,177 @@ spring.jpa.hibernate.ddl-auto=update
 ```
 
 But for the governed path, `validate` is the stronger target.
+
+## Local runbook
+
+This runbook is the simplest validated local path for the service:
+
+1. start local PostgreSQL
+2. run the Spring Boot application
+3. let Flyway create and seed the schema
+4. call the persisted endpoint
+
+### 1. Start local PostgreSQL
+
+```bash
+docker compose up -d
+```
+
+### 2. Verify PostgreSQL is running
+
+```bash
+docker compose ps
+docker compose logs payment-review-postgres
+```
+
+### 3. Run the Spring Boot application
+
+From:
+
+```bash
+application/payment-exception-review-service
+```
+
+run:
+
+```bash
+./mvnw spring-boot:run
+```
+
+### 4. Expected startup signals
+
+When startup is healthy, the logs should show:
+
+- Hikari datasource startup completes
+- Flyway validates and applies migrations
+- JPA initializes successfully
+- Tomcat starts on port `8080`
+
+Typical success indicators:
+
+- `HikariPool-1 - Start completed`
+- `Successfully applied 2 migrations`
+- `Initialized JPA EntityManagerFactory`
+- `Tomcat started on port 8080`
+
+### 5. Validate the persisted endpoint
+
+```bash
+curl http://localhost:8080/api/payment-exceptions/payexc-100045/status
+```
+
+Expected response:
+
+```json
+{
+  "reviewId": "payexc-100045",
+  "status": "PENDING_REVIEW",
+  "validationMode": "STANDARD",
+  "escalationEnabled": true,
+  "region": "CA-QC"
+}
+```
+
+### 6. Optional database verification
+
+Connect to the local database:
+
+```bash
+docker exec -it payment-review-postgres psql -U postgres -d payment_exception_review
+```
+
+Then check:
+
+```sql
+SELECT * FROM flyway_schema_history;
+SELECT review_id, status FROM payment_exception_reviews;
+```
+
+### 7. Troubleshooting
+
+#### Flyway reports `Unsupported Database: PostgreSQL 16.x`
+
+Cause:
+
+- the PostgreSQL Flyway support module is missing
+- this was encountered during the first local PostgreSQL startup attempt when Flyway could connect to PostgreSQL but could not identify PostgreSQL 16 correctly with `flyway-core` alone
+
+Fix:
+
+- ensure both dependencies are present in `pom.xml`:
+  - `org.flywaydb:flyway-core`
+  - `org.flywaydb:flyway-database-postgresql`
+
+Expected recovery:
+
+- the application starts
+- Flyway creates `flyway_schema_history`
+- migrations `V1` and `V2` are applied successfully
+
+#### The app cannot connect to PostgreSQL
+
+Check:
+
+- the Compose service is running:
+
+```bash
+docker compose ps
+```
+
+- the application datasource values match the local container:
+  - host: `localhost`
+  - port: `5432`
+  - database: `payment_exception_review`
+  - username: `postgres`
+  - password: `postgres`
+
+#### Migrations do not appear to run
+
+Check:
+
+- `spring.flyway.enabled=true`
+- migration files are under:
+  - `src/main/resources/db/migration/`
+
+#### The endpoint returns no seeded data
+
+## Stop and cleanup
+
+Stop PostgreSQL:
+
+```bash
+docker compose down
+```
+
+Stop PostgreSQL and remove the local database volume:
+
+```bash
+docker compose down -v
+```
+
+Check:
+
+- `V2__seed_payment_exception_reviews.sql` exists
+- the seed row uses the expected review id:
+  - `payexc-100045`
+
+### 8. Stop the local setup
+
+Stop the application:
+
+- `Ctrl+C`
+
+Stop PostgreSQL:
+
+```bash
+docker stop payment-review-postgres
+```
+
+Remove PostgreSQL completely:
+
+```bash
+docker rm -f payment-review-postgres
+```
 
 ## Governed cloud access model
 

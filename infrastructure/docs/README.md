@@ -216,3 +216,9 @@ platform-baseline-config   3      42s
 ## Set GitHub Actions secrets and variables
 ![alt text](../../assets/OIDC_secrets.png)
 ![alt text](../../assets/github_actions_variables.png)
+
+## Troubleshooting
+
+Infrastructure and platform troubleshooting runbooks now live under:
+
+- [infrastructure/docs/troubleshooting/README.md](./troubleshooting/README.md)

@@ -14,7 +14,7 @@ This folder contains the design artifacts for the Stage 1 application-team servi
 - [Architecture decision records](./adrs/README.md)
 - [Application architecture](./architecture.md)
 - [Configuration ownership](./config-ownership.md)
-- [Failure scenarios](./failure-scenarios.md)
+- [Failure scenarios](./failure-scenarios/README.md)
 - [Implementation skeleton](./implementation-skeleton.md)
 
 ## Purpose

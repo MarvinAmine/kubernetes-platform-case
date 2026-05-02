@@ -108,7 +108,7 @@ Cloud database validation should not normally depend on:
 
 For the operational runbook and common mistakes encountered during in-cluster PostgreSQL validation, see:
 
-- [Application failure scenarios](../../../application/docs/failure-scenarios.md#scenario-3---private-postgresql-connectivity-validation-from-aks)
+- [Scenario 3 - Private PostgreSQL connectivity validation from AKS](../../../application/docs/failure-scenarios/scenario-3-private-postgresql-connectivity-validation-from-aks.md)
 
 ## Relationship to local development
 

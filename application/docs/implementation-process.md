@@ -201,7 +201,7 @@ Stage 1 focuses on:
 - invalid business configuration
 
 Reference:
-- [Failure scenarios](./failure-scenarios.md)
+- [Failure scenarios](./failure-scenarios/README.md)
 
 ### 10. Implementation skeleton
 

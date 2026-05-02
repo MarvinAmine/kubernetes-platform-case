@@ -1,0 +1,15 @@
+services:
+  payment-review-postgres:
+    image: postgres:16
+    container_name: payment-review-postgres
+    environment:
+      POSTGRES_DB: payment_exception_review
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - payment-review-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  payment-review-postgres-data:

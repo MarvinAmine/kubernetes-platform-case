@@ -1,0 +1,29 @@
+INSERT INTO payment_exception_reviews (
+    id,
+    review_id,
+    payment_reference,
+    status,
+    reason_code,
+    validation_state,
+    priority,
+    region,
+    source_system,
+    assigned_queue,
+    requires_manual_review,
+    created_at,
+    updated_at
+) VALUES (
+      '11111111-1111-1111-1111-111111111111',
+      'payexc-100045',
+      'payref-100045',
+      'PENDING_REVIEW',
+      'AMOUNT_THRESHOLD_EXCEEDED',
+      'REQUIRES_MANUAL_REVIEW',
+      'HIGH',
+      'CA-QC',
+      'payments-core',
+      'manual-review-qc',
+      true,
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP
+);
