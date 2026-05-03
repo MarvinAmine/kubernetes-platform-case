@@ -103,6 +103,7 @@ Show that the platform can evolve into an enterprise-ready model with stronger i
 * DataDog
 * ElasticSearch
 * Kibana
+* Tanos
 * Prometheus
 * Grafana
 * Ansible

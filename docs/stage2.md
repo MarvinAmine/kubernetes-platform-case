@@ -6,6 +6,9 @@ The main objective is no longer only to prove that one internal service can be d
 
 This stage introduces enterprise Kubernetes operational features through OpenShift, while keeping the delivery path aligned with platform engineering responsibilities commonly expected in regulated organizations. The focus is on governance, isolation, promotion discipline, and controlled operations rather than only raw deployment capability.
 
+For the tradeoff behind using OpenShift here, see
+[openshift-tradeoffs.md](./openshift-tradeoffs.md).
+
 ### What changes from Stage 1
 
 Stage 1 proved a governed delivery base for a single stateful internal service.  
@@ -53,6 +56,33 @@ Highly regulated organizations usually need more than successful deployments. Th
 - reduced misconfiguration risk in production
 
 This stage is built to reflect those realities.
+
+### Specific OpenShift-oriented features emphasized in Stage 2
+
+This stage is mainly concerned with enterprise Kubernetes operating features
+such as:
+
+- stronger project or namespace governance patterns
+- more controlled multi-team tenancy boundaries
+- stricter service account and RBAC conventions
+- stronger route or ingress operating patterns
+- policy-aware shared-platform operations
+- stronger GitOps alignment for governed promotions
+- platform guardrails that improve supportability in regulated environments
+
+These are the features that justify OpenShift in Stage 2.
+
+### Features intentionally deferred to Stage 3
+
+This stage is not primarily about:
+
+- hybrid Azure and AWS architecture
+- on-prem expansion strategy
+- multi-cluster portability across different hosting models
+- cross-environment identity standardization at broader enterprise scale
+- broader federated observability across environments
+
+Those concerns are treated as Stage 3 architecture features.
 
 ### What this stage proves
 

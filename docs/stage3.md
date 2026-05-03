@@ -19,6 +19,22 @@ Stage 3 extends that model by introducing:
 - a more mature enterprise supportability model
 - full **local / dev / prod** operating model formalization
 
+### Specific multi-cloud and cross-environment features emphasized in Stage 3
+
+This stage is where the broader architecture concerns become explicit, such as:
+
+- hybrid Azure and AWS platform direction
+- on-prem operating model compatibility
+- multi-cluster operating patterns across different hosting models
+- stronger portability and standardization between environments
+- broader enterprise identity integration across environments
+- cross-environment observability strategy and wider enterprise visibility
+- long-term metrics retention and global query patterns such as Thanos when
+  justified
+
+These are intentionally broader than the Stage 2 OpenShift-focused platform
+governance features.
+
 ### Operating model in this stage
 
 This stage keeps the separation of responsibilities between infrastructure, platform, security, reliability, and application concerns, but now under a broader enterprise scope:
@@ -44,6 +60,8 @@ At this stage, the platform is no longer presented as a single-cluster implement
 - **Prometheus and Grafana** continue to provide Kubernetes-native metrics visibility
 - **Elasticsearch and Kibana** support centralized logging and operational investigations
 - **DataDog** introduces an enterprise-wide observability direction for broader cross-environment monitoring and operational visibility
+- **Thanos** is the natural extension when shared Prometheus retention and
+  global query need to scale beyond a single cluster or short local retention
 
 ### Why this stage matters in regulated environments
 
@@ -66,6 +84,8 @@ This stage is built to reflect that reality.
 - practical understanding of platform design across **Azure**, **AWS**, and **on-prem**
 - stronger maturity in **identity, access, and secrets governance**
 - stronger observability judgment across self-managed and enterprise-scale monitoring approaches
+- better judgment about when to keep observability shared at the platform level
+  and when regulation actually justifies separate monitoring estates
 - stronger ability to reason about portability, standardization, and provider-specific trade-offs
 - stronger enterprise architecture credibility for regulated organizations
 

@@ -109,6 +109,9 @@ This stage uses a clear 3-team model:
 - **Platform team** provisions the governed Kubernetes application boundary, runtime conventions, and shared observability services such as **Prometheus** and **Grafana** on top of that foundation
 - **Application team** builds and deploys a **Spring Boot** microservice through **GitHub Actions**, **Docker**, and **Helm**
 
+For the detailed responsibilities and role boundaries inside each team, see
+[project_team_ownership_model.md](./project_team_ownership_model.md).
+
 ![Intrastructure bootstrap path](/assets/infrastructure_bootstrap_path.png)
 ![Platform provision path](/assets/platform_provision_path.png)
 ![Application delivery path](/assets/app_delivery_path.png)
@@ -120,6 +123,30 @@ The operating model foundation delivers:
 - **controlled GitHub Actions CI/CD path**
 - **observable runtime path** through health checks, configuration validation, and Grafana Prometheus metrics
 - **documented rollout and misconfiguration failure scenarios** to demonstrate realistic incident diagnosis
+
+### Observability model
+
+The observability direction is a shared platform-level monitoring stack per
+cluster or environment boundary, not a separate monitoring stack per
+application.
+
+The intended production model is:
+
+- shared `kube-prometheus-stack`
+- Grafana behind SSO
+- network isolation around monitoring components and scrape surfaces
+- controlled RBAC
+- persistent Grafana
+- governed Alertmanager routing
+- Thanos for long-term retention and global query when broader enterprise scale
+  requires it
+
+This is the better default for regulated fintech-style environments because it
+preserves strong governance while avoiding unnecessary duplication of
+Prometheus, Grafana, Alertmanager, dashboards, upgrade work, and storage. A
+separate monitoring stack per application is treated as an exception that
+should be justified by a hard compliance, tenancy, or data-separation
+requirement.
 
 What this demonstrates:
 
@@ -138,6 +165,10 @@ For the cross-stage team structure used in this repository, see [project_team_ow
 For a reusable non-project-specific reference, see [generic_team_ownership_model.md](./generic_team_ownership_model.md).
 
 For root-level platform-case decisions, see [Architecture Decision Records](./adrs/README.md).
+
+For the observability boundary between the current shared monitoring baseline
+and the later enterprise direction, see
+[observability-tradeoffs.md](./observability-tradeoffs.md).
 
 
 ## 0. HOW TO USE IT?
@@ -643,40 +674,41 @@ kubernetes-platform-case/
  
 ## 9. THREE-STAGE PLATFORM EVOLUTION
 
+For the fuller technology progression and stage-by-stage stack rationale, see
+[tech_stack_evolution.md](./tech_stack_evolution.md).
+
 ### Stage 1 — Governed delivery foundation
 Focus:
-- AKS
-- Terraform
-- GitHub Actions
-- Docker
-- Helm
-- Spring Boot microservice
-- probes, config validation, and observability
+- **Azure AKS**, **Kubernetes**, and **Azure OIDC / federated CI authentication**: governed cloud delivery foundation
+- **Terraform** and **Azure Storage remote backend for Terraform state**: repeatable infrastructure bootstrap
+- **GitHub Actions** and **GitHub**: controlled CI/CD path
+- **Docker** and **Helm**: application packaging and deployment
+- **Java Spring Boot**: internal microservice runtime
+- **PostgreSQL** (Azure and Local): stateful service credibility
+- **Prometheus** and **Grafana**: probes, config validation, observability, and troubleshooting signals
 
 Outcome:
 An infrastructure team bootstraps the foundation, a platform team provisions a governed Kubernetes environment on top of it, and an application team deploys the Payment Exception Review Status API into it through a controlled path.
 
 ### Stage 2 — Governance, security, and shared-platform hardening
 Planned focus:
-- ArgoCD
-- Vault
-- identity federation
-- stronger AppSec controls
-- policy and governance
-- deeper observability with logs and security posture
+- all Stage 1 technologies, plus:
+- **OpenShift**, **ArgoCD**, **HashiCorp Vault**, and **Ansible**: stronger platform controls, GitOps discipline, and shared-platform standards
+- **OpenShift**, **Kubernetes**, and **HashiCorp Vault**: stronger AppSec controls and secret-aware hardening
+- **Elasticsearch** and **Kibana**: deeper observability with logs and security posture
+- **Linux / Red Hat or Ubuntu**: more enterprise-oriented platform operations
 
 Outcome:
 The platform evolves from controlled delivery to controlled and secured delivery, with Security and IAM becoming an explicit part of the operating model.
 
 ### Stage 3 — Enterprise hybrid platform expansion
 Planned focus:
-- hybrid Azure + AWS
-- OpenShift or OKD orientation
-- advanced observability
-- stronger production governance
-- SRE / Production Engineering visibility
-- multi-environment promotion
-- enterprise-grade operations narrative
+- all Stage 2 technologies, plus:
+- **AWS**, **Azure**, **OpenShift**, and **OnPrem**: multi-cloud hybrid platform direction for stronger production governance
+- **DataDog**, **Thanos**, **Prometheus**, and **Grafana**: advanced observability for SRE / Production Engineering visibility
+- **Okta**: stronger enterprise identity and access alignment
+- **local**, **dev**, and **prod**: multi-environment promotion across hybrid platform boundaries
+- **AWS EKS**, **Azure AKS**, **Okta**, **Ansible**, and **GitHub Actions**: enterprise-grade operations narrative
 
 Outcome:
 The platform becomes a broader enterprise platform case aligned with highly regulated environments.

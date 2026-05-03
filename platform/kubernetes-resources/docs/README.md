@@ -10,6 +10,11 @@ This layer owns the platform-managed Kubernetes resources required by the applic
 
 It does not deploy the application itself.
 
+It also represents the correct ownership boundary for shared platform
+observability services when they are introduced. Monitoring is treated as a
+platform capability rather than as something each application team duplicates
+for itself.
+
 ## Resources created
 
 The Kubernetes resources Terraform creates:
@@ -21,6 +26,46 @@ The Kubernetes resources Terraform creates:
 - Baseline ConfigMap: `platform-baseline-config`
 
 These resources are prepared in advance so the application delivery path can reuse them instead of creating them.
+
+## Shared monitoring direction
+
+The intended production direction for Kubernetes metrics observability is a
+shared platform-level stack per cluster or environment boundary.
+
+Preferred baseline:
+
+- `kube-prometheus-stack`
+- shared Prometheus
+- shared Grafana
+- shared Alertmanager
+- governed onboarding through `ServiceMonitor` or `PodMonitor`
+- SSO-backed Grafana access
+- network isolation and controlled RBAC
+- persistent Grafana storage
+- Thanos added later for long-term retention and global query
+
+This layer should eventually own the shared monitoring platform installation
+and its guardrails, while application teams only expose service metrics and
+register scrape targets.
+
+### Why not duplicate Prometheus and Grafana per application?
+
+The default regulated-enterprise tradeoff is to prefer logical isolation over
+automatic physical duplication.
+
+Shared monitoring is preferred because it:
+
+- reduces duplicated infrastructure and storage
+- reduces dashboard and alert drift
+- centralizes patching and operational hardening
+- improves auditability and governance consistency
+
+Per-application monitoring stacks should be reserved for stricter cases such
+as:
+
+- hard tenancy isolation
+- different retention or residency requirements
+- compliance scopes that require separate platform instances
 
 ## Runtime secret injection
 
