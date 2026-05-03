@@ -678,37 +678,40 @@ For the fuller technology progression and stage-by-stage stack rationale, see
 [tech_stack_evolution.md](./tech_stack_evolution.md).
 
 ### Stage 1 — Governed delivery foundation
-Focus:
-- **Azure AKS**, **Kubernetes**, and **Azure OIDC / federated CI authentication**: governed cloud delivery foundation
-- **Terraform** and **Azure Storage remote backend for Terraform state**: repeatable infrastructure bootstrap
-- **GitHub Actions** and **GitHub**: controlled CI/CD path
-- **Docker** and **Helm**: application packaging and deployment
-- **Java Spring Boot**: internal microservice runtime
-- **PostgreSQL** (Azure and Local): stateful service credibility
-- **Prometheus** and **Grafana**: probes, config validation, observability, and troubleshooting signals
+| Area | Technologies | Purpose |
+| --- | --- | --- |
+| Cloud foundation | Azure AKS, Kubernetes, Azure OIDC / federated CI authentication | Governed cloud delivery foundation |
+| Infrastructure | Terraform, Azure Storage remote backend for Terraform state | Repeatable infrastructure bootstrap |
+| Delivery | GitHub Actions, GitHub | Controlled CI/CD path |
+| Packaging | Docker, Helm | Application packaging and deployment |
+| Application runtime | Java Spring Boot | Internal microservice runtime |
+| Data | PostgreSQL (Azure and Local) | Stateful service credibility |
+| Operations | Prometheus, Grafana | Probes, config validation, observability, and troubleshooting signals |
 
 Outcome:
 An infrastructure team bootstraps the foundation, a platform team provisions a governed Kubernetes environment on top of it, and an application team deploys the Payment Exception Review Status API into it through a controlled path.
 
 ### Stage 2 — Governance, security, and shared-platform hardening
-Planned focus:
-- all Stage 1 technologies, plus:
-- **OpenShift**, **ArgoCD**, **HashiCorp Vault**, and **Ansible**: stronger platform controls, GitOps discipline, and shared-platform standards
-- **OpenShift**, **Kubernetes**, and **HashiCorp Vault**: stronger AppSec controls and secret-aware hardening
-- **Elasticsearch** and **Kibana**: deeper observability with logs and security posture
-- **Linux / Red Hat or Ubuntu**: more enterprise-oriented platform operations
+| Additive scope | Technologies | Purpose |
+| --- | --- | --- |
+| Inheritance | All Stage 1 technologies | Keep the governed delivery base |
+| Governance | OpenShift, ArgoCD, HashiCorp Vault, Ansible | Stronger platform controls, GitOps discipline, and shared-platform standards |
+| Security | OpenShift, Kubernetes, HashiCorp Vault | Stronger AppSec controls and secret-aware hardening |
+| Observability | Elasticsearch, Kibana | Deeper observability with logs and security posture |
+| Operations | Linux / Red Hat or Ubuntu | More enterprise-oriented platform operations |
 
 Outcome:
 The platform evolves from controlled delivery to controlled and secured delivery, with Security and IAM becoming an explicit part of the operating model.
 
 ### Stage 3 — Enterprise hybrid platform expansion
-Planned focus:
-- all Stage 2 technologies, plus:
-- **AWS**, **Azure**, **OpenShift**, and **OnPrem**: multi-cloud hybrid platform direction for stronger production governance
-- **DataDog**, **Thanos**, **Prometheus**, and **Grafana**: advanced observability for SRE / Production Engineering visibility
-- **Okta**: stronger enterprise identity and access alignment
-- **local**, **dev**, and **prod**: multi-environment promotion across hybrid platform boundaries
-- **AWS EKS**, **Azure AKS**, **Okta**, **Ansible**, and **GitHub Actions**: enterprise-grade operations narrative
+| Additive scope | Technologies | Purpose |
+| --- | --- | --- |
+| Inheritance | All Stage 2 technologies | Keep the governed shared-platform base |
+| Hybrid platform | AWS, Azure, OpenShift, OnPrem | Multi-cloud hybrid platform direction for stronger production governance |
+| Observability | DataDog, Thanos, Prometheus, Grafana | Advanced observability for SRE / Production Engineering visibility |
+| Identity | Okta | Stronger enterprise identity and access alignment |
+| Promotion model | local, dev, prod | Multi-environment promotion across hybrid platform boundaries |
+| Operations | AWS EKS, Azure AKS, Okta, Ansible, GitHub Actions | Enterprise-grade operations narrative |
 
 Outcome:
 The platform becomes a broader enterprise platform case aligned with highly regulated environments.
