@@ -22,6 +22,30 @@ The Kubernetes resources Terraform creates:
 
 These resources are prepared in advance so the application delivery path can reuse them instead of creating them.
 
+## Runtime secret injection
+
+The platform flow also injects the runtime database password secret expected by the application Helm chart.
+
+The shared script:
+
+- `scripts/apply_runtime_db_secret.sh`
+
+applies the Kubernetes secret contract:
+
+- Secret name: `payment-review-db`
+- Secret key: `POSTGRES_ADMIN_PASSWORD`
+
+The actual secret value is injected dynamically at runtime:
+
+- locally from `.env` through `POSTGRES_ADMIN_PASSWORD`
+- in GitHub Actions from the `POSTGRES_ADMIN_PASSWORD` repository secret
+
+This keeps the secret contract reproducible and versioned without storing the actual password in:
+
+- Git
+- Helm values files
+- Terraform state
+
 ## Scripts
 
 The `scripts/` directory contains operational helpers for this layer.
@@ -30,6 +54,11 @@ The `scripts/` directory contains operational helpers for this layer.
   Validates that Azure CLI is logged into the expected subscription, refreshes
   AKS credentials, verifies the active `kubectl` context, and confirms basic
   cluster access before Terraform interacts with the cluster.
+
+- `scripts/apply_runtime_db_secret.sh`
+  Applies the runtime Kubernetes secret consumed by the application Helm chart.
+  It uses the stable secret contract in code while injecting the real password
+  dynamically from local environment variables or GitHub Actions secrets.
 
 This script is intentionally documented here in `docs/` while the executable
 logic stays under `scripts/`.

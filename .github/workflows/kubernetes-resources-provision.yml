@@ -26,6 +26,11 @@ jobs:
             EXPECTED_RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
             EXPECTED_AKS_CLUSTER_NAME: ${{ vars.AKS_CLUSTER_NAME }}
             EXPECTED_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+            APP_NAMESPACE: payment-exception-review-stage1
+            DB_PASSWORD_SECRET_NAME: payment-review-db
+            DB_PASSWORD_SECRET_KEY: POSTGRES_ADMIN_PASSWORD
+            DB_PASSWORD_SECRET_VALUE: ${{ secrets.POSTGRES_ADMIN_PASSWORD }}
+
             ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
             ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
             ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -55,6 +60,7 @@ jobs:
                   ARM_CLIENT_ID
                   ARM_TENANT_ID
                   ARM_SUBSCRIPTION_ID
+                  DB_PASSWORD_SECRET_VALUE
                 )
                 for name in "${required_secrets[@]}"; do
                   if [[ -z "${!name:-}" ]]; then
@@ -136,3 +142,8 @@ jobs:
             - name: Terraform Apply
               if: github.event_name == 'workflow_dispatch'
               run: terraform apply -auto-approve  
+
+            - name: Apply runtime database password secret
+              if: github.event_name == 'workflow_dispatch'
+              working-directory: platform/kubernetes-resources
+              run: ./scripts/apply_runtime_db_secret.sh

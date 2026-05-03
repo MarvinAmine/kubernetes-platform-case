@@ -1,0 +1,55 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/marvinamine/payment-exception-review-service
+  pullPolicy: IfNotPresent
+  tag: latest
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  name: app-runtime-sa
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+platform:
+  namespace: payment-exception-review-stage1
+  baselineConfigMapName: platform-baseline-config
+
+application:
+  validationMode: STANDARD
+  escalationEnabled: true
+  riskAmountThreshold: "10000"
+  region: CA-QC
+  infrastructureOwner: infrastructure-team
+
+database:
+  host: replace-me.postgres.database.azure.com
+  port: 5432
+  name: payment_exception_review
+  username: replace-me
+  existingSecret: payment-review-db
+  passwordKey: POSTGRES_ADMIN_PASSWORD
+  sslMode: require
+
+probes:
+  path: /actuator/health
+  initialDelaySeconds: 20
+  periodSeconds: 10
+  failureThreshold: 6
+  timeoutSeconds: 3
+
+resources: {}
+
+podAnnotations: {}
+podLabels: {}
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

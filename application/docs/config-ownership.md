@@ -39,7 +39,14 @@ Stage 1 should still demonstrate a secret usage pattern, even if the service rem
 
 | Secret | Example | Purpose |
 | --- | --- | --- |
-| `PAYMENT_REVIEW_DB_PASSWORD` | `<from Kubernetes Secret>` | PostgreSQL password used by the application |
+| `POSTGRES_ADMIN_PASSWORD` | `<from Kubernetes Secret>` | PostgreSQL password used by the application in Stage 1 |
+
+In the governed Kubernetes path, this secret should be injected by the platform flow into the application namespace rather than embedded in Helm values or committed configuration files.
+
+The Helm chart is expected to reference an existing secret such as:
+
+- Secret name: `payment-review-db`
+- Secret key: `POSTGRES_ADMIN_PASSWORD`
 
 ## Ownership principle
 

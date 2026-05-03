@@ -16,6 +16,7 @@ This folder contains the design artifacts for the Stage 1 application-team servi
 - [Configuration ownership](./config-ownership.md)
 - [Failure scenarios](./failure-scenarios/README.md)
 - [Implementation skeleton](./implementation-skeleton.md)
+- [Helm chart](../payment-exception-review-service/helm/README.md)
 
 ## Purpose
 
@@ -58,3 +59,7 @@ If you want to validate the containerized application path instead of the Maven 
 For the detailed local database and container runtime runbook, see:
 
 - [Local PostgreSQL setup](./local-postgresql.md)
+
+For the Kubernetes deployment packaging and Helm deployment assumptions, see:
+
+- [Helm chart](../payment-exception-review-service/helm/README.md)

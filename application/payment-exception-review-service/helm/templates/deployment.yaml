@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "payment-exception-review-service.fullname" . }}
+  namespace: {{ .Values.platform.namespace }}
+  labels:
+    {{- include "payment-exception-review-service.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "payment-exception-review-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "payment-exception-review-service.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "payment-exception-review-service.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ include "payment-exception-review-service.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://{{ .Values.database.host }}:{{ .Values.database.port }}/{{ .Values.database.name }}?sslmode={{ .Values.database.sslMode }}"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: {{ .Values.database.username | quote }}
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.existingSecret }}
+                  key: {{ .Values.database.passwordKey }}
+            - name: APP_VALIDATION_MODE
+              value: {{ .Values.application.validationMode | quote }}
+            - name: APP_ESCALATION_ENABLED
+              value: {{ .Values.application.escalationEnabled | quote }}
+            - name: APP_RISK_AMOUNT_THRESHOLD
+              value: {{ .Values.application.riskAmountThreshold | quote }}
+            - name: APP_REGION
+              value: {{ .Values.application.region | quote }}
+            - name: APP_INFRASTRUCTURE_OWNER
+              value: {{ .Values.application.infrastructureOwner | quote }}
+            - name: APP_ENVIRONMENT_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.platform.baselineConfigMapName }}
+                  key: ENV_NAME
+            - name: APP_PLATFORM_OWNER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.platform.baselineConfigMapName }}
+                  key: PLATFORM_OWNER
+            - name: APP_LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.platform.baselineConfigMapName }}
+                  key: LOG_LEVEL
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.failureThreshold }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.failureThreshold }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

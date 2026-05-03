@@ -4,6 +4,7 @@ on:
     workflow_dispatch:
 
 permissions:
+    id-token: write
     contents: read
     packages: write
 
@@ -14,10 +15,51 @@ jobs:
         env:
             IMAGE_NAME: payment-exception-review-service
             APP_DIRECTORY: application/payment-exception-review-service
+            APP_NAMESPACE: payment-exception-review-stage1
+            APP_SERVICE_ACCOUNT_NAME: app-runtime-sa
+            PLATFORM_BASELINE_CONFIGMAP_NAME: platform-baseline-config
+            DB_PASSWORD_SECRET_NAME: payment-review-db
+            DB_PASSWORD_SECRET_KEY: POSTGRES_ADMIN_PASSWORD
+            DB_HOST: ${{ vars.POSTGRES_SERVER_NAME }}.postgres.database.azure.com
+            DB_NAME: ${{ vars.POSTGRES_DATABASE_NAME }}
+            DB_USERNAME: ${{ vars.POSTGRES_ADMIN_USERNAME }}
+            ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+            ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+            ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+            EXPECTED_RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
+            EXPECTED_AKS_CLUSTER_NAME: ${{ vars.AKS_CLUSTER_NAME }}
 
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
+
+            - name: Preflight repository configuration
+              run: |
+                required_vars=(
+                    DB_HOST
+                    DB_NAME
+                    DB_USERNAME
+                    EXPECTED_RESOURCE_GROUP
+                    EXPECTED_AKS_CLUSTER_NAME
+                )
+                for name in "${required_vars[@]}"; do
+                    if [[ -z "${!name:-}" ]]; then
+                        echo "ERROR: Missing GitHub repository variable: ${name}."
+                        exit 1
+                    fi
+                done
+                
+                required_secrets=(
+                    ARM_CLIENT_ID
+                    ARM_TENANT_ID
+                    ARM_SUBSCRIPTION_ID
+                )
+                for name in "${required_secrets[@]}"; do
+                    if [[ -z "${!name:-}" ]]; then
+                        echo "ERROR: Missing GitHub repository secret backing: ${name}."
+                        exit 1
+                    fi
+                done
 
             - name: Normalize registry owner
               id: registry
@@ -50,3 +92,58 @@ jobs:
                 push: true
                 tags: ${{ steps.metadata.outputs.tags }}
                 labels: ${{ steps.metadata.outputs.labels }}
+
+            - name: Capture deployment image
+              id: image
+              run: |
+                first_tag="$(echo '${{ steps.metadata.outputs.tags }}' | head -n 1)"
+                echo "image_ref=${first_tag}" >> "${GITHUB_OUTPUT}"
+                echo "image_tag=${first_tag##*:}" >> "${GITHUB_OUTPUT}"
+
+            - name: Azure login with OIDC
+              uses: azure/login@v2
+              with:
+                client-id: ${{ secrets.AZURE_CLIENT_ID }}
+                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+            
+            - name: Get AKS credentials
+              run: |
+                az aks get-credentials \
+                    --resource-group "${EXPECTED_RESOURCE_GROUP}" \
+                    --name "${EXPECTED_AKS_CLUSTER_NAME}" \
+                    --overwrite-existing
+            
+            - name: Setup Helm
+              uses: azure/setup-helm@v4
+
+            - name: Preflight Kubernetes resources
+              run: |
+                kubectl get namespace "${APP_NAMESPACE}"
+                kubectl get serviceaccount "${APP_SERVICE_ACCOUNT_NAME}" -n "${APP_NAMESPACE}"
+                kubectl get configmap "${PLATFORM_BASELINE_CONFIGMAP_NAME}" -n "${APP_NAMESPACE}"
+                kubectl get secret "${DB_PASSWORD_SECRET_NAME}" -n "${APP_NAMESPACE}"
+
+            - name: Helm lint
+              run: helm lint "${APP_DIRECTORY}/helm"
+
+            - name: Deploy application with Helm
+              run: |
+                helm upgrade --install payment-exception-review-service \
+                    "${APP_DIRECTORY}/helm" \
+                    --namespace "${APP_NAMESPACE}" \
+                    --wait \
+                    --timeout 120s \
+                    --set image.repository="ghcr.io/${{ steps.registry.outputs.owner_lc }}/${IMAGE_NAME}" \
+                    --set image.tag="${{ steps.image.outputs.image_tag }}" \
+                    --set database.host="${DB_HOST}" \
+                    --set database.name="${DB_NAME}" \
+                    --set database.username="${DB_USERNAME}" \
+                    --set database.existingSecret="${DB_PASSWORD_SECRET_NAME}" \
+                    --set database.passwordKey="${DB_PASSWORD_SECRET_KEY}"
+            
+            - name: Verify rollout
+              run: |
+                kubectl rollout status deployment/payment-exception-review-service -n "${APP_NAMESPACE}" --timeout=180s
+                kubectl get pods -n "${APP_NAMESPACE}"
+                kubectl get svc -n "${APP_NAMESPACE}"

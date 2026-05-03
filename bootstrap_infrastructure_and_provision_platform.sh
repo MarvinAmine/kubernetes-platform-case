@@ -179,7 +179,7 @@ print_first_run_instructions() {
     echo "TF_BACKEND_STORAGE_ACCOUNT=\"$BACKEND_STORAGE_ACCOUNT\""
     echo "TF_BACKEND_CONTAINER=\"$BACKEND_CONTAINER\""
     echo
-    highlight_line "Confirm these values are also set in GitHub repository variables:"
+    highlight_line "Required GitHub repository variables:"
     echo "TF_BACKEND_RESOURCE_GROUP=$BACKEND_RESOURCE_GROUP"
     echo "TF_BACKEND_STORAGE_ACCOUNT=$BACKEND_STORAGE_ACCOUNT"
     echo "TF_BACKEND_CONTAINER=$BACKEND_CONTAINER"
@@ -189,8 +189,21 @@ print_first_run_instructions() {
     echo "POSTGRES_SERVER_NAME=${POSTGRES_SERVER_NAME:-psql-stage1-platform}"
     echo "POSTGRES_DATABASE_NAME=${POSTGRES_DATABASE_NAME:-payment_exception_review}"
     echo "POSTGRES_ADMIN_USERNAME=${POSTGRES_ADMIN_USERNAME:-pgadminmarvin}"
-    echo "POSTGRES_VERSION=${POSTGRES_VERSION:-16}"
     echo "POSTGRES_SKU_NAME=${POSTGRES_SKU_NAME:-Standard_B1ms}"
+    echo
+    highlight_line "Recommended GitHub repository variables for full Azure and networking bootstrap:"
+    echo "VNET_NAME=${VNET_NAME:-vnet-stage1-platform}"
+    echo "VNET_ADDRESS_SPACE=${VNET_ADDRESS_SPACE:-10.20.0.0/16}"
+    echo "AKS_SUBNET_NAME=${AKS_SUBNET_NAME:-snet-stage1-aks}"
+    echo "AKS_SUBNET_PREFIX=${AKS_SUBNET_PREFIX:-10.20.1.0/24}"
+    echo "POSTGRES_SUBNET_NAME=${POSTGRES_SUBNET_NAME:-snet-stage1-postgres}"
+    echo "POSTGRES_SUBNET_PREFIX=${POSTGRES_SUBNET_PREFIX:-10.20.2.0/28}"
+    echo "POSTGRES_PRIVATE_DNS_ZONE_NAME=${POSTGRES_PRIVATE_DNS_ZONE_NAME:-stage1-platform.postgres.database.azure.com}"
+    echo "POSTGRES_PRIVATE_DNS_ZONE_LINK_NAME=${POSTGRES_PRIVATE_DNS_ZONE_LINK_NAME:-stage1-platform-postgres-dns-link}"
+    echo
+    highlight_line "Optional tuning variables:"
+    echo "VM_SIZE=${VM_SIZE:-Standard_D2as_v6}"
+    echo "POSTGRES_VERSION=${POSTGRES_VERSION:-16}"
     echo "POSTGRES_STORAGE_MB=${POSTGRES_STORAGE_MB:-32768}"
     echo "POSTGRES_BACKUP_RETENTION_DAYS=${POSTGRES_BACKUP_RETENTION_DAYS:-7}"
     echo "POSTGRES_ZONE=${POSTGRES_ZONE:-1}"
@@ -200,6 +213,12 @@ print_first_run_instructions() {
     echo "AZURE_CLIENT_ID=${RESOLVED_AZURE_CLIENT_ID}"
     echo "AZURE_TENANT_ID=${RESOLVED_AZURE_TENANT_ID}"
     echo "POSTGRES_ADMIN_PASSWORD=<set this as a GitHub secret>"
+    echo
+    highlight_line "Secret contract note:"
+    echo "- POSTGRES_ADMIN_PASSWORD is reused in Stage 1 for:"
+    echo "  - Azure PostgreSQL provisioning"
+    echo "  - the GitHub repository secret POSTGRES_ADMIN_PASSWORD"
+    echo "  - the platform-injected Kubernetes secret payment-review-db / POSTGRES_ADMIN_PASSWORD"
     echo
     highlight_line "Then load the environment:"
     echo "set -a"
@@ -222,8 +241,9 @@ print_manual_configuration_block() {
     echo
     highlight_line "Required:"
     echo "- Update $ENV_FILE manually"
-    echo "- Set the GitHub repository variables"
-    echo "- Ensure GitHub repository secrets exist"
+    echo "- Set the required GitHub repository variables"
+    echo "- Set the recommended networking variables if you want full bootstrap from GitHub Actions"
+    echo "- Ensure the required GitHub repository secrets exist"
     echo
     highlight_line "Optional now:"
     echo "- Continue local provisioning if you only want local bootstrap"
@@ -265,6 +285,10 @@ run_kubernetes_provisioning() {
         run_command_with_context "Kubernetes resources provisioning" \
             "$SCRIPT_DIR/platform/kubernetes-resources/apply_kubernetes_resources.sh"
     fi
+
+    log_info "Applying the platform-managed runtime database password secret..."
+    run_command_with_context "Runtime database password secret injection" \
+        "$SCRIPT_DIR/platform/kubernetes-resources/scripts/apply_runtime_db_secret.sh"
 }
 
 run_oidc_setup() {
