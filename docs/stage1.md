@@ -513,6 +513,4 @@ You should frame it as:
 - **Terraform + Helm + GitHub Actions**
 - **observability and troubleshooting-focused**
 
-Not as a “toy banking simulator.”
-
 [NEXT: Stage 2 — Governed shared platform with enterprise Kubernetes features ->](./stage2.md)

@@ -112,6 +112,18 @@ This stage uses a clear 3-team model:
 For the detailed responsibilities and role boundaries inside each team, see
 [project_team_ownership_model.md](./project_team_ownership_model.md).
 
+![Intrastructure bootstrap path](/assets/infrastructure_bootstrap_path.png)
+![Platform provision path](/assets/platform_provision_path.png)
+![Application delivery path](/assets/app_delivery_path.png)
+
+The operating model foundation delivers:
+
+- **governed AKS delivery foundation**
+- **postgreSQL-backed internal payment review service**
+- **controlled GitHub Actions CI/CD path**
+- **observable runtime path** through health checks, configuration validation, and Grafana Prometheus metrics
+- **documented rollout and misconfiguration failure scenarios** to demonstrate realistic incident diagnosis
+
 ## Three-Stage Platform Evolution
 
 For the fuller technology progression and stage-by-stage stack rationale, see
@@ -155,18 +167,6 @@ The platform evolves from controlled delivery to controlled and secured delivery
 
 Outcome:
 The platform becomes a broader enterprise platform case aligned with highly regulated environments.
-
-![Intrastructure bootstrap path](/assets/infrastructure_bootstrap_path.png)
-![Platform provision path](/assets/platform_provision_path.png)
-![Application delivery path](/assets/app_delivery_path.png)
-
-The operating model foundation delivers:
-
-- **governed AKS delivery foundation**
-- **postgreSQL-backed internal payment review service**
-- **controlled GitHub Actions CI/CD path**
-- **observable runtime path** through health checks, configuration validation, and Grafana Prometheus metrics
-- **documented rollout and misconfiguration failure scenarios** to demonstrate realistic incident diagnosis
 
 ### Observability model
 
@@ -715,10 +715,5 @@ kubernetes-platform-case/
 - application Secret usage pattern
 - application rollout behavior
 - application runbook notes
- 
-## 9. THREE-STAGE PLATFORM EVOLUTION
-
-For the fuller technology progression and stage-by-stage stack rationale, see
-[tech_stack_evolution.md](./tech_stack_evolution.md).
 
 [NEXT: Read the detailed Stage 1 document ->](./stage1.md)
