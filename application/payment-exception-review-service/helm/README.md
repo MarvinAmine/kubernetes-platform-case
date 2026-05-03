@@ -178,6 +178,20 @@ Expected results:
 - the service is exposed on `80` inside the cluster but the application container still listens on `8080`
 - a wrong review id such as `payexc-10045` returns an application error because the seeded row is `payexc-100045`
 
+## App destroy workflow
+
+The repository also includes a dedicated manual workflow:
+
+- `.github/workflows/app-destroy.yml`
+
+Its purpose is to uninstall only the Helm release from the platform-managed namespace without destroying the wider platform or Azure foundation.
+
+This keeps application teardown explicit and separate from infrastructure teardown.
+
+Validated workflow example:
+
+![GitHub Actions Helm uninstall](../../../assets/github_helm_uninstall.png)
+
 ## Values ownership
 
 The chart follows the Stage 1 operating model:

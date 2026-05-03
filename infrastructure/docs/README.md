@@ -217,6 +217,31 @@ platform-baseline-config   3      42s
 ![alt text](../../assets/OIDC_secrets.png)
 ![alt text](../../assets/github_actions_variables.png)
 
+## Full teardown flow
+
+The repository root script:
+
+- `./destroy_infrastructure_and_platform.sh`
+
+now performs the reverse dependency order explicitly:
+
+1. uninstall the application Helm release
+2. remove the runtime Kubernetes database secret
+3. destroy platform Kubernetes resources
+4. destroy Azure infrastructure
+5. destroy the Terraform backend
+6. optionally destroy Azure OIDC
+
+This was validated successfully as a full local teardown path.
+
+Teardown flow example:
+
+![Destroy infrastructure and platform script - phase 1](../../assets/destroy_infrastructure_and_platform_script_1.png)
+
+Successful completion example:
+
+![Destroy infrastructure and platform script - completed](../../assets/destroy_infrastructure_and_platform_script_2_completed_in_11_min.png)
+
 ## Troubleshooting
 
 Infrastructure and platform troubleshooting runbooks now live under:
