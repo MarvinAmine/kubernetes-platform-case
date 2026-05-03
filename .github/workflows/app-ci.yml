@@ -3,11 +3,19 @@ name: App CI
 on:
     push:
         paths:
-            - 'application/payment-exception-review-service/**'
+            - 'application/payment-exception-review-service/src/**'
+            - 'application/payment-exception-review-service/.mvn/**'
+            - 'application/payment-exception-review-service/mvnw'
+            - 'application/payment-exception-review-service/mvnw.cmd'
+            - 'application/payment-exception-review-service/pom.xml'
             - '.github/workflows/app-ci.yml'
     pull_request:
         paths:
-            - 'application/payment-exception-review-service/**'
+            - 'application/payment-exception-review-service/src/**'
+            - 'application/payment-exception-review-service/.mvn/**'
+            - 'application/payment-exception-review-service/mvnw'
+            - 'application/payment-exception-review-service/mvnw.cmd'
+            - 'application/payment-exception-review-service/pom.xml'
             - '.github/workflows/app-ci.yml'
     workflow_dispatch:
 
