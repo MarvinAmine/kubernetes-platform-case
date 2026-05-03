@@ -70,18 +70,23 @@ main() {
         log_info "Verbose mode enabled by default to help debug the teardown flow."
     fi
 
+    print_header "Application"
+    log_info "STEP 1/5 - Uninstalling the application Helm release..."
+    run_child_step "Application Helm teardown" \
+        "$SCRIPT_DIR/application/payment-exception-review-service/destroy_app_with_helm.sh"
+
     print_header "Kubernetes Resources"
-    log_info "STEP 1/4 - Destroying Kubernetes resources..."
+    log_info "STEP 2/5 - Destroying Kubernetes resources..."
     run_child_step "Kubernetes resources destruction" \
         "$SCRIPT_DIR/platform/kubernetes-resources/destroy_kubernetes_resources.sh"
 
     print_header "Azure Infrastructure"
-    log_info "STEP 2/4 - Destroying Azure infrastructure (AKS + PostgreSQL)..."
+    log_info "STEP 3/5 - Destroying Azure infrastructure (AKS + PostgreSQL)..."
     run_child_step "Azure infrastructure destruction (AKS + PostgreSQL)" \
         "$SCRIPT_DIR/infrastructure/azure/destroy_azure_resources.sh"
 
     print_header "Terraform Backend"
-    log_info "STEP 3/4 - Destroying the remote Terraform backend..."
+    log_info "STEP 4/5 - Destroying the remote Terraform backend..."
     run_child_step "Remote Terraform backend destruction" \
         "$SCRIPT_DIR/infrastructure/terraform-backend/destroy_remote_backend.sh"
 
@@ -91,11 +96,11 @@ main() {
 
     if [[ "$DESTROY_OIDC" == "yes" ]]; then
         print_header "Azure OIDC"
-        log_info "STEP 4/4 - Destroying Azure OIDC for GitHub..."
+        log_info "STEP 5/5 - Destroying Azure OIDC for GitHub..."
         run_child_step "Azure OIDC destruction" \
             "$SCRIPT_DIR/infrastructure/azure/oidc/destroy_az_oidc.sh"
     else
-        log_info "STEP 4/4 - Skipping Azure OIDC federation destruction."
+        log_info "STEP 5/5 - Skipping Azure OIDC federation destruction."
     fi
 
     print_header "Completed"

@@ -105,6 +105,79 @@ Before `app-deploy.yml` runs a real deployment, confirm:
   - `AZURE_SUBSCRIPTION_ID`
   - `POSTGRES_ADMIN_PASSWORD`
 
+## Post-deploy verification
+
+After `app-deploy.yml` succeeds, verify the deployed workload from a workstation with AKS access.
+
+Deployment workflow example:
+
+![GitHub Actions app deploy with Helm](../../../assets/github_actions_deploy_with_helm.png)
+
+### 1. Check namespace and workload objects
+
+```bash
+kubectl get ns
+kubectl get deploy,rs,pods,svc -n payment-exception-review-stage1
+```
+
+Expected signals:
+
+- namespace `payment-exception-review-stage1` exists
+- deployment `payment-exception-review-service` is `READY 1/1`
+- pod is `Running`
+- service `payment-exception-review-service` exists
+
+### 2. Check application logs
+
+```bash
+kubectl -n payment-exception-review-stage1 logs deployment/payment-exception-review-service
+```
+
+Expected log signals:
+
+- datasource startup completes
+- Flyway validates and applies migrations
+- Tomcat starts on port `8080`
+- no secret or database connectivity errors appear
+
+### 3. Access the service locally through port-forward
+
+The chart creates a `ClusterIP` service, so the application is not directly reachable from your laptop.
+
+You must port-forward before calling `localhost`:
+
+```bash
+kubectl -n payment-exception-review-stage1 port-forward svc/payment-exception-review-service 8080:80
+```
+
+Port-forward example:
+
+![Kubernetes port-forward for the Helm-deployed app](../../../assets/kubernetes_port_fowarding_for_helm_app.png)
+
+Then from another terminal:
+
+```bash
+curl http://localhost:8080/actuator/health
+curl http://localhost:8080/api/payment-exceptions/service-status
+curl http://localhost:8080/api/payment-exceptions/payexc-100045/status
+```
+
+Port-forward plus curl verification example:
+
+![Kubernetes port-forward with curl validation for the Helm-deployed app](../../../assets/kubernetes_port_fowarding_for_helm_app_curls.png)
+
+Expected results:
+
+- `/actuator/health` returns `UP`
+- `/api/payment-exceptions/service-status` returns runtime metadata
+- `/api/payment-exceptions/payexc-100045/status` returns the seeded review with `PENDING_REVIEW`
+
+### 4. Common verification pitfalls
+
+- `curl http://localhost:8080/...` fails if `kubectl port-forward` is not running
+- the service is exposed on `80` inside the cluster but the application container still listens on `8080`
+- a wrong review id such as `payexc-10045` returns an application error because the seeded row is `payexc-100045`
+
 ## Values ownership
 
 The chart follows the Stage 1 operating model:

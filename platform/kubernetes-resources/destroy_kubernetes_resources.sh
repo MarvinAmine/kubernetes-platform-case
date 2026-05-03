@@ -44,6 +44,10 @@ log_info "Validating access to the expected AKS cluster..."
 run_command_with_context "AKS cluster access validated" \
     "$SCRIPT_DIR/scripts/validate-cluster-access.sh"
 
+log_info "Removing runtime database password secret..."
+run_command_with_context "Runtime database password secret removed" \
+    "$SCRIPT_DIR/scripts/remove_runtime_db_secret.sh"
+
 cd "$SCRIPT_DIR/terraform"
 
 log_info "Initializing Kubernetes Terraform layer..."
