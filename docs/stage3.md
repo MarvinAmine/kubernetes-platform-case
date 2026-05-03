@@ -1,5 +1,7 @@
 ## Stage 3 analysis — Enterprise-ready hybrid governed platform
 
+[MAIN DOC: Stage 1 of 3 - Governed AKS delivery foundation for an internal payment review service ->](./README.md)
+
 Stage 3 extends the governed platform beyond a single cloud deployment into an enterprise-ready operating model able to support hybrid environments, stronger identity integration, broader observability strategy, and cross-environment standardization expected in highly regulated organizations.
 
 The objective is no longer only to deliver and govern workloads safely. It is to demonstrate that the same platform model can remain secure, observable, supportable, and standardized across Azure, AWS, and on-prem realities while preserving clear operational boundaries and controlled delivery practices.
@@ -147,3 +149,5 @@ This stage is meant to show a platform that can:
 - **Stage 1** established delivery credibility
 - **Stage 2** established governance and shared-platform credibility
 - **Stage 3** establishes enterprise architecture credibility across hybrid cloud and on-prem environments
+
+[MAIN DOC: Return to the main Stage 1 platform document ->](./README.md)

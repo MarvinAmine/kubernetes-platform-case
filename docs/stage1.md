@@ -1,5 +1,7 @@
 # Stage 1 — Governed Platform Bootstrap and Controlled Delivery of a Regulated Internal Service
 
+[MAIN DOC: Stage 1 of 3 - Governed AKS delivery foundation for an internal payment review service ->](./README.md)
+
 ## Stage 1 title
 
 **Stage 1 — Platform Bootstrapping and Controlled Delivery of a Regulated Internal Service**
@@ -512,3 +514,5 @@ You should frame it as:
 - **observability and troubleshooting-focused**
 
 Not as a “toy banking simulator.”
+
+[NEXT: Stage 2 — Governed shared platform with enterprise Kubernetes features ->](./stage2.md)

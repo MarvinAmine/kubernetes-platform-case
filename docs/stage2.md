@@ -1,5 +1,7 @@
 ## Stage 2 analysis — Governed shared platform with enterprise Kubernetes features
 
+[MAIN DOC: Stage 1 of 3 - Governed AKS delivery foundation for an internal payment review service ->](./README.md)
+
 Stage 2 evolves the Stage 1 delivery foundation into a governed shared platform model designed for enterprise Kubernetes operations in highly regulated environments.
 
 The main objective is no longer only to prove that one internal service can be deployed safely. It is to demonstrate how a platform can support multiple teams, multiple environments, stronger change controls, centralized secrets handling, and safer promotion practices while keeping delivery repeatable and operationally supportable.
@@ -143,3 +145,5 @@ This stage is meant to show a platform that can:
 - **Stage 1** established delivery credibility
 - **Stage 2** establishes governance and shared-platform credibility, with Security and IAM becoming explicit in the operating model
 - **Stage 3** will extend this model toward enterprise-ready hybrid cloud and on-prem platform architecture
+
+[NEXT: Stage 3 — Enterprise-ready hybrid governed platform ->](./stage3.md)

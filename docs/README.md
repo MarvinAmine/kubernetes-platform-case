@@ -112,6 +112,50 @@ This stage uses a clear 3-team model:
 For the detailed responsibilities and role boundaries inside each team, see
 [project_team_ownership_model.md](./project_team_ownership_model.md).
 
+## Three-Stage Platform Evolution
+
+For the fuller technology progression and stage-by-stage stack rationale, see
+[tech_stack_evolution.md](./tech_stack_evolution.md).
+
+### Stage 1 — Governed delivery foundation
+| Area | Technologies | Purpose |
+| --- | --- | --- |
+| Cloud foundation | Azure AKS, Kubernetes, Azure OIDC / federated CI authentication | Governed cloud delivery foundation |
+| Infrastructure | Terraform, Azure Storage remote backend for Terraform state | Repeatable infrastructure bootstrap |
+| Delivery | GitHub Actions, GitHub | Controlled CI/CD path |
+| Packaging | Docker, Helm | Application packaging and deployment |
+| Application runtime | Java Spring Boot | Internal microservice runtime |
+| Data | PostgreSQL (Azure and Local) | Stateful service credibility |
+| Operations | Prometheus, Grafana | Probes, config validation, observability, and troubleshooting signals |
+
+Outcome:
+An infrastructure team bootstraps the foundation, a platform team provisions a governed Kubernetes environment on top of it, and an application team deploys the Payment Exception Review Status API into it through a controlled path.
+
+### Stage 2 — Governance, security, and shared-platform hardening
+| Additive scope | Technologies | Purpose |
+| --- | --- | --- |
+| Inheritance | All Stage 1 technologies | Keep the governed delivery base |
+| Governance | OpenShift, ArgoCD, HashiCorp Vault, Ansible | Stronger platform controls, GitOps discipline, and shared-platform standards |
+| Security | OpenShift, Kubernetes, HashiCorp Vault | Stronger AppSec controls and secret-aware hardening |
+| Observability | Elasticsearch, Kibana | Deeper observability with logs and security posture |
+| Operations | Linux / Red Hat or Ubuntu | More enterprise-oriented platform operations |
+
+Outcome:
+The platform evolves from controlled delivery to controlled and secured delivery, with Security and IAM becoming an explicit part of the operating model.
+
+### Stage 3 — Enterprise hybrid platform expansion
+| Additive scope | Technologies | Purpose |
+| --- | --- | --- |
+| Inheritance | All Stage 2 technologies | Keep the governed shared-platform base |
+| Hybrid platform | AWS, Azure, OpenShift, OnPrem | Multi-cloud hybrid platform direction for stronger production governance |
+| Observability | DataDog, Thanos, Prometheus, Grafana | Advanced observability for SRE / Production Engineering visibility |
+| Identity | Okta | Stronger enterprise identity and access alignment |
+| Promotion model | local, dev, prod | Multi-environment promotion across hybrid platform boundaries |
+| Operations | AWS EKS, Azure AKS, Okta, Ansible, GitHub Actions | Enterprise-grade operations narrative |
+
+Outcome:
+The platform becomes a broader enterprise platform case aligned with highly regulated environments.
+
 ![Intrastructure bootstrap path](/assets/infrastructure_bootstrap_path.png)
 ![Platform provision path](/assets/platform_provision_path.png)
 ![Application delivery path](/assets/app_delivery_path.png)
@@ -677,41 +721,4 @@ kubernetes-platform-case/
 For the fuller technology progression and stage-by-stage stack rationale, see
 [tech_stack_evolution.md](./tech_stack_evolution.md).
 
-### Stage 1 — Governed delivery foundation
-| Area | Technologies | Purpose |
-| --- | --- | --- |
-| Cloud foundation | Azure AKS, Kubernetes, Azure OIDC / federated CI authentication | Governed cloud delivery foundation |
-| Infrastructure | Terraform, Azure Storage remote backend for Terraform state | Repeatable infrastructure bootstrap |
-| Delivery | GitHub Actions, GitHub | Controlled CI/CD path |
-| Packaging | Docker, Helm | Application packaging and deployment |
-| Application runtime | Java Spring Boot | Internal microservice runtime |
-| Data | PostgreSQL (Azure and Local) | Stateful service credibility |
-| Operations | Prometheus, Grafana | Probes, config validation, observability, and troubleshooting signals |
-
-Outcome:
-An infrastructure team bootstraps the foundation, a platform team provisions a governed Kubernetes environment on top of it, and an application team deploys the Payment Exception Review Status API into it through a controlled path.
-
-### Stage 2 — Governance, security, and shared-platform hardening
-| Additive scope | Technologies | Purpose |
-| --- | --- | --- |
-| Inheritance | All Stage 1 technologies | Keep the governed delivery base |
-| Governance | OpenShift, ArgoCD, HashiCorp Vault, Ansible | Stronger platform controls, GitOps discipline, and shared-platform standards |
-| Security | OpenShift, Kubernetes, HashiCorp Vault | Stronger AppSec controls and secret-aware hardening |
-| Observability | Elasticsearch, Kibana | Deeper observability with logs and security posture |
-| Operations | Linux / Red Hat or Ubuntu | More enterprise-oriented platform operations |
-
-Outcome:
-The platform evolves from controlled delivery to controlled and secured delivery, with Security and IAM becoming an explicit part of the operating model.
-
-### Stage 3 — Enterprise hybrid platform expansion
-| Additive scope | Technologies | Purpose |
-| --- | --- | --- |
-| Inheritance | All Stage 2 technologies | Keep the governed shared-platform base |
-| Hybrid platform | AWS, Azure, OpenShift, OnPrem | Multi-cloud hybrid platform direction for stronger production governance |
-| Observability | DataDog, Thanos, Prometheus, Grafana | Advanced observability for SRE / Production Engineering visibility |
-| Identity | Okta | Stronger enterprise identity and access alignment |
-| Promotion model | local, dev, prod | Multi-environment promotion across hybrid platform boundaries |
-| Operations | AWS EKS, Azure AKS, Okta, Ansible, GitHub Actions | Enterprise-grade operations narrative |
-
-Outcome:
-The platform becomes a broader enterprise platform case aligned with highly regulated environments.
+[NEXT: Read the detailed Stage 1 document ->](./stage1.md)
