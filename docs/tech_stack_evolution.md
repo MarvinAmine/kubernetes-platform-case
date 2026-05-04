@@ -95,6 +95,7 @@ Show that the platform can evolve into an enterprise-ready model with stronger i
 * GitHub Actions
 * ArgoCD
 * Terraform
+* Terragrunt
 * HashiCorp Vault
 * Okta
 * Docker
@@ -120,6 +121,7 @@ Show that the platform can evolve into an enterprise-ready model with stronger i
 * enterprise identity and access model
 * stronger observability layering
 * platform standardization across environments
+* reducing repeated Terraform stack wiring as the platform grows
 * resilient delivery model
 * enterprise operating model maturity
 * large-scale governance and supportability

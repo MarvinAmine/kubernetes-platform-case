@@ -173,6 +173,7 @@ The platform evolves from controlled delivery to controlled and secured delivery
 | --- | --- | --- |
 | Inheritance | All Stage 2 technologies | Keep the governed shared-platform base |
 | Hybrid platform | AWS, Azure, OpenShift, OnPrem | Multi-cloud hybrid platform direction for stronger production governance |
+| Terraform orchestration | Terragrunt | Reduce repeated Terraform structure and coordinate more complex multi-environment stacks |
 | Observability | DataDog, Thanos, Prometheus, Grafana | Advanced observability for SRE / Production Engineering visibility |
 | Identity | Okta | Stronger enterprise identity and access alignment |
 | Promotion model | local, dev, prod | Multi-environment promotion across hybrid platform boundaries |

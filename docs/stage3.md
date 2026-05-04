@@ -53,6 +53,7 @@ At this stage, the platform is no longer presented as a single-cluster implement
 
 - **OpenShift** represents enterprise Kubernetes operational maturity and supportability, especially relevant for stricter enterprise or on-prem realities
 - **Terraform** continues to support reusable and standardized infrastructure patterns across environments
+- **Terragrunt** becomes a credible later-stage candidate when the repository grows into more environments, more repeated Terraform roots, and more cross-stack dependency coordination
 - **GitHub Actions** continues to build and package artifacts in a controlled CI path
 - **ArgoCD** continues to support GitOps-style reconciliation and controlled application delivery
 - **Vault** strengthens centralized secrets governance across broader platform scope

@@ -198,6 +198,8 @@ Strong answer:
 - add Kubernetes-managed Grafana dashboards
 - extend alerting
 - harden internal access patterns in later stages
+- consider Terragrunt in the later hybrid and multi-environment stages if the
+  Terraform stack count and shared wiring become noisy
 - continue toward stronger GitOps, secrets management, and hybrid-platform
   maturity
 
