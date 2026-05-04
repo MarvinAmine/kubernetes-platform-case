@@ -143,6 +143,10 @@ logic stays under `scripts/`.
   Platform-owned GitHub Actions workflows for installing and uninstalling the
   shared observability stack in the AKS dev environment.
 
+Workflow example:
+
+![GitHub Actions provision Prometheus and Grafana](../../assets/github_actions_provision_prometheus_grafana.png)
+
 ## Shared observability installation
 
 The platform-owned installation path is:

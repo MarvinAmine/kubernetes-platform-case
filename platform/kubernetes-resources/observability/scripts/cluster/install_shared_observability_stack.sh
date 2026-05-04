@@ -8,6 +8,7 @@ MONITORING_NAMESPACE="${MONITORING_NAMESPACE:-monitoring}"
 RELEASE_NAME="${RELEASE_NAME:-kube-prometheus-stack}"
 GRAFANA_ADMIN_USER="${GRAFANA_ADMIN_USER:-admin}"
 GRAFANA_ADMIN_PASSWORD="${GRAFANA_ADMIN_PASSWORD:-}"
+OBSERVABILITY_HELM_TIMEOUT="${OBSERVABILITY_HELM_TIMEOUT:-600s}"
 VALUES_FILE_PROMETHEUS="${OBSERVABILITY_ROOT}/prometheus/kube-prometheus-stack-prometheus-values.yaml"
 VALUES_FILE_GRAFANA="${OBSERVABILITY_ROOT}/grafana/kube-prometheus-stack-grafana-values.yaml"
 VALUES_FILE_ALERTMANAGER="${OBSERVABILITY_ROOT}/alertmanager/kube-prometheus-stack-alertmanager-values.yaml"
@@ -45,7 +46,7 @@ helm upgrade --install "$RELEASE_NAME" \
     -f "$VALUES_FILE_ALERTMANAGER" \
     -f "$TEMP_VALUES" \
     --wait \
-    --timeout 180s
+    --timeout "$OBSERVABILITY_HELM_TIMEOUT"
 
 echo 
 echo "Grafana:"

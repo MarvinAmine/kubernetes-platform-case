@@ -72,6 +72,17 @@ such as:
 - stronger GitOps alignment for governed promotions
 - platform guardrails that improve supportability in regulated environments
 
+This is also the stage where the earlier Stage 1 internal access direction can
+become more concrete through work such as:
+
+- stronger internal ingress patterns
+- more explicit private DNS integration
+- clearer internal service exposure standards
+- more governed internal application entry paths
+
+For the preserved future-state access direction behind those items, see
+[internal-access-future-direction.md](./internal-access-future-direction.md).
+
 These are the features that justify OpenShift in Stage 2.
 
 ### Features intentionally deferred to Stage 3

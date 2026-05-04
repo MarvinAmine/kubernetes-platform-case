@@ -119,6 +119,10 @@ It does not yet represent a fully formalized multi-environment enterprise model.
 
 That stronger environment separation is introduced in later stages.
 
+For the Kubernetes portability boundary behind the local, AKS, and later
+multi-environment resource model, see
+[kubernetes-portability.md](./kubernetes-portability.md).
+
 ### In scope for Stage 1
 
 - AKS cluster already created

@@ -21,12 +21,12 @@ flowchart TB
   end
 
   subgraph ACCESS["Internal Access Path"]
-    CONSUMER["Internal Consumer"]
-    CORP["Corporate Network / VPN"]
-    DNS["Private DNS"]
+    DEV["Internal Dev"]
+    KUBEACCESS["Azure CLI / kubectl context"]
+    PORTFWD["kubectl port-forward"]
 
-    CONSUMER --> CORP
-    CORP --> DNS
+    DEV --> KUBEACCESS
+    KUBEACCESS --> PORTFWD
   end
 
   %% =========================
@@ -36,30 +36,25 @@ flowchart TB
   subgraph AZURE["Azure Dev Environment"]
     direction TB
 
-    subgraph RG_AKS["Resource Group:rg-stage1-aks"]
+    subgraph RG_AKS["RG: rg-stage1-aks"]
       direction TB
 
       subgraph VNET["Private Virtual Network"]
         direction LR
 
-        APPGW["Internal App Gateway"]
-
         subgraph AKS["AKS Platform"]
           direction TB
           API["Java Spring Boot Payment Exception API"]
+          OBS["Prometheus / Grafana"]
         end
 
         POSTGRES["Azure PostgreSQL"]
 
-        OBS["Prometheus / Grafana"]
-
-        APPGW --> AKS
         AKS --> POSTGRES
-        AKS --> OBS
       end
     end
 
-    subgraph RG_TFSTATE["Resource Group:rg-stage1-tfstate"]
+    subgraph RG_TFSTATE["RG: rg-stage1-tfstate"]
       direction TB
 
       subgraph STORAGE["Azure Storage Account"]
@@ -71,9 +66,9 @@ flowchart TB
   %% =========================
   %% Path Entry Points
   %% =========================
-
-  DELIVERY_PATH ----> AZURE
-  DNS --> APPGW
+  
+  PORTFWD --> AKS
+  DELIVERY_PATH ---> AZURE
 
   %% =========================
   %% Styling
@@ -93,12 +88,16 @@ flowchart TB
   class VNET vnet;
   class AKS aks;
   class GH,GHA,ENTRA,DELIVERY_PATH delivery;
-  class CONSUMER,CORP,DNS,APPGW access;
+  class DEV,KUBEACCESS,PORTFWD access;
   class POSTGRES,STORAGE,TFSTATE data;
   class OBS obs;
 ```
 
 ## Detailed version:
+
+For a shorter stakeholder-facing version of this project, see
+[executive-summary.md](./executive-summary.md).
+
 Production-oriented Kubernetes delivery foundation for highly regulated environments, where internal service delivery is often slowed by infrastructure setup, deployment standards, observability requirements, and operational risk.
 
 Stage 1 focuses on one expensive problem: turning governed internal service delivery from a fragile, manual, multi-team effort into a repeatable operating model.
@@ -123,6 +122,20 @@ The operating model foundation delivers:
 - **controlled GitHub Actions CI/CD path**
 - **observable runtime path** through health checks, configuration validation, and Grafana Prometheus metrics
 - **documented rollout and misconfiguration failure scenarios** to demonstrate realistic incident diagnosis
+
+This repository demonstrates repeatable infrastructure provisioning, controlled
+application delivery, clear ownership boundaries between infrastructure,
+platform, and application teams, and enough observability to support recurring
+troubleshooting scenarios. It is built as a hands-on platform case aligned
+with **Platform Engineer, DevOps, SRE, and CI/CD platform roles** in regulated
+environments.
+
+GitHub Actions workflow landscape:
+
+![GitHub Actions workflow overview](../assets/github_actions_all_workflows.png)
+
+For root-level platform-case decisions, see
+[Architecture Decision Records](./adrs/README.md).
 
 ## Three-Stage Platform Evolution
 
@@ -168,56 +181,6 @@ The platform evolves from controlled delivery to controlled and secured delivery
 Outcome:
 The platform becomes a broader enterprise platform case aligned with highly regulated environments.
 
-### Observability model
-
-The observability direction is a shared platform-level monitoring stack per
-cluster or environment boundary, not a separate monitoring stack per
-application.
-
-The intended production model is:
-
-- shared `kube-prometheus-stack`
-- Grafana behind SSO
-- network isolation around monitoring components and scrape surfaces
-- controlled RBAC
-- persistent Grafana
-- governed Alertmanager routing
-- Thanos for long-term retention and global query when broader enterprise scale
-  requires it
-
-This is the better default for regulated fintech-style environments because it
-preserves strong governance while avoiding unnecessary duplication of
-Prometheus, Grafana, Alertmanager, dashboards, upgrade work, and storage. A
-separate monitoring stack per application is treated as an exception that
-should be justified by a hard compliance, tenancy, or data-separation
-requirement.
-
-What this demonstrates:
-
-- repeatable infrastructure provisioning and controlled application delivery
-- clear separation between infrastructure, platform, and application ownership
-- support for stateful services with database dependencies
-- enough observability to support safe operations and recurring troubleshooting scenarios
-- hands-on experience aligned with **Platform Engineer, DevOps, SRE, and CI/CD platform roles** in regulated environments
-
-> **Important:** This delivery foundation uses a **remote Terraform backend in Azure Storage** so local executions and CI/CD pipelines share the same infrastructure state instead of relying on local Terraform state files.
-
-This foundation later evolves toward stronger GitOps, security, secrets management, policy enforcement, and hybrid-cloud platform credibility.
-
-For the cross-stage team structure used in this repository, see [project_team_ownership_model.md](./project_team_ownership_model.md).
-
-For a reusable non-project-specific reference, see [generic_team_ownership_model.md](./generic_team_ownership_model.md).
-
-For root-level platform-case decisions, see [Architecture Decision Records](./adrs/README.md).
-
-For the observability boundary between the current shared monitoring baseline
-and the later enterprise direction, see
-[observability-tradeoffs.md](./observability-tradeoffs.md).
-
-For a local-only validation path that avoids Azure cost and provisioning time,
-see [local-platform-and-app-validation.md](./local-platform-and-app-validation.md).
-
-
 ## 0. HOW TO USE IT?
 
 ### 0.1 Setup the environment file
@@ -254,9 +217,14 @@ Provision the full platform locally:
 
 See screen shoot example here: [provision_platform_screenshoots.md](infrastructure/docs/provision_platform_screenshoots.md)
 
+For a local-only validation path that avoids Azure cost and provisioning time,
+see [local-platform-and-app-validation.md](./local-platform-and-app-validation.md).
+
 ### 0.3 Complete the environment values and GitHub configuration
 
 On the first run, `bootstrap_infrastructure_and_provision_platform.sh` bootstraps the remote Terraform backend and prints the backend values that must be copied into `.env`.
+
+> **Important:** This delivery foundation uses a **remote Terraform backend in Azure Storage** so local executions and CI/CD pipelines share the same infrastructure state instead of relying on local Terraform state files.
 
 Update `.env` with the real backend values described in:
 
@@ -289,7 +257,38 @@ When changes are pushed to the tracked infrastructure paths, GitHub Actions auto
 On `push`, the workflows run formatting, initialization, validation, and planning steps.
 
 On `workflow_dispatch`, the Azure provisioning workflow can also run `terraform apply`.
-![github_workflows](../assets/github_workflows.png)
+![github_actions_manual_trigger](../assets/github_actions_manual_trigger.png)
+
+
+
+
+
+- `./bootstrap_infrastructure_and_provision_platform.sh` has created or
+  reconciled:
+  - the remote Terraform backend
+  - the Azure foundation
+  - the Kubernetes resources
+  - the shared observability stack
+
+The remaining standard GitHub Actions path is:
+| Layer | Already created by the bootstrap script? | Remaining to create from GitHub Actions? | Workflow | Why it still matters |
+| --- | --- | --- | --- | --- |
+| Remote Terraform backend | Yes | No | none | it is a bootstrap prerequisite before the normal cloud workflows can use remote Terraform state |
+| Azure foundation | Yes | Usually no | `azure-provision.yml` | use later when you want the standard Infrastructure team reconciliation path from GitHub Actions |
+| Kubernetes resources | Yes | Usually no | `kubernetes-resources-provision.yml` | use later when you want the standard Platform team reconciliation path from GitHub Actions |
+| Shared observability | Yes | Usually no | `observability-provision.yml` | use later when you want the standard Platform team observability reconciliation path from GitHub Actions |
+| Application | No | Yes | `app-deploy.yml` | this is usually the main remaining GitHub Actions step after a successful full bootstrap |
+
+Important exceptions:
+- the remote Terraform backend is still a bootstrap concern and is not part of
+  the normal GitHub Actions workflow chain
+- after a successful full bootstrap, the main remaining GitHub Actions action
+  is usually `app-deploy.yml`
+- `observability-provision.yml` and `app-deploy.yml` are manual
+  `workflow_dispatch` workflows
+
+The detailed workflow matrix, destroy order, and credential paths are in:
+- [github-actions-workflows.md](./github-actions-workflows.md) 
 
 ### 0.5 Destroy the full platform
 
@@ -308,20 +307,18 @@ It destroys:
 
 ![iac_lifecycle_dependencies](/assets/iac_lifecycle_dependencies.png)
 
-## 1. INFRASTRUCTURE BOOTSTRAP PATH MANAGED BY THE INFRASTRUCTURE TEAM 
+## 1. AZURE FOUNDATION PATH MANAGED BY THE INFRASTRUCTURE TEAM
 
 ```text
 [Infrastructure Team]
       │
-      │ pushes platform bootstrap code
+      │ pushes Azure foundation code
       ▼
 ┌──────────────────────────────────────────────┐
 │            GitHub                            │
 │----------------------------------------------│
-│ infrastructure/                              │
-│ - terraform/                                 │
-│ - docs/                                      │
-│ - GitHub Actions workflow for terraform/     │
+│ infrastructure/azure/terraform/              │
+│ .github/workflows/azure-provision.yml        │
 └──────────────────────────────────────────────┘
       │
       │ triggers
@@ -330,43 +327,115 @@ It destroys:
 │        GitHub Actions        │
 │------------------------------│
 │ Runs Terraform plan/apply    │
-│ for platform-owned resources │
+│ for Azure foundation         │
 └──────────────────────────────┘
       │
-      │ bootstraps environment in
+      │ provisions
       ▼
 ┌──────────────────────────────────────────────────────────────┐
-│                   AKS  Kubernetes Cluster                    │
+│                   Azure foundation                           │
 │--------------------------------------------------------------│
-│ Namespace: payment-exception-review-stage1                   │
-│                                                              │
-│  Platform-owned resources:                                   │
-│  ┌──────────────────────────────┐                            │
-│  │ Namespace                    │                            │
-│  └──────────────────────────────┘                            │
-│                                                              │
-│  ┌──────────────────────────────┐                            │
-│  │ ServiceAccount               │                            │
-│  └──────────────────────────────┘                            │
-│                                                              │
-│  ┌──────────────────────────────┐                            │
-│  │ Role                         │                            │
-│  └──────────────────────────────┘                            │
-│                                                              │
-│  ┌──────────────────────────────┐                            │
-│  │ RoleBinding                  │                            │
-│  └──────────────────────────────┘                            │
-│                                                              │
-│  ┌──────────────────────────────┐                            │
-│  │ Baseline ConfigMap           │                            │
-│  │------------------------------│                            │
-│  │ Shared platform convention   │                            │
-│  │ example: ENV_NAME, LOG_LEVEL │                            │
-│  └──────────────────────────────┘                            │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │ Resource Group                                         │  │
+│  │--------------------------------------------------------│  │
+│  │                                                        │  │
+│  │  ┌──────────────────────────────┐                      │  │
+│  │  │ Network Foundation           │                      │  │
+│  │  │------------------------------│                      │  │
+│  │  │ VNet                         │                      │  │
+│  │  │ AKS subnet                   │                      │  │
+│  │  │ PostgreSQL subnet            │                      │  │
+│  │  │ private DNS / connectivity   │                      │  │
+│  │  └──────────────────────────────┘                      │  │
+│  │                                                        │  │
+│  │  ┌──────────────────────────────┐                      │  │
+│  │  │ AKS Cluster                  │                      │  │
+│  │  │ uses: AKS subnet             │                      │  │
+│  │  └──────────────────────────────┘                      │  │
+│  │                                                        │  │
+│  │  ┌──────────────────────────────┐                      │  │
+│  │  │ Azure Database for           │                      │  │
+│  │  │ PostgreSQL                   │                      │  │
+│  │  │ uses: PostgreSQL subnet      │                      │  │
+│  │  └──────────────────────────────┘                      │  │
+│  └────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────┘
 ```
 
-## 2. APP DELIVERY PATH USED BY THE APPLICATION TEAM 
+This layer is represented by:
+
+- `./infrastructure/azure/create_azure_resources.sh`
+- `.github/workflows/azure-provision.yml`
+
+## 2. KUBERNETES BOOTSTRAP PATH MANAGED BY THE PLATFORM TEAM
+
+```text
+[Platform Team]
+      │
+      │ pushes platform bootstrap code
+      ▼
+┌──────────────────────────────────────────────┐
+│            GitHub                            │
+│----------------------------------------------│
+│ platform/kubernetes-resources/terraform/     │
+│ .github/workflows/kubernetes-resources-      │
+│ provision.yml                                │
+└──────────────────────────────────────────────┘
+      │
+      │ triggers
+      ▼
+┌──────────────────────────────┐
+│        GitHub Actions        │
+│------------------------------│
+│ Runs Terraform plan/apply    │
+│ for Kubernetes bootstrap     │
+└──────────────────────────────┘
+      │
+      │ bootstraps inside
+      ▼
+┌──────────────────────────────────────────────────────────────┐
+│                   AKS Kubernetes Cluster                     │
+│--------------------------------------------------------------│
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │ Namespace: payment-exception-review-stage1             │  │
+│  │--------------------------------------------------------│  │
+│  │                                                        │  │
+│  │ Platform-owned resources:                              │  │
+│  │  ┌──────────────────────────────┐                      │  │
+│  │  │ ServiceAccount               │                      │  │
+│  │  └──────────────────────────────┘                      │  │
+│  │                                                        │  │
+│  │  ┌──────────────────────────────┐                      │  │
+│  │  │ Role                         │                      │  │
+│  │  └──────────────────────────────┘                      │  │
+│  │                                                        │  │
+│  │  ┌──────────────────────────────┐                      │  │
+│  │  │ RoleBinding                  │                      │  │
+│  │  └──────────────────────────────┘                      │  │
+│  │                                                        │  │
+│  │  ┌──────────────────────────────┐                      │  │
+│  │  │ Baseline ConfigMap           │                      │  │
+│  │  │------------------------------│                      │  │
+│  │  │ Shared platform convention   │                      │  │
+│  │  │ example: ENV_NAME, LOG_LEVEL │                      │  │
+│  │  └──────────────────────────────┘                      │  │
+│  │                                                        │  │
+│  │  ┌──────────────────────────────┐                      │  │
+│  │  │ Runtime DB Secret Injection  │                      │  │
+│  │  │------------------------------│                      │  │
+│  │  │ Secret: payment-review-db    │                      │  │
+│  │  │ Key: POSTGRES_ADMIN_PASSWORD │                      │  │
+│  │  └──────────────────────────────┘                      │  │
+│  └────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────┘
+```
+
+This layer is represented by:
+
+- `./platform/kubernetes-resources/apply_dev_kubernetes_resources.sh`
+- `.github/workflows/kubernetes-resources-provision.yml`
+
+## 3. APP DELIVERY PATH USED BY THE APPLICATION TEAM 
 
 
 ```text
@@ -377,12 +446,16 @@ It destroys:
 ┌──────────────────────────────┐
 │            GitHub            │
 │------------------------------│
-│ application-team/            │
+│ application/payment-         │
+│ exception-review-service/    │
 │ - Spring Boot app            │
 │ - Dockerfile                 │
 │ - Helm chart                 │
 │ - app docs                   │
-│ - workflow for app delivery  │
+│ .github/workflows/           │
+│ - app-ci.yml                 │
+│ - app-deploy.yml             │
+│ - app-destroy.yml            │
 └──────────────────────────────┘
       │
       │ triggers
@@ -392,13 +465,13 @@ It destroys:
 │--------------------------------------------│
 │ 1. Checkout code                           │
 │ 2. Build Spring Boot app                   │
-│ 3. Run tests                               │
-│ 4. Run database migration validation       │
-│ 5. Package JAR                             │
-│ 6. Build Docker image                      │
+│ 3. Package JAR                             │
+│ 4. Build and push Docker image             │
+│ 5. Azure login with OIDC                   │
+│ 6. Get AKS credentials                     │
 │ 7. Validate Helm chart                     │
 │ 8. Deploy with Helm                        │
-│ 9. Post-deploy validation                  │
+│ 9. Verify rollout and startup              │
 └────────────────────────────────────────────┘
       │
       ├──────────────────────────────────────────────────────┐
@@ -425,37 +498,44 @@ It destroys:
 ┌──────────────────────────────────────────────────────────────┐
 │                 AKS Kubernetes Cluster                       │
 │--------------------------------------------------------------│
-│ Namespace: payment-exception-review-stage1                   │
-│                                                              │
-│ App-team-owned resources:                                    │
-│  ┌──────────────────────────────┐                            │
-│  │ Deployment                   │                            │
-│  │------------------------------│                            │
-│  │ Spring Boot Pod(s)           │                            │
-│  │ - image from pipeline        │                            │
-│  │ - readiness probe            │                            │
-│  │ - liveness probe             │                            │
-│  │ - requests/limits            │                            │
-│  │ - env from ConfigMap/Secret  │                            │
-│  │ - uses ServiceAccount        │                            │
-│  └──────────────────────────────┘                            │
-│                                                              │
-│  ┌──────────────────────────────┐                            │
-│  │ Service                      │                            │
-│  └──────────────────────────────┘                            │
-│                                                              │
-│  ┌──────────────────────────────┐                            │
-│  │ App ConfigMap                │                            │
-│  │------------------------------│                            │
-│  │ App-specific config          │                            │
-│  │ example: VALIDATION_MODE     │                            │
-│  └──────────────────────────────┘                            │
-│                                                              │
-│  ┌──────────────────────────────┐                            │
-│  │ Secret                       │                            │
-│  │------------------------------│                            │
-│  │ Placeholder secret pattern   │                            │
-│  └──────────────────────────────┘                            │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │ Namespace: payment-exception-review-stage1             │  │
+│  │--------------------------------------------------------│  │
+│  │                                                        │  │
+│  │ App-team-owned resources:                              │  │
+│  │  ┌──────────────────────────────┐                      │  │
+│  │  │ Deployment                   │                      │  │
+│  │  │------------------------------│                      │  │
+│  │  │ Spring Boot Pod(s)           │                      │  │
+│  │  │ - image from pipeline        │                      │  │
+│  │  │ - readiness probe            │                      │  │
+│  │  │ - liveness probe             │                      │  │
+│  │  │ - requests/limits            │                      │  │
+│  │  │ - env from ConfigMap         │                      │  │
+│  │  │ - uses ServiceAccount        │                      │  │
+│  │  │ - Flyway validates/applies   │                      │  │
+│  │  │   migrations at startup      │                      │  │
+│  │  └──────────────────────────────┘                      │  │
+│  │                                                        │  │
+│  │  ┌──────────────────────────────┐                      │  │
+│  │  │ Service                      │                      │  │
+│  │  └──────────────────────────────┘                      │  │
+│  │                                                        │  │
+│  │  ┌──────────────────────────────┐                      │  │
+│  │  │ App ConfigMap                │                      │  │
+│  │  │------------------------------│                      │  │
+│  │  │ App-specific config          │                      │  │
+│  │  │ example: VALIDATION_MODE     │                      │  │
+│  │  └──────────────────────────────┘                      │  │
+│  │                                                        │  │
+│  │  ┌──────────────────────────────┐                      │  │
+│  │  │ Platform DB Secret Usage     │                      │  │
+│  │  │------------------------------│                      │  │
+│  │  │ Secret: payment-review-db    │                      │  │
+│  │  │ Key: POSTGRES_ADMIN_PASSWORD │                      │  │
+│  │  │ consumed by Helm values      │                      │  │
+│  │  └──────────────────────────────┘                      │  │
+│  └────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -532,6 +612,34 @@ Kubernetes / Application
 └──────────────────────────────┘
 ```
 
+### Observability model
+
+The observability direction is a shared platform-level monitoring stack per
+cluster or environment boundary, not a separate monitoring stack per
+application.
+
+The intended production model is:
+
+- shared `kube-prometheus-stack`
+- Grafana behind SSO
+- network isolation around monitoring components and scrape surfaces
+- controlled RBAC
+- persistent Grafana
+- governed Alertmanager routing
+- Thanos for long-term retention and global query when broader enterprise scale
+  requires it
+
+This is the better default for regulated fintech-style environments because it
+preserves strong governance while avoiding unnecessary duplication of
+Prometheus, Grafana, Alertmanager, dashboards, upgrade work, and storage. A
+separate monitoring stack per application is treated as an exception that
+should be justified by a hard compliance, tenancy, or data-separation
+requirement.
+
+For the observability boundary between the current shared monitoring baseline
+and the later enterprise direction, see
+[observability-tradeoffs.md](./observability-tradeoffs.md).
+
 ## 5. Repo architecture
 The structure below represents the current Stage 1 repository architecture:
 ```
@@ -540,29 +648,34 @@ kubernetes-platform-case/
 │   └── workflows/
 │       ├── azure-provision.yml
 │       ├── azure-destroy.yml
+│       ├── observability-provision.yml
+│       ├── observability-destroy.yml
 │       ├── kubernetes-resources-provision.yml
 │       ├── kubernetes-resources-destroy.yml
-│       └── app-delivery.yml
+│       ├── app-ci.yml
+│       ├── app-deploy.yml
+│       └── app-destroy.yml
 │
+├── .env
 ├── .env.example
 ├── bootstrap_infrastructure_and_provision_platform.sh
 ├── destroy_infrastructure_and_platform.sh
+├── create_local_platform_and_app.sh
+├── destroy_local_platform_and_app.sh
 ├── commons/
 │   └── scripts/
 │       ├── common_logging.sh
+│       ├── load_terraform_env.sh
 │       └── wait_for_backend_access.sh
-├── logs/
 │
 ├── infrastructure/
 │   ├── terraform-backend/
+│   │   ├── # bootstrap Terraform only
+│   │   ├── # example: remote Terraform backend
 │   │   ├── create_remote_backend.sh
 │   │   ├── destroy_remote_backend.sh
 │   │   ├── terraform/
-│   │   │   ├── main.tf
-│   │   │   ├── variables.tf
-│   │   │   ├── outputs.tf
-│   │   │   ├── providers.tf
-│   │   │   └── versions.tf
+│   │   │   └── *.tf
 │   │   └── docs/
 │   │       └── README.md
 │   │
@@ -570,48 +683,54 @@ kubernetes-platform-case/
 │   │   ├── create_azure_resources.sh
 │   │   ├── destroy_azure_resources.sh
 │   │   ├── terraform/
-│   │   │   ├── resource-group.tf
-│   │   │   ├── aks.tf
-│   │   │   ├── postgresql.tf
-│   │   │   ├── variables.tf
-│   │   │   ├── outputs.tf
-│   │   │   ├── providers.tf
-│   │   │   ├── backend.tf
-│   │   │   └── versions.tf
+│   │   │   ├── # Infrastructure team Azure foundation Terraform
+│   │   │   ├── # examples: resource group, AKS, PostgreSQL, networking
+│   │   │   └── *.tf
 │   │   ├── oidc/
 │   │   │   ├── create_az_oidc.sh
 │   │   │   ├── destroy_az_oidc.sh
-│   │   │   ├── github-oidc-credential.template.json
-│   │   │   └── github-oidc-credential.json
+│   │   │   └── github-oidc-credential.template.json
 │   │   ├── scripts/
-│   │   │   ├── create_aks_cluster_and_connect_with_kubectl.sh
-│   │   │   └── delete_azure_resource_group_manually.sh
+│   │   │   └── create_aks_cluster_and_connect_with_kubectl.sh
 │   │   └── docs/
 │   │       ├── OIDC.md
-│   │       └── README.md
+│   │       ├── README.md
+│   │       └── networking-design.md
+│   └── docs/
+│       ├── README.md
+│       ├── provision_platform_screenshoots.md
+│       └── troubleshooting/
 │
 ├── platform/
 │   └── kubernetes-resources/
 │       ├── apply_dev_kubernetes_resources.sh
+│       ├── create_local_platform.sh
 │       ├── destroy_dev_kubernetes_resources.sh
+│       ├── destroy_local_platform.sh
 │       ├── terraform/
-│       │   ├── main.tf
-│       │   ├── variables.tf
-│       │   ├── outputs.tf
-│       │   ├── providers.tf
-│       │   ├── backend.tf
-│       │   └── versions.tf
+│       │   ├── # Platform team Kubernetes bootstrap Terraform
+│       │   ├── # examples: namespace, RBAC, baseline ConfigMap
+│       │   └── *.tf
 │       ├── scripts/
 │       │   ├── cloud/
-│       │   │   └── validate_dev_cluster_access.sh
+│       │   │   ├── validate_dev_cluster_access.sh
+│       │   │   └── validate_dev_aks_cluster_access.sh
 │       │   └── cluster/
+│       │       ├── apply_platform_runtime_boundary.sh
 │       │       ├── apply_runtime_db_secret.sh
+│       │       ├── deploy_local_postgres.sh
+│       │       ├── destroy_local_postgres.sh
 │       │       └── remove_runtime_db_secret.sh
 │       ├── observability/
 │       │   ├── install_local_observability_stack.sh
 │       │   ├── destroy_local_observability_stack.sh
 │       │   ├── install_dev_observability_stack.sh
 │       │   ├── destroy_dev_observability_stack.sh
+│       │   ├── troubleshooting.md
+│       │   ├── prometheus/
+│       │   ├── grafana/
+│       │   ├── alertmanager/
+│       │   ├── README.md
 │       │   └── scripts/
 │       │       └── cluster/
 │       │           ├── install_shared_observability_stack.sh
@@ -620,87 +739,73 @@ kubernetes-platform-case/
 │           └── README.md
 │
 ├── application/
-│   ├── payment-exception-review-service/
-│   │   ├── src/
-│   │   ├── pom.xml
-│   │   └── README.md
+│   ├── docs/
+│   │   ├── README.md
+│   │   ├── architecture.md
+│   │   ├── api-contract.md
+│   │   ├── local-postgresql.md
+│   │   ├── failure-scenarios.md
+│   │   ├── failure-scenarios/
+│   │   └── adrs/
 │   │
-│   ├── docker/
-│   │   └── Dockerfile
-│   │
-│   ├── helm/
-│   │   └── payment-exception-review-service-status/
-│   │       ├── Chart.yaml
-│   │       ├── values.yaml
-│   │       └── templates/
-│   │           ├── deployment.yaml
-│   │           ├── service.yaml
-│   │           ├── configmap.yaml
-│   │           └── serviceaccount.yaml
-│   │
-│   ├── scripts/
-│   │   ├── smoke-test.sh
-│   │   ├── validate-helm.sh
-│   │   └── debug-rollout.sh
-│   │
-│   └── docs/
-│       ├── README.md
-│       ├── runbook.md
-│       ├── failure-scenarios.md
-│       └── case-study-stage1.md
+│   └── payment-exception-review-service/
+│       ├── Dockerfile
+│       ├── compose.yaml
+│       ├── pom.xml
+│       ├── create_dev_app_with_helm.sh
+│       ├── create_local_app_with_helm.sh
+│       ├── destroy_dev_app_with_helm.sh
+│       ├── destroy_local_app_with_helm.sh
+│       ├── helm/
+│       │   ├── Chart.yaml
+│       │   ├── values.yaml
+│       │   ├── README.md
+│       │   └── templates/
+│       ├── scripts/
+│       │   └── cluster/
+│       │       ├── deploy_app_with_helm.sh
+│       │       └── destroy_app_with_helm.sh
+│       └── src/
+│           ├── main/
+│           └── test/
 │
-├── observability/
-│   ├── prometheus/
-│   ├── grafana/
-│   └── docs/
-│       └── README.md
+├── assets/
+│   └── *.png
 │
 ├── docs/
+│   ├── README.md
 │   ├── executive-summary.md
+│   ├── interview-notes.md
+│   ├── github-actions-workflows.md
+│   ├── configuration-reference.md
+│   ├── local-platform-and-app-validation.md
+│   ├── kubernetes-portability.md
+│   ├── internal-access-future-direction.md
+│   ├── observability-tradeoffs.md
+│   ├── project_team_ownership_model.md
+│   ├── generic_team_ownership_model.md
 │   ├── stage1.md
 │   ├── stage2.md
 │   ├── stage3.md
-│   └── interview-notes.md
+│   ├── tech_stack_evolution.md
+│   ├── architecture/
+│   └── adrs/
 ```
 
-## 6. Infrastructure layer responsibility
-| Layer                                 | Responsibility                                                       | Owner            |
-| ------------------------------------- | -------------------------------------------------------------------- | ---------------- |
-| `infrastructure/terraform-backend`    | Creates the shared Azure Storage backend for Terraform state         | Infrastructure team |
-| `infrastructure/azure`                | Provisions Azure resources such as the resource group and AKS cluster| Infrastructure team |
-| `platform/kubernetes-resources` | Bootstraps namespace, service account, RBAC, and baseline config     | Platform team    |
-| `application/`                        | Builds, packages, and deploys the Spring Boot service                | Application team |
+## 6. OWNERSHIP AND LAYER RESPONSIBILITIES
 
+For the cross-stage team structure used in this repository, see
+[project_team_ownership_model.md](./project_team_ownership_model.md).
 
-## 7. FAILURE SCENARIOS USED TO DEMONSTRATE OPERATIONAL TROUBLESHOOTING
+For a reusable non-project-specific reference, see
+[generic_team_ownership_model.md](./generic_team_ownership_model.md).
 
-**Operational skills demonstrated**
-
-- reasoning about observability, probes, and deployment safety
-- diagnosing rollout failures in Kubernetes
-- validating application health and runtime configuration
-- reading and structuring Terraform layers
-- understanding ownership boundaries between infrastructure, platform, and application teams
-- handling a service with a real database dependency
-
-#### Scenario 1 - Bad readiness probe
-- application starts correctly
-- readiness probe path or port is wrong
-- pod stays unready
-- rollout appears broken
-- service is not available through standard routing
-- diagnosed through events, `kubectl describe`, rollout status, and health endpoint verification
-
-#### Scenario 2 - Bad business configuration
-- the app receives an invalid validation configuration
-- example: `VALIDATION_MODE=AGGRESSIVE` when only `STRICT` or `STANDARD` are supported
-- startup validation fails or the application becomes unhealthy
-- issue is visible through logs, pod status, and config-check endpoint
-- demonstrates config governance and safe startup behavior in a regulated service
-
-
-
-## 8. OWNERSHIP MODEL
+| Layer | Responsibility | Owner |
+| --- | --- | --- |
+| `infrastructure/terraform-backend` | Creates the shared Azure Storage backend for Terraform state | Infrastructure team |
+| `infrastructure/azure` | Provisions Azure resources such as the resource group, AKS cluster, and managed PostgreSQL foundation | Infrastructure team |
+| `platform/kubernetes-resources` | Bootstraps the namespace, service account, RBAC, baseline config, runtime secret pattern, and shared observability services | Platform team |
+| `application/` | Builds, packages, deploys, and operates the Spring Boot service workload | Application team |
 
 **Infrastructure team owns:**
 - Azure resource group
@@ -731,5 +836,32 @@ kubernetes-platform-case/
 - application Secret usage pattern
 - application rollout behavior
 - application runbook notes
+
+
+## 7. FAILURE SCENARIOS USED TO DEMONSTRATE OPERATIONAL TROUBLESHOOTING
+
+**Operational skills demonstrated**
+
+- reasoning about observability, probes, and deployment safety
+- diagnosing rollout failures in Kubernetes
+- validating application health and runtime configuration
+- reading and structuring Terraform layers
+- understanding ownership boundaries between infrastructure, platform, and application teams
+- handling a service with a real database dependency
+
+#### Scenario 1 - Bad readiness probe
+- application starts correctly
+- readiness probe path or port is wrong
+- pod stays unready
+- rollout appears broken
+- service is not available through standard routing
+- diagnosed through events, `kubectl describe`, rollout status, and health endpoint verification
+
+#### Scenario 2 - Bad business configuration
+- the app receives an invalid validation configuration
+- example: `VALIDATION_MODE=AGGRESSIVE` when only `STRICT` or `STANDARD` are supported
+- startup validation fails or the application becomes unhealthy
+- issue is visible through logs, pod status, and config-check endpoint
+- demonstrates config governance and safe startup behavior in a regulated service
 
 [NEXT: Read the detailed Stage 1 document ->](./stage1.md)

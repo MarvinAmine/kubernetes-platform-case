@@ -49,6 +49,10 @@ The GitHub Actions automation entrypoints are:
 - `.github/workflows/observability-provision.yml`
 - `.github/workflows/observability-destroy.yml`
 
+Provision workflow example:
+
+![GitHub Actions provision Prometheus and Grafana](../../../assets/github_actions_provision_prometheus_grafana.png)
+
 So a new visitor can understand quickly:
 
 - `local` wrappers target the local kind validation path
@@ -133,4 +137,5 @@ After that, the local application deployment succeeded normally.
 - [Grafana notes](./grafana/README.md)
 - [Alertmanager notes](./alertmanager/README.md)
 - [Observability troubleshooting](./troubleshooting.md)
+- [Kubernetes portability note](../../../docs/kubernetes-portability.md)
 - [Platform Kubernetes resources README](../docs/README.md)
