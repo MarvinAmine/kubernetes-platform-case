@@ -83,7 +83,7 @@ Important distinction:
 
 | Variable | Required | Example / default | Description |
 | --- | --- | --- | --- |
-| `GRAFANA_ADMIN_USER` | Yes for local observability validation | `admin` | Grafana administrator username used by the shared observability installation path for local validation. |
+| `GRAFANA_ADMIN_USER` | Optional | `admin` | Grafana administrator username used by the shared observability installation path. Defaults to `admin` if unset. |
 | `GRAFANA_ADMIN_PASSWORD` | Yes for local observability validation | `<strong-password>` | Grafana administrator password used by the shared observability installation path. Keep it only in local `.env`; never commit it. |
 
 ## GitHub repository variables
@@ -122,4 +122,4 @@ Important distinction:
 | `AZURE_CLIENT_ID` | Yes | Application ID of the Azure Entra app created for GitHub OIDC. |
 | `AZURE_TENANT_ID` | Yes | Azure tenant ID used by `azure/login@v2` during GitHub Actions authentication. |
 | `POSTGRES_ADMIN_PASSWORD` | Yes | PostgreSQL administrator password used by the Azure workflows. Mirrors `POSTGRES_ADMIN_PASSWORD` from local `.env`, but must be stored as a GitHub secret in CI. |
-| `GRAFANA_ADMIN_PASSWORD` | Optional today, required if observability installation is automated through GitHub Actions later | Grafana administrator password for the shared observability stack. Mirrors `GRAFANA_ADMIN_PASSWORD` from local `.env`, but should be stored as a GitHub secret in CI if the observability stack is installed or updated through workflows. |
+| `GRAFANA_ADMIN_PASSWORD` | Yes for observability GitHub Actions | Grafana administrator password for the shared observability stack. Mirrors `GRAFANA_ADMIN_PASSWORD` from local `.env`, and must be stored as a GitHub secret in CI for the observability provision workflow. |

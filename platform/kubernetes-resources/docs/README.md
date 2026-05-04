@@ -138,6 +138,11 @@ logic stays under `scripts/`.
 - `observability/scripts/cluster/destroy_shared_observability_stack.sh`
   Shared Kubernetes-only Helm logic used by both the local and dev wrappers.
 
+- `.github/workflows/observability-provision.yml`
+- `.github/workflows/observability-destroy.yml`
+  Platform-owned GitHub Actions workflows for installing and uninstalling the
+  shared observability stack in the AKS dev environment.
+
 ## Shared observability installation
 
 The platform-owned installation path is:

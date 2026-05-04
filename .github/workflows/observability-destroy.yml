@@ -1,0 +1,74 @@
+name: Observability Destroy
+
+on:
+    workflow_dispatch:
+
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+    observability-destroy:
+        runs-on: ubuntu-latest
+
+        env:
+            MONITORING_NAMESPACE: monitoring
+            RELEASE_NAME: kube-prometheus-stack
+            EXPECTED_RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
+            EXPECTED_AKS_CLUSTER_NAME: ${{ vars.AKS_CLUSTER_NAME }}
+            EXPECTED_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+            ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+            ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+            ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Preflight repository configuration
+              run: |
+                required_vars=(
+                    EXPECTED_RESOURCE_GROUP
+                    EXPECTED_AKS_CLUSTER_NAME
+                )
+                for name in "${required_vars[@]}"; do
+                    if [[ -z "${!name:-}" ]]; then
+                        echo "ERROR: Missing GitHub repository variable: ${name}."
+                        exit 1
+                    fi
+                done
+
+                required_secrets=(
+                    ARM_CLIENT_ID
+                    ARM_TENANT_ID
+                    ARM_SUBSCRIPTION_ID
+                )
+                for name in "${required_secrets[@]}"; do
+                    if [[ -z "${!name:-}" ]]; then
+                        echo "ERROR: Missing GitHub repository secret backing: ${name}."
+                        exit 1
+                    fi
+                done
+
+            - name: Azure login with OIDC
+              uses: azure/login@v2
+              with:
+                client-id: ${{ secrets.AZURE_CLIENT_ID }}
+                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+            - name: Get AKS credentials
+              run: |
+                az aks get-credentials \
+                    --resource-group "${EXPECTED_RESOURCE_GROUP}" \
+                    --name "${EXPECTED_AKS_CLUSTER_NAME}" \
+                    --overwrite-existing
+
+            - name: Setup Helm
+              uses: azure/setup-helm@v4
+
+            - name: Uninstall shared observability stack
+              run: bash ./platform/kubernetes-resources/observability/destroy_dev_observability_stack.sh
+
+            - name: Verify shared observability removal
+              run: kubectl get all -n "${MONITORING_NAMESPACE}"

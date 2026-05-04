@@ -35,8 +35,12 @@ The shared Helm installation logic itself lives in:
 
 The planned installation path expects:
 
-- `GRAFANA_ADMIN_USER`
 - `GRAFANA_ADMIN_PASSWORD`
+
+Optional:
+
+- `GRAFANA_ADMIN_USER`
+  Defaults to `admin` if unset.
 
 Those values must not be committed in values files.
 

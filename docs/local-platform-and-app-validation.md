@@ -122,8 +122,12 @@ cp .env.example .env
 For this local path, the important values are:
 
 - `POSTGRES_ADMIN_PASSWORD`
-- `GRAFANA_ADMIN_USER`
 - `GRAFANA_ADMIN_PASSWORD`
+
+Optional:
+
+- `GRAFANA_ADMIN_USER`
+  Defaults to `admin` if unset.
 
 If you are not using kind, you can also set:
 

@@ -252,7 +252,7 @@ print_manual_configuration_block() {
 }
 
 run_first_time_backend_bootstrap() {
-    print_header "Remote Terraform Backend: First Run Detected"
+    print_header "Remote Terraform Backend"
     log_info "STEP 1/5 - Creating or reconciling the remote Terraform backend..."
     if [[ "$SILENT_MODE" == true ]]; then
         run_command_with_context "Remote Terraform backend bootstrap" \
@@ -340,15 +340,16 @@ main() {
 
     if backend_values_missing; then
         first_run_detected=true
+        log_info "Remote backend values are not fully set in $ENV_FILE yet."
         run_first_time_backend_bootstrap
     else
-        print_header "Existing Backend Configuration Detected"
-        log_info "Backend values already exist in $ENV_FILE."
-
         if backend_exists; then
+            print_header "Remote Terraform Backend"
+            log_info "Backend values already exist in $ENV_FILE."
             log_success "Remote backend exists and is reachable."
         else
             first_run_detected=true
+            log_info "Backend values already exist in $ENV_FILE."
             log_info "Remote backend values are set, but the backend does not exist yet or is not reachable."
             log_info "Falling back to STEP 1/5 to create or reconcile the remote Terraform backend."
             run_first_time_backend_bootstrap

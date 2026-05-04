@@ -44,6 +44,11 @@ The shared implementation lives under:
 - `scripts/cluster/install_shared_observability_stack.sh`
 - `scripts/cluster/destroy_shared_observability_stack.sh`
 
+The GitHub Actions automation entrypoints are:
+
+- `.github/workflows/observability-provision.yml`
+- `.github/workflows/observability-destroy.yml`
+
 So a new visitor can understand quickly:
 
 - `local` wrappers target the local kind validation path
