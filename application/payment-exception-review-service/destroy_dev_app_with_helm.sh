@@ -17,7 +17,7 @@ parse_args() {
 }
 
 parse_args "$@"
-setup_logging "$REPO_ROOT/logs/destroy_app_with_helm.log"
+setup_logging "$REPO_ROOT/logs/destroy_dev_app_with_helm.log"
 
 load_repo_env "$ENV_FILE" "$ENV_FILE_TEMPLATE" || exit 1
 require_env_vars "$ENV_FILE" SUBSCRIPTION_ID RESOURCE_GROUP AKS_CLUSTER_NAME || exit 1
@@ -40,14 +40,10 @@ fi
 
 log_info "Validating access to the expected AKS cluster..."
 run_command_with_context "AKS cluster access validated" \
-    "$REPO_ROOT/platform/kubernetes-resources/scripts/validate-cluster-access.sh"
+    "$REPO_ROOT/platform/kubernetes-resources/scripts/cloud/validate_dev_cluster_access.sh"
 
-if helm status "$RELEASE_NAME" --namespace "$APP_NAMESPACE" >/dev/null 2>&1; then
-    log_info "Uninstalling Helm release $RELEASE_NAME from namespace $APP_NAMESPACE..."
-    run_command_with_context "Helm release uninstalled" \
-        helm uninstall "$RELEASE_NAME" --namespace "$APP_NAMESPACE"
-else
-    log_info "Helm release $RELEASE_NAME does not exist in namespace $APP_NAMESPACE. Skipping."
-fi
+export APP_RELEASE_NAME="$RELEASE_NAME"
+run_command_with_context "Helm release uninstalled" \
+    "$SCRIPT_DIR/scripts/cluster/destroy_app_with_helm.sh"
 
 log_success "Application Helm teardown completed."

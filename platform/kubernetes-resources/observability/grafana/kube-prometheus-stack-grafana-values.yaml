@@ -1,0 +1,8 @@
+grafana:
+  enabled: true
+  service:
+    type: ClusterIP
+  persistence:
+    enabled: true
+    type: pvc
+    size: 10Gi

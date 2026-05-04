@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/commons/scripts/common_logging.sh"
+
+usage() {
+    cat <<'EOF'
+Usage: ./create_local_platform_and_app.sh [--silent|-s] [--help|-h]
+EOF
+}
+
+parse_args() {
+    parse_silent_flag "$@"
+    if [[ ${#REMAINING_ARGS[@]} -eq 0 ]]; then
+        return 0
+    fi
+
+    case "${REMAINING_ARGS[0]}" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown argument: ${REMAINING_ARGS[0]}"
+            exit 1
+            ;;
+    esac
+}
+
+main() {
+    parse_args "$@"
+    setup_logging "$SCRIPT_DIR/logs/create_local_platform_and_app.log"
+    run_command_with_context "Local platform provisioning" \
+        "$SCRIPT_DIR/platform/kubernetes-resources/create_local_platform.sh"
+    run_command_with_context "Local application deployment" \
+        "$SCRIPT_DIR/application/payment-exception-review-service/create_local_app_with_helm.sh"
+
+    log_success "Local platform and application provisioning completed."
+}
+
+main "$@"

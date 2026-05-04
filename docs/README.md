@@ -214,6 +214,9 @@ For the observability boundary between the current shared monitoring baseline
 and the later enterprise direction, see
 [observability-tradeoffs.md](./observability-tradeoffs.md).
 
+For a local-only validation path that avoids Azure cost and provisioning time,
+see [local-platform-and-app-validation.md](./local-platform-and-app-validation.md).
+
 
 ## 0. HOW TO USE IT?
 
@@ -589,8 +592,8 @@ kubernetes-platform-case/
 │
 ├── platform/
 │   └── kubernetes-resources/
-│       ├── apply_kubernetes_resources.sh
-│       ├── destroy_kubernetes_resources.sh
+│       ├── apply_dev_kubernetes_resources.sh
+│       ├── destroy_dev_kubernetes_resources.sh
 │       ├── terraform/
 │       │   ├── main.tf
 │       │   ├── variables.tf
@@ -599,7 +602,20 @@ kubernetes-platform-case/
 │       │   ├── backend.tf
 │       │   └── versions.tf
 │       ├── scripts/
-│       │   └── validate-cluster-access.sh
+│       │   ├── cloud/
+│       │   │   └── validate_dev_cluster_access.sh
+│       │   └── cluster/
+│       │       ├── apply_runtime_db_secret.sh
+│       │       └── remove_runtime_db_secret.sh
+│       ├── observability/
+│       │   ├── install_local_observability_stack.sh
+│       │   ├── destroy_local_observability_stack.sh
+│       │   ├── install_dev_observability_stack.sh
+│       │   ├── destroy_dev_observability_stack.sh
+│       │   └── scripts/
+│       │       └── cluster/
+│       │           ├── install_shared_observability_stack.sh
+│       │           └── destroy_shared_observability_stack.sh
 │       └── docs/
 │           └── README.md
 │

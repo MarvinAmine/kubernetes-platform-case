@@ -45,6 +45,16 @@ probes:
   failureThreshold: 6
   timeoutSeconds: 3
 
+monitoring:
+  namespace: monitoring
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+      release: kube-prometheus-stack
+    interval: 30s
+    scrapeTimeout: 10s
+    path: /actuator/prometheus
+
 resources: {}
 
 podAnnotations: {}

@@ -1,18 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# This script validates AKS access for the kubernetes-resources layer.
-#
-# Preferred interface:
-#   EXPECTED_SUBSCRIPTION_ID
-#   EXPECTED_RESOURCE_GROUP
-#   EXPECTED_AKS_CLUSTER_NAME
-#
-# Backward-compatible fallback:
-#   SUBSCRIPTION_ID
-#   RESOURCE_GROUP
-#   AKS_CLUSTER_NAME
-
 EXPECTED_SUBSCRIPTION_ID="${EXPECTED_SUBSCRIPTION_ID:-${SUBSCRIPTION_ID:-}}"
 EXPECTED_RESOURCE_GROUP="${EXPECTED_RESOURCE_GROUP:-${RESOURCE_GROUP:-}}"
 EXPECTED_AKS_CLUSTER_NAME="${EXPECTED_AKS_CLUSTER_NAME:-${AKS_CLUSTER_NAME:-}}"
@@ -62,4 +50,3 @@ kubectl get ns kube-system
 
 echo
 echo "Cluster access validation passed."
-

@@ -213,6 +213,7 @@ print_first_run_instructions() {
     echo "AZURE_CLIENT_ID=${RESOLVED_AZURE_CLIENT_ID}"
     echo "AZURE_TENANT_ID=${RESOLVED_AZURE_TENANT_ID}"
     echo "POSTGRES_ADMIN_PASSWORD=<set this as a GitHub secret>"
+    echo "GRAFANA_ADMIN_PASSWORD=<optional now, required later if you automate the observability stack from GitHub Actions>"
     echo
     highlight_line "Secret contract note:"
     echo "- POSTGRES_ADMIN_PASSWORD is reused in Stage 1 for:"
@@ -252,7 +253,7 @@ print_manual_configuration_block() {
 
 run_first_time_backend_bootstrap() {
     print_header "Remote Terraform Backend: First Run Detected"
-    log_info "STEP 1/4 - Creating or reconciling the remote Terraform backend..."
+    log_info "STEP 1/5 - Creating or reconciling the remote Terraform backend..."
     if [[ "$SILENT_MODE" == true ]]; then
         run_command_with_context "Remote Terraform backend bootstrap" \
             "$SCRIPT_DIR/infrastructure/terraform-backend/create_remote_backend.sh" --silent
@@ -265,7 +266,7 @@ run_first_time_backend_bootstrap() {
 
 run_azure_provisioning() {
     print_header "Azure Infrastructure"
-    log_info "STEP 2/4 - Creating or reconciling Azure infrastructure (AKS + PostgreSQL)..."
+    log_info "STEP 2/5 - Creating or reconciling Azure infrastructure (AKS + PostgreSQL)..."
     if [[ "$SILENT_MODE" == true ]]; then
         run_command_with_context "Azure infrastructure provisioning (AKS + PostgreSQL)" \
             "$SCRIPT_DIR/infrastructure/azure/create_azure_resources.sh" --silent
@@ -277,25 +278,32 @@ run_azure_provisioning() {
 
 run_kubernetes_provisioning() {
     print_header "Kubernetes Resources"
-    log_info "STEP 3/4 - Creating or reconciling Kubernetes resources..."
+    log_info "STEP 3/5 - Creating or reconciling Kubernetes resources..."
     if [[ "$SILENT_MODE" == true ]]; then
         run_command_with_context "Kubernetes resources provisioning" \
-            "$SCRIPT_DIR/platform/kubernetes-resources/apply_kubernetes_resources.sh" --silent
+            "$SCRIPT_DIR/platform/kubernetes-resources/apply_dev_kubernetes_resources.sh" --silent
     else
         run_command_with_context "Kubernetes resources provisioning" \
-            "$SCRIPT_DIR/platform/kubernetes-resources/apply_kubernetes_resources.sh"
+            "$SCRIPT_DIR/platform/kubernetes-resources/apply_dev_kubernetes_resources.sh"
     fi
 
     log_info "Applying the platform-managed runtime database password secret..."
     run_command_with_context "Runtime database password secret injection" \
-        "$SCRIPT_DIR/platform/kubernetes-resources/scripts/apply_runtime_db_secret.sh"
+        "$SCRIPT_DIR/platform/kubernetes-resources/scripts/cluster/apply_runtime_db_secret.sh"
+}
+
+run_observability_install() {
+    print_header "Shared Observability Stack"
+    log_info "STEP 4/5 - Installing or reconciling the shared observability stack..."
+    run_command_with_context "Shared observability stack installation" \
+        "$SCRIPT_DIR/platform/kubernetes-resources/observability/install_dev_observability_stack.sh"
 }
 
 run_oidc_setup() {
     echo
     if confirm_continue "Do you also want to create the Azure OIDC federation configuration? Type yes or no: "; then
         print_header "Azure OIDC For GitHub"
-        log_info "STEP 4/4 - Creating or reconciling Azure OIDC for GitHub..."
+        log_info "STEP 5/5 - Creating or reconciling Azure OIDC for GitHub..."
         if [[ "$SILENT_MODE" == true ]]; then
             run_command_with_context "Azure OIDC reconciliation" \
                 "$SCRIPT_DIR/infrastructure/azure/oidc/create_az_oidc.sh" --silent
@@ -304,7 +312,7 @@ run_oidc_setup() {
                 "$SCRIPT_DIR/infrastructure/azure/oidc/create_az_oidc.sh"
         fi
     else
-        log_info "STEP 4/4 - Skipping the creation or reconciliation of Azure OIDC for GitHub."
+        log_info "STEP 5/5 - Skipping the creation or reconciliation of Azure OIDC for GitHub."
     fi
 }
 
@@ -342,13 +350,14 @@ main() {
         else
             first_run_detected=true
             log_info "Remote backend values are set, but the backend does not exist yet or is not reachable."
-            log_info "Falling back to STEP 1/4 to create or reconcile the remote Terraform backend."
+            log_info "Falling back to STEP 1/5 to create or reconcile the remote Terraform backend."
             run_first_time_backend_bootstrap
         fi
     fi
 
     run_azure_provisioning
     run_kubernetes_provisioning
+    run_observability_install
     run_oidc_setup
 
     if [[ "$first_run_detected" == true ]]; then

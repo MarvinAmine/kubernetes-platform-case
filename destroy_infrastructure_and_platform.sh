@@ -73,12 +73,12 @@ main() {
     print_header "Application"
     log_info "STEP 1/5 - Uninstalling the application Helm release..."
     run_child_step "Application Helm teardown" \
-        "$SCRIPT_DIR/application/payment-exception-review-service/destroy_app_with_helm.sh"
+        "$SCRIPT_DIR/application/payment-exception-review-service/destroy_dev_app_with_helm.sh"
 
     print_header "Kubernetes Resources"
-    log_info "STEP 2/5 - Destroying Kubernetes resources..."
+    log_info "STEP 2/5 - Destroying the shared observability stack and Kubernetes resources..."
     run_child_step "Kubernetes resources destruction" \
-        "$SCRIPT_DIR/platform/kubernetes-resources/destroy_kubernetes_resources.sh"
+        "$SCRIPT_DIR/platform/kubernetes-resources/destroy_dev_kubernetes_resources.sh"
 
     print_header "Azure Infrastructure"
     log_info "STEP 3/5 - Destroying Azure infrastructure (AKS + PostgreSQL)..."
