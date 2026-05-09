@@ -24,6 +24,9 @@ The main Stage 1 design decisions are captured in:
 - [ADR-004 - Observability and failure scenarios as core scope](./adrs/ADR-004-observability-and-failure-scenarios-as-core-scope.md)
 - [ADR-005 - Staged maturity evolution](./adrs/ADR-005-staged-maturity-evolution.md)
 
+For the remaining implementation and validation steps still planned inside
+Stage 1, see [stage1-remaining-todo.md](./stage1-remaining-todo.md).
+
 ## 1. Stage 1 purpose
 
 Stage 1 demonstrates how an **infrastructure team**, a **platform team**, and an **application team** collaborate in a controlled Kubernetes environment similar to what is expected in regulated organizations such as banks, insurers, and government-adjacent institutions.

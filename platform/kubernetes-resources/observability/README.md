@@ -136,6 +136,6 @@ After that, the local application deployment succeeded normally.
 - [Prometheus notes](./prometheus/README.md)
 - [Grafana notes](./grafana/README.md)
 - [Alertmanager notes](./alertmanager/README.md)
-- [Observability troubleshooting](./troubleshooting.md)
+- [Observability troubleshooting](./troubleshooting/README.md)
 - [Kubernetes portability note](../../../docs/kubernetes-portability.md)
 - [Platform Kubernetes resources README](../docs/README.md)

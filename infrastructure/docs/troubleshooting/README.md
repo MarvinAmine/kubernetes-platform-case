@@ -1,5 +1,7 @@
 # Infrastructure Troubleshooting
 
+[ROOT INDEX: Troubleshooting Index ->](../../../docs/troubleshooting-index.md)
+
 This directory captures real infrastructure and platform troubleshooting scenarios that came up during Stage 1 work.
 
 ## Scenario Index
