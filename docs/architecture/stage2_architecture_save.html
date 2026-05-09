@@ -429,7 +429,7 @@
 
     .vnet-grid {
       display: grid;
-      grid-template-columns: minmax(300px, 1.2fr) minmax(210px, 0.86fr);
+      grid-template-columns: minmax(180px, 0.78fr) minmax(280px, 1.1fr) minmax(210px, 0.86fr);
       gap: 18px;
       align-items: center;
     }
@@ -477,38 +477,26 @@
         radial-gradient(circle at 20% 10%, rgba(50, 108, 229, 0.10), transparent 35%),
         linear-gradient(180deg, #ffffff, #f3f7ff);
       border-radius: 18px;
-      padding: 18px;
-      display: grid;
-      grid-template-columns: minmax(120px, 150px) minmax(0, 1fr);
+      padding: 16px;
+      display: flex;
       align-items: center;
-      gap: 16px;
+      justify-content: center;
       overflow: visible;
     }
 
     .aks-header {
-      position: static;
+      position: absolute;
+      left: 50%;
+      top: 10%;
+      transform: translateX(-50%);
       display: flex;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       gap: 10px;
       color: #2559c7;
       font-weight: 850;
-      font-size: 1rem;
+      font-size: 0.95rem;
       white-space: nowrap;
-      background: rgba(255, 255, 255, 0.92);
-      padding: 6px 12px;
-      border: 1px solid rgba(50, 108, 229, 0.22);
-      border-radius: 14px;
-      z-index: 2;
-      align-self: start;
-      justify-self: start;
-    }
-
-    .aks-workloads {
-      display: grid;
-      gap: 14px;
-      justify-items: center;
-      width: 100%;
     }
 
     .right-services {
@@ -523,12 +511,18 @@
       z-index: 2;
     }
 
-    .aks-platform::after {
+    .aks-platform .azure-node {
+      position: relative;
+      z-index: 4;
+      overflow: visible;
+    }
+
+    .aks-platform .azure-node::after {
       content: "";
       position: absolute;
-      right: -42px;
+      left: 100%;
       top: 50%;
-      width: 42px;
+      width: calc(((20vw - 32px) / 3) * 0.34);
       height: 2px;
       background: var(--ms-orange);
       transform: translateY(-50%);
@@ -537,12 +531,12 @@
       pointer-events: none;
     }
 
-    .aks-platform::before {
+    .aks-platform .azure-node::before {
       content: "";
       position: absolute;
-      right: -42px;
+      left: calc(100% + min(max(calc(((20vw - 32px) / 3) * 0.34)), 120px) - 2px);
       top: 50%;
-      transform: translate(100%, -50%);
+      transform: translateY(-50%);
       border-top: 7px solid transparent;
       border-bottom: 7px solid transparent;
       border-left: 10px solid var(--ms-orange);
@@ -550,14 +544,17 @@
       pointer-events: none;
     }
 
-    .aks-platform .azure-node {
-      position: relative;
-      z-index: 4;
-      overflow: visible;
-    }
-
     .service-arrow {
       display: none;
+    }
+
+    .observability {
+      margin-top: 16px;
+    }
+
+    .observability .node {
+      max-width: none;
+      justify-content: center;
     }
 
     .storage-account {
@@ -676,16 +673,13 @@
       }
 
       .aks-platform {
-        grid-template-columns: 1fr;
+        display: grid;
+        align-content: center;
         gap: 13px;
       }
 
-      .aks-workloads {
-        justify-items: center;
-      }
-
-      .aks-platform::before,
-      .aks-platform::after {
+      .aks-platform .azure-node::before,
+      .aks-platform .azure-node::after {
         display: none;
       }
 
@@ -799,8 +793,8 @@
         <h1>Stage 1 — Dev Environment Solution Architecture</h1>
         <p>
           High-level Microsoft Azure architecture view for a governed AKS delivery foundation:
-          controlled CI/CD delivery path, operator access through Azure CLI, kubectl context, and
-          port-forwarding, AKS runtime, managed PostgreSQL, shared observability, and isolated Terraform remote state.
+          controlled CI/CD delivery path, private internal access path, private networking, AKS runtime,
+          managed PostgreSQL, observability, and isolated Terraform remote state.
         </p>
       </div>
 
@@ -870,28 +864,28 @@
             <article class="node access-node">
               <img class="node-icon" src="https://api.iconify.design/fluent:people-team-24-filled.svg?color=%23107c10" alt="Internal consumer icon" />
               <div class="node-text">
-                <div class="node-name">Internal Dev</div>
-                <div class="node-sub">Internal platform or application engineer validating the environment.</div>
+                <div class="node-name">Internal Consumer</div>
+                <div class="node-sub">Internal operator, support workflow, back-office tool, or trusted internal system.</div>
               </div>
             </article>
 
             <div class="arrow-down access-arrow" aria-hidden="true"></div>
 
             <article class="node access-node">
-              <img class="node-icon" src="https://api.iconify.design/fluent:code-24-filled.svg?color=%23107c10" alt="Azure CLI and kubectl context icon" />
+              <img class="node-icon" src="https://api.iconify.design/fluent:shield-lock-24-filled.svg?color=%23107c10" alt="Corporate network icon" />
               <div class="node-text">
-                <div class="node-name">Azure CLI / kubectl context</div>
-                <div class="node-sub">Authenticated operator access to the AKS cluster control plane.</div>
+                <div class="node-name">Corporate Network / VPN</div>
+                <div class="node-sub">Private enterprise connectivity into the Azure dev environment.</div>
               </div>
             </article>
 
             <div class="arrow-down access-arrow" aria-hidden="true"></div>
 
             <article class="node access-node">
-              <img class="node-icon" src="https://api.iconify.design/fluent:plug-connected-24-filled.svg?color=%23107c10" alt="kubectl port-forward icon" />
+              <img class="node-icon" src="https://api.iconify.design/fluent:globe-shield-24-filled.svg?color=%23107c10" alt="Private DNS icon" />
               <div class="node-text">
-                <div class="node-name">kubectl port-forward</div>
-                <div class="node-sub">Secure local access path to ClusterIP services for validation and troubleshooting.</div>
+                <div class="node-name">Private DNS</div>
+                <div class="node-sub">Internal name resolution for the private application endpoint.</div>
               </div>
             </article>
           </div>
@@ -916,7 +910,7 @@
               </svg>
               <div>
                 <h2>Azure Dev Environment</h2>
-                <p>Cloud boundary receiving both the governed delivery path and the operator access path used for secure runtime validation.</p>
+                <p>Cloud boundary receiving both the governed delivery path and the private runtime access path.</p>
               </div>
             </div>
 
@@ -939,30 +933,30 @@
               </div>
 
               <div class="vnet-grid">
+                <div class="edge-entry">
+                  <article class="node access-node">
+                    <img class="node-icon" src="https://api.iconify.design/lucide:route.svg?color=%230078d4" alt="Internal Application Gateway icon" />
+                    <div class="node-text">
+                      <div class="node-name">Internal App Gateway</div>
+                      <div class="node-sub">Private HTTP entry point at the VNet edge.</div>
+                    </div>
+                  </article>
+                  <div class="h-arrow" aria-hidden="true"></div>
+                </div>
+
                 <section class="aks-platform" aria-label="AKS Platform">
                   <div class="aks-header">
                     <img class="node-icon small" src="https://cdn.simpleicons.org/kubernetes/326CE5" alt="Kubernetes icon" />
                     AKS Platform
                   </div>
 
-                  <div class="aks-workloads">
-                    <article class="node azure-node centered">
-                      <img class="node-icon" src="https://cdn.simpleicons.org/springboot/6DB33F" alt="Spring Boot icon" />
-                      <div class="node-text">
-                        <div class="node-name">Payment Exception API</div>
-                        <div class="node-sub">Internal Spring Boot backend running as a Kubernetes workload.</div>
-                      </div>
-                    </article>
-
-                    <article class="node obs-node centered">
-                      <img class="node-icon" src="https://cdn.simpleicons.org/prometheus/E6522C" alt="Prometheus icon" />
-                      <img class="node-icon" src="https://cdn.simpleicons.org/grafana/F46800" alt="Grafana icon" />
-                      <div class="node-text">
-                        <div class="node-name">Prometheus / Grafana</div>
-                        <div class="node-sub">Shared in-cluster observability for metrics and operational dashboards.</div>
-                      </div>
-                    </article>
-                  </div>
+                  <article class="node azure-node centered">
+                    <img class="node-icon" src="https://cdn.simpleicons.org/springboot/6DB33F" alt="Spring Boot icon" />
+                    <div class="node-text">
+                      <div class="node-name">Payment Exception API</div>
+                      <div class="node-sub">Internal Spring Boot backend running as a Kubernetes workload.</div>
+                    </div>
+                  </article>
                 </section>
 
                 <div class="right-services">
@@ -978,6 +972,16 @@
                 </div>
               </div>
 
+              <div class="observability">
+                <article class="node obs-node">
+                  <img class="node-icon" src="https://cdn.simpleicons.org/prometheus/E6522C" alt="Prometheus icon" />
+                  <img class="node-icon" src="https://cdn.simpleicons.org/grafana/F46800" alt="Grafana icon" />
+                  <div class="node-text">
+                    <div class="node-name">Prometheus / Grafana</div>
+                    <div class="node-sub">Platform observability for metrics and operational dashboards.</div>
+                  </div>
+                </article>
+              </div>
             </section>
           </section>
 
