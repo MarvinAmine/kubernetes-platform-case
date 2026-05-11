@@ -12,9 +12,16 @@ OBSERVABILITY_HELM_TIMEOUT="${OBSERVABILITY_HELM_TIMEOUT:-600s}"
 VALUES_FILE_PROMETHEUS="${OBSERVABILITY_ROOT}/prometheus/kube-prometheus-stack-prometheus-values.yaml"
 VALUES_FILE_GRAFANA="${OBSERVABILITY_ROOT}/grafana/kube-prometheus-stack-grafana-values.yaml"
 VALUES_FILE_ALERTMANAGER="${OBSERVABILITY_ROOT}/alertmanager/kube-prometheus-stack-alertmanager-values.yaml"
+OBSERVABILITY_EXTRA_VALUES_FILE="${OBSERVABILITY_EXTRA_VALUES_FILE:-}"
+DASHBOARD_KUSTOMIZE_DIR="${OBSERVABILITY_ROOT}/grafana"
 
 if ! command -v helm >/dev/null 2>&1; then
     echo "ERROR: helm is required to install the observability stack."
+    exit 1
+fi
+
+if ! command -v kubectl >/dev/null 2>&1; then
+    echo "ERROR: kubectl is required to install the observability stack."
     exit 1
 fi
 
@@ -24,6 +31,10 @@ if [[ -z "$GRAFANA_ADMIN_PASSWORD" ]]; then
 fi
 
 kubectl get namespace "$MONITORING_NAMESPACE" >/dev/null 2>&1 || kubectl create namespace "$MONITORING_NAMESPACE"
+
+# Custom dashboard ConfigMaps must exist before Grafana starts because the
+# Helm-managed pod mounts them directly.
+kubectl apply -k "$DASHBOARD_KUSTOMIZE_DIR"
 
 TEMP_VALUES="$(mktemp)"
 trap 'rm -f "$TEMP_VALUES"' EXIT
@@ -37,14 +48,22 @@ EOF
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
 
+HELM_VALUES_ARGS=(
+    -f "$VALUES_FILE_PROMETHEUS"
+    -f "$VALUES_FILE_GRAFANA"
+    -f "$VALUES_FILE_ALERTMANAGER"
+    -f "$TEMP_VALUES"
+)
+
+if [[ -n "$OBSERVABILITY_EXTRA_VALUES_FILE" ]]; then
+    HELM_VALUES_ARGS+=(-f "$OBSERVABILITY_EXTRA_VALUES_FILE")
+fi
+
 helm upgrade --install "$RELEASE_NAME" \
     prometheus-community/kube-prometheus-stack \
     --namespace "$MONITORING_NAMESPACE" \
     --create-namespace \
-    -f "$VALUES_FILE_PROMETHEUS" \
-    -f "$VALUES_FILE_GRAFANA" \
-    -f "$VALUES_FILE_ALERTMANAGER" \
-    -f "$TEMP_VALUES" \
+    "${HELM_VALUES_ARGS[@]}" \
     --wait \
     --timeout "$OBSERVABILITY_HELM_TIMEOUT"
 

@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: monitoring
+
+configMapGenerator:
+  - name: payment-exception-review-overview-dashboard
+    files:
+      - payment-exception-review-overview.json=dashboards/payment-exception-review-overview.json
+  
+  - name: kubernetes-networking-namespace-pods-curated
+    files:
+      - kubernetes-networking-namespace-pods-curated.json=dashboards/kubernetes-networking-namespace-pods-curated.json
+  
+  - name: prometheus-overview-curated
+    files:
+      - prometheus-overview-curated.json=dashboards/prometheus-overview-curated.json
+generatorOptions:
+  disableNameSuffixHash: true

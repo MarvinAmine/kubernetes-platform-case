@@ -23,6 +23,7 @@ The main Stage 1 design decisions are captured in:
 - [ADR-003 - Controlled application delivery path](./adrs/ADR-003-controlled-application-delivery-path.md)
 - [ADR-004 - Observability and failure scenarios as core scope](./adrs/ADR-004-observability-and-failure-scenarios-as-core-scope.md)
 - [ADR-005 - Staged maturity evolution](./adrs/ADR-005-staged-maturity-evolution.md)
+- [ADR-015 - Use Kustomize for Grafana dashboard ConfigMap generation](./adrs/ADR-015-use-kustomize-for-grafana-dashboard-configmap-generation.md)
 
 For the remaining implementation and validation steps still planned inside
 Stage 1, see [stage1-remaining-todo.md](./stage1-remaining-todo.md).
@@ -359,6 +360,7 @@ Inside the AKS cluster, the application runs with:
 - **GitHub Actions**
 - **Docker**
 - **Helm**
+- **Kustomize**
 - **Java Spring Boot**
 - **PostgreSQL**
 - **Kubernetes RBAC**

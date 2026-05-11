@@ -58,6 +58,44 @@ This was observed on the local Kubernetes path where:
 This is a local persistence hygiene issue, not a general Prometheus or AKS
 design issue.
 
+## Permanent local fix
+
+The repository now treats this as a local-environment concern rather than a
+reason to disable Grafana persistence everywhere.
+
+Current design:
+
+- local install path: Grafana persistence disabled
+- dev / AKS install path: Grafana persistence remains enabled
+
+This keeps local rebuilds fast and repeatable while preserving a more
+production-shaped persistent Grafana setup in the governed cloud environment.
+
+The local-only override lives in:
+
+- `platform/kubernetes-resources/observability/grafana/kube-prometheus-stack-grafana-values-local.yaml`
+
+and is consumed by:
+
+- `platform/kubernetes-resources/observability/install_local_observability_stack.sh`
+
+through the shared install path.
+
+## Permanent fix validation
+
+The local-only non-persistent Grafana design was validated with a real
+Helm-triggered Grafana rollout after changing the chart values.
+
+Observed result:
+
+- the old Grafana pod terminated normally
+- the replacement Grafana pod reached `3/3 Running`
+- the previous `init-chown-data` failure did not return
+- no `Permission denied` messages were observed
+
+This confirms the repository fix works for the local lifecycle that previously
+retriggered the PVC permission failure during reinstall or upgrade.
+
 ## Diagnosis checklist
 
 Use these commands to confirm the issue:
@@ -78,7 +116,8 @@ Signals that confirm this root cause:
 
 ## Recovery runbook
 
-If you do not need to preserve local Grafana data:
+If you are still on the older persistent local setup or already hit the issue
+before the local-only persistence override was applied:
 
 1. uninstall the local observability release
 2. delete the Grafana PVC if it still exists
@@ -97,6 +136,10 @@ If you want only the observability portion again:
 ```bash
 ./platform/kubernetes-resources/observability/install_local_observability_stack.sh
 ```
+
+After the local override is in place, normal local reinstalls should no longer
+need the PVC cleanup path unless an older persistent local release is still
+being upgraded in place.
 
 ## Validation after recovery
 
@@ -129,5 +172,6 @@ http://localhost:3000
 
 This issue does not mean the shared observability stack design is broken.
 
-It means the local persistent Grafana storage can become inconsistent across
-reinstalls and may need to be reset.
+It means local Grafana persistence on `kind` was a poor fit for a disposable
+developer validation path. The durable repository fix is to keep persistence in
+dev and disable it locally.

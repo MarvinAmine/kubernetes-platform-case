@@ -148,7 +148,7 @@ For the fuller technology progression and stage-by-stage stack rationale, see
 | Cloud foundation | Azure AKS, Kubernetes, Azure OIDC / federated CI authentication | Governed cloud delivery foundation |
 | Infrastructure | Terraform, Azure Storage remote backend for Terraform state | Repeatable infrastructure bootstrap |
 | Delivery | GitHub Actions, GitHub | Controlled CI/CD path |
-| Packaging | Docker, Helm | Application packaging and deployment |
+| Packaging | Docker, Helm, Kustomize | Application packaging, deployment, and Kubernetes-native dashboard resource generation |
 | Application runtime | Java Spring Boot | Internal microservice runtime |
 | Data | PostgreSQL (Azure and Local) | Stateful service credibility |
 | Operations | Prometheus, Grafana | Probes, config validation, observability, and troubleshooting signals |

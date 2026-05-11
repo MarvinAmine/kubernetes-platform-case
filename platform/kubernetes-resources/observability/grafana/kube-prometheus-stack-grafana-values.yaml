@@ -6,3 +6,33 @@ grafana:
     enabled: true
     type: pvc
     size: 10Gi
+  podAnnotations:
+    stage1-test/revision: "3"
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: payment-exception-review
+          orgId: 1
+          folder: Payment Exception Review
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/payment-exception-review
+  extraConfigmapMounts:
+    - name: payment-exception-review-overview-dashboard
+      configMap: payment-exception-review-overview-dashboard
+      mountPath: /var/lib/grafana/dashboards/payment-exception-review/payment-exception-review-overview.json
+      subPath: payment-exception-review-overview.json
+      readOnly: true
+    - name: kubernetes-networking-namespace-pods-curated
+      configMap: kubernetes-networking-namespace-pods-curated
+      mountPath: /var/lib/grafana/dashboards/payment-exception-review/kubernetes-networking-namespace-pods-curated.json
+      subPath: kubernetes-networking-namespace-pods-curated.json
+      readOnly: true
+    - name: prometheus-overview-curated
+      configMap: prometheus-overview-curated
+      mountPath: /var/lib/grafana/dashboards/payment-exception-review/prometheus-overview-curated.json
+      subPath: prometheus-overview-curated.json
+      readOnly: true

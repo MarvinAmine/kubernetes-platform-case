@@ -26,6 +26,7 @@ These ADRs capture the structural decisions behind Stage 1 of the repository:
 - [ADR-012 - Defer advanced PostgreSQL capabilities to later stages](./ADR-012-defer-advanced-postgresql-capabilities-to-later-stages.md)
 - [ADR-013 - Use the repository-root `.env` file as the single local configuration source](./ADR-013-use-the-repository-root-env-file-as-the-single-local-configuration-source.md)
 - [ADR-014 - Separate application CI, deploy, and destroy workflows](./ADR-014-separate-application-ci-deploy-and-destroy-workflows.md)
+- [ADR-015 - Use Kustomize for Grafana dashboard ConfigMap generation](./ADR-015-use-kustomize-for-grafana-dashboard-configmap-generation.md)
 
 ## Related ADRs
 

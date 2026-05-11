@@ -12,6 +12,7 @@ Prove that an infrastructure team can bootstrap the foundation, a platform team 
 * GitHub Actions
 * Docker
 * Helm
+* Kustomize
 * Java Spring Boot
 * PostgreSQL (Azure and Local)
 * Prometheus
@@ -29,6 +30,7 @@ Prove that an infrastructure team can bootstrap the foundation, a platform team 
 * controlled deployment
 * health checks, metrics, and troubleshooting
 * stateful service credibility
+* dashboards and Kubernetes-native dashboard provisioning
 
 **Best place to formalize:**
 

@@ -49,6 +49,31 @@ Use:
 - local `.env`
 - GitHub repository secrets later if CI automates observability installation
 
+## Environment-specific persistence model
+
+Grafana persistence is intentionally split by environment:
+
+- local: disabled
+- dev / AKS: enabled
+
+Reason:
+
+- local dashboards and datasources are provisioned from code and can be
+  recreated cheaply
+- local `kind` storage repeatedly triggered `init-chown-data` permission
+  failures on Grafana restart or upgrade
+- dev remains the more production-shaped persistent environment
+
+The local-only persistence override lives in:
+
+- `kube-prometheus-stack-grafana-values-local.yaml`
+
+This local/dev split was validated through a real Grafana Helm rollout:
+
+- local Grafana restarted with a new pod template
+- the replacement pod reached `3/3 Running`
+- the earlier PVC ownership error did not return
+
 ## Default datasource behavior
 
 In the current shared stack, Grafana already provisions the Prometheus
@@ -143,6 +168,8 @@ For the local persistence permission failure that can block Grafana startup on
 local Kubernetes, see:
 
 - [Scenario 4 - Local Grafana PVC permission failure](../troubleshooting/scenario-4-local-grafana-pvc-permission-failure.md)
+- [Scenario 5 - 404 dashboard panel shows no data](../troubleshooting/scenario-5-404-dashboard-panel-shows-no-data.md)
+- [Scenario 6 - Grafana classic file provisioning rejects v2 dashboard JSON](../troubleshooting/scenario-6-grafana-classic-file-provisioning-rejects-v2-dashboard-json.md)
 
 ## Manual work still to do
 

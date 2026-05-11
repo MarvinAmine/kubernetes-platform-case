@@ -18,6 +18,8 @@ runbooks beneath them.
 - [Scenario 2 - Prometheus API query validation fails](../platform/kubernetes-resources/observability/troubleshooting/scenario-2-prometheus-api-query-missing-query-parameter.md)
 - [Scenario 3 - Grafana datasource validation fails with `127.0.0.1`](../platform/kubernetes-resources/observability/troubleshooting/scenario-3-grafana-datasource-validation-fails-with-localhost.md)
 - [Scenario 4 - Local Grafana PVC permission failure](../platform/kubernetes-resources/observability/troubleshooting/scenario-4-local-grafana-pvc-permission-failure.md)
+- [Scenario 5 - 404 dashboard panel shows no data](../platform/kubernetes-resources/observability/troubleshooting/scenario-5-404-dashboard-panel-shows-no-data.md)
+- [Scenario 6 - Grafana classic file provisioning rejects v2 dashboard JSON](../platform/kubernetes-resources/observability/troubleshooting/scenario-6-grafana-classic-file-provisioning-rejects-v2-dashboard-json.md)
 
 ## Ownership model
 
