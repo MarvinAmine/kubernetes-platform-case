@@ -42,7 +42,7 @@ jobs:
                 for name in "${required_vars[@]}"; do
                   if [[ -z "${!name:-}" ]]; then
                     echo "ERROR: Missing GitHub repository variable: ${name}."
-                    echo "Run infrastructure/provision_platform.sh and configure the repository variables described in README.md."
+                    echo "Run ./bootstrap_infrastructure_and_provision_platform.sh and configure the repository variables described in README.md."
                     exit 1
                   fi
                 done

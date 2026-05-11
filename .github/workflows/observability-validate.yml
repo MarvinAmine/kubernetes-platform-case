@@ -1,0 +1,110 @@
+name: Observability Validate
+
+on:
+    pull_request:
+        paths:
+            - 'platform/kubernetes-resources/observability/**/*.sh'
+            - 'platform/kubernetes-resources/observability/grafana/**/*.yaml'
+            - 'platform/kubernetes-resources/observability/grafana/**/*.yml'
+            - 'platform/kubernetes-resources/observability/grafana/**/*.json'
+            - 'platform/kubernetes-resources/observability/prometheus/**/*.yaml'
+            - 'platform/kubernetes-resources/observability/prometheus/**/*.yml'
+            - 'platform/kubernetes-resources/observability/alertmanager/**/*.yaml'
+            - 'platform/kubernetes-resources/observability/alertmanager/**/*.yml'
+            - '.github/workflows/observability-*.yml'
+    push:
+        branches:
+            - main
+        paths:
+            - 'platform/kubernetes-resources/observability/**/*.sh'
+            - 'platform/kubernetes-resources/observability/grafana/**/*.yaml'
+            - 'platform/kubernetes-resources/observability/grafana/**/*.yml'
+            - 'platform/kubernetes-resources/observability/grafana/**/*.json'
+            - 'platform/kubernetes-resources/observability/prometheus/**/*.yaml'
+            - 'platform/kubernetes-resources/observability/prometheus/**/*.yml'
+            - 'platform/kubernetes-resources/observability/alertmanager/**/*.yaml'
+            - 'platform/kubernetes-resources/observability/alertmanager/**/*.yml'
+            - '.github/workflows/observability-*.yml'
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    observability-validate:
+        runs-on: ubuntu-latest
+
+        env:
+            MONITORING_NAMESPACE: monitoring
+            RELEASE_NAME: kube-prometheus-stack
+            VALUES_FILE_PROMETHEUS: platform/kubernetes-resources/observability/prometheus/kube-prometheus-stack-prometheus-values.yaml
+            VALUES_FILE_GRAFANA: platform/kubernetes-resources/observability/grafana/kube-prometheus-stack-grafana-values.yaml
+            VALUES_FILE_GRAFANA_LOCAL: platform/kubernetes-resources/observability/grafana/kube-prometheus-stack-grafana-values-local.yaml
+            VALUES_FILE_ALERTMANAGER: platform/kubernetes-resources/observability/alertmanager/kube-prometheus-stack-alertmanager-values.yaml
+            DASHBOARD_KUSTOMIZE_DIR: platform/kubernetes-resources/observability/grafana
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup kubectl
+              uses: azure/setup-kubectl@v4
+
+            - name: Setup Helm
+              uses: azure/setup-helm@v4
+
+            - name: Verify observability shell script syntax
+              run: |
+                while IFS= read -r script; do
+                    echo "Checking ${script}"
+                    bash -n "${script}"
+                done < <(find platform/kubernetes-resources/observability -type f -name '*.sh' | sort)
+
+            - name: Validate Grafana dashboard Kustomize render
+              run: kubectl kustomize "${DASHBOARD_KUSTOMIZE_DIR}" > /tmp/observability-grafana-dashboards.yaml
+
+            - name: Add kube-prometheus-stack chart repository
+              run: helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+
+            - name: Validate shared observability Helm render
+              run: |
+                TEMP_VALUES="$(mktemp)"
+                trap 'rm -f "$TEMP_VALUES"' EXIT
+
+                cat > "$TEMP_VALUES" <<EOF
+                grafana:
+                  adminUser: dummy-validation-admin-user
+                  adminPassword: dummy-validation-admin-password
+                EOF
+
+                helm repo update
+
+                helm template "${RELEASE_NAME}" \
+                    prometheus-community/kube-prometheus-stack \
+                    --namespace "${MONITORING_NAMESPACE}" \
+                    -f "${VALUES_FILE_PROMETHEUS}" \
+                    -f "${VALUES_FILE_GRAFANA}" \
+                    -f "${VALUES_FILE_ALERTMANAGER}" \
+                    -f "$TEMP_VALUES" \
+                    > /tmp/observability-shared-render.yaml
+
+            - name: Validate local observability Helm render
+              run: |
+                TEMP_VALUES="$(mktemp)"
+                trap 'rm -f "$TEMP_VALUES"' EXIT
+
+                cat > "$TEMP_VALUES" <<EOF
+                grafana:
+                  adminUser: dummy-validation-admin-user
+                  adminPassword: dummy-validation-admin-password
+                EOF
+
+                helm template "${RELEASE_NAME}" \
+                    prometheus-community/kube-prometheus-stack \
+                    --namespace "${MONITORING_NAMESPACE}" \
+                    -f "${VALUES_FILE_PROMETHEUS}" \
+                    -f "${VALUES_FILE_GRAFANA}" \
+                    -f "${VALUES_FILE_ALERTMANAGER}" \
+                    -f "$TEMP_VALUES" \
+                    -f "${VALUES_FILE_GRAFANA_LOCAL}" \
+                    > /tmp/observability-local-render.yaml
