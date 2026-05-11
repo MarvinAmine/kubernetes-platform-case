@@ -1,147 +1,148 @@
 name: Kubernetes Resources
 
 on:
-    push:
-        paths:
-            - 'platform/kubernetes-resources/terraform/**'
-            - '.github/workflows/kubernetes-resources-provision.yml'
-    workflow_dispatch:
+  push:
+    paths:
+      - 'platform/kubernetes-resources/terraform/**'
+      - '.github/workflows/kubernetes-resources-provision.yml'
+  workflow_dispatch:
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-    terraform-bootstrap:
-        runs-on: ubuntu-latest
+  terraform-bootstrap:
+    runs-on: ubuntu-latest
 
-        defaults:
-            run:
-                working-directory: platform/kubernetes-resources/terraform
-        
-        env:
-            TF_BACKEND_RESOURCE_GROUP: ${{ vars.TF_BACKEND_RESOURCE_GROUP }}
-            TF_BACKEND_STORAGE_ACCOUNT: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT }}
-            TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER }}
-            EXPECTED_RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
-            EXPECTED_AKS_CLUSTER_NAME: ${{ vars.AKS_CLUSTER_NAME }}
-            EXPECTED_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-            APP_NAMESPACE: payment-exception-review-stage1
-            DB_PASSWORD_SECRET_NAME: payment-review-db
-            DB_PASSWORD_SECRET_KEY: POSTGRES_ADMIN_PASSWORD
-            DB_PASSWORD_SECRET_VALUE: ${{ secrets.POSTGRES_ADMIN_PASSWORD }}
+    defaults:
+      run:
+        working-directory: platform/kubernetes-resources/terraform
 
-            ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-            ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-            ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    env:
+      TF_BACKEND_RESOURCE_GROUP: ${{ vars.TF_BACKEND_RESOURCE_GROUP }}
+      TF_BACKEND_STORAGE_ACCOUNT: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT }}
+      TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER }}
+      EXPECTED_RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
+      EXPECTED_AKS_CLUSTER_NAME: ${{ vars.AKS_CLUSTER_NAME }}
+      EXPECTED_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      APP_NAMESPACE: payment-exception-review-stage1
+      DB_PASSWORD_SECRET_NAME: payment-review-db
+      DB_PASSWORD_SECRET_KEY: POSTGRES_ADMIN_PASSWORD
+      DB_PASSWORD_SECRET_VALUE: ${{ secrets.POSTGRES_ADMIN_PASSWORD }}
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            - name: Preflight repository configuration
-              run: |
-                required_vars=(
-                  TF_BACKEND_RESOURCE_GROUP
-                  TF_BACKEND_STORAGE_ACCOUNT
-                  TF_BACKEND_CONTAINER
-                  EXPECTED_RESOURCE_GROUP
-                  EXPECTED_AKS_CLUSTER_NAME
-                )
-                for name in "${required_vars[@]}"; do
-                  if [[ -z "${!name:-}" ]]; then
-                    echo "ERROR: Missing GitHub repository variable: ${name}."
-                    echo "Run ./bootstrap_infrastructure_and_provision_platform.sh and configure the repository variables described in README.md."
-                    exit 1
-                  fi
-                done
+      - name: Preflight repository configuration
+        run: |
+          required_vars=(
+            TF_BACKEND_RESOURCE_GROUP
+            TF_BACKEND_STORAGE_ACCOUNT
+            TF_BACKEND_CONTAINER
+            EXPECTED_RESOURCE_GROUP
+            EXPECTED_AKS_CLUSTER_NAME
+          )
+          for name in "${required_vars[@]}"; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "ERROR: Missing GitHub repository variable: ${name}."
+              echo "Run ./bootstrap_infrastructure_and_provision_platform.sh and configure the repository variables described in README.md."
+              exit 1
+            fi
+          done
 
-                required_secrets=(
-                  ARM_CLIENT_ID
-                  ARM_TENANT_ID
-                  ARM_SUBSCRIPTION_ID
-                  DB_PASSWORD_SECRET_VALUE
-                )
-                for name in "${required_secrets[@]}"; do
-                  if [[ -z "${!name:-}" ]]; then
-                    echo "ERROR: Missing GitHub repository secret backing: ${name}."
-                    echo "Run infrastructure/azure/oidc/create_az_oidc.sh and configure the repository secrets described in README.md."
-                    exit 1
-                  fi
-                done
+          required_secrets=(
+            ARM_CLIENT_ID
+            ARM_TENANT_ID
+            ARM_SUBSCRIPTION_ID
+            DB_PASSWORD_SECRET_VALUE
+          )
+          for name in "${required_secrets[@]}"; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "ERROR: Missing GitHub repository secret backing: ${name}."
+              echo "Run infrastructure/azure/oidc/create_az_oidc.sh and configure the repository secrets described in README.md."
+              exit 1
+            fi
+          done
 
-            - name: Azure login with OIDC
-              uses: azure/login@v2
-              with:
-                client-id: ${{ secrets.AZURE_CLIENT_ID }}
-                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Azure login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-            - name: Preflight Azure backend access
-              run: |
-                az storage account show \
-                  --name "${TF_BACKEND_STORAGE_ACCOUNT}" \
-                  --resource-group "${TF_BACKEND_RESOURCE_GROUP}" \
-                  --output none
-                
-                az storage container show \
-                  --name "${TF_BACKEND_CONTAINER}" \
-                  --account-name "${TF_BACKEND_STORAGE_ACCOUNT}" \
-                  --auth-mode login \
-                  --output none 
-            
-            - name: Preflight AKS cluster existence
-              run: |
-                az aks show \
-                  --resource-group "${EXPECTED_RESOURCE_GROUP}" \
-                  --name "${EXPECTED_AKS_CLUSTER_NAME}" \
-                  --output none
+      - name: Preflight Azure backend access
+        run: |
+          az storage account show \
+            --name "${TF_BACKEND_STORAGE_ACCOUNT}" \
+            --resource-group "${TF_BACKEND_RESOURCE_GROUP}" \
+            --output none
 
-            - name: Get AKS credentials
-              run: |
-                az aks get-credentials --resource-group "${EXPECTED_RESOURCE_GROUP}" \
-                  --name "${EXPECTED_AKS_CLUSTER_NAME}" --overwrite-existing
-            
-            - name: Setup Terraform
-              uses: hashicorp/setup-terraform@v3
+          az storage container show \
+            --name "${TF_BACKEND_CONTAINER}" \
+            --account-name "${TF_BACKEND_STORAGE_ACCOUNT}" \
+            --auth-mode login \
+            --output none
 
-            - name: Terraform Format Check
-              run: terraform fmt -check -diff    
+      - name: Preflight AKS cluster existence
+        run: |
+          az aks show \
+            --resource-group "${EXPECTED_RESOURCE_GROUP}" \
+            --name "${EXPECTED_AKS_CLUSTER_NAME}" \
+            --output none
 
-            - name: Verify Azure subscription
-              run: |
-                echo "Expected subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}"
-                echo "Active subscription: $(az account show --query id -o tsv)"
-                test "${{ secrets.AZURE_SUBSCRIPTION_ID }}" = "$(az account show --query id -o tsv)"
+      - name: Get AKS credentials
+        run: |
+          az aks get-credentials \
+            --resource-group "${EXPECTED_RESOURCE_GROUP}" \
+            --name "${EXPECTED_AKS_CLUSTER_NAME}" \
+            --overwrite-existing
 
-            - name: Verify kubectl context
-              run: |
-                echo "Current kubectl context:"
-                kubectl config current-context
-                echo
-                echo "Cluster info:"
-                kubectl cluster-info
-                echo "kube-system namespace:"
-                kubectl get ns kube-system     
-            
-            - name: Terraform Init
-              run: |
-                terraform init -reconfigure \
-                  -backend-config="resource_group_name=${TF_BACKEND_RESOURCE_GROUP}" \
-                  -backend-config="storage_account_name=${TF_BACKEND_STORAGE_ACCOUNT}" \
-                  -backend-config="container_name=${TF_BACKEND_CONTAINER}" \
-                  -backend-config="key=platform/kubernetes-resources/terraform.tfstate" \
-                  -backend-config="use_azuread_auth=true"
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
 
-            - name: Terraform Validate
-              run: terraform validate
-            
-            - name: Terraform Plan
-              run: terraform plan
+      - name: Terraform Format Check
+        run: terraform fmt -check -diff
 
-            - name: Terraform Apply
-              if: github.event_name == 'workflow_dispatch'
-              run: terraform apply -auto-approve  
+      - name: Verify Azure subscription
+        run: |
+          echo "Expected subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          echo "Active subscription: $(az account show --query id -o tsv)"
+          test "${{ secrets.AZURE_SUBSCRIPTION_ID }}" = "$(az account show --query id -o tsv)"
+
+      - name: Verify kubectl context
+        run: |
+          echo "Current kubectl context:"
+          kubectl config current-context
+          echo
+          echo "Cluster info:"
+          kubectl cluster-info
+          echo "kube-system namespace:"
+          kubectl get ns kube-system
+
+      - name: Terraform Init
+        run: |
+          terraform init -reconfigure \
+            -backend-config="resource_group_name=${TF_BACKEND_RESOURCE_GROUP}" \
+            -backend-config="storage_account_name=${TF_BACKEND_STORAGE_ACCOUNT}" \
+            -backend-config="container_name=${TF_BACKEND_CONTAINER}" \
+            -backend-config="key=platform/kubernetes-resources/terraform.tfstate" \
+            -backend-config="use_azuread_auth=true"
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan
+
+      - name: Terraform Apply
+        if: github.event_name == 'workflow_dispatch'
+        run: terraform apply -auto-approve
 
       - name: Apply runtime database password secret
         if: github.event_name == 'workflow_dispatch'
