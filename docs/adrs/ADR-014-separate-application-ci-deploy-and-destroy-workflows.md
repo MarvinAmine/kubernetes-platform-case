@@ -25,9 +25,9 @@ These concerns do not have the same purpose, trigger model, or risk profile:
 
 The repository will use separate GitHub Actions workflows for the application lifecycle:
 
-- `app-ci.yml` for compile, test, and verify
-- `app-deploy.yml` for application delivery into Kubernetes
-- `app-destroy.yml` for explicit application teardown
+- `application-app-ci.yml` for compile, test, and verify
+- `application-app-deploy.yml` for application delivery into Kubernetes
+- `application-app-destroy.yml` for explicit application teardown
 
 The application CI workflow is allowed to run automatically on `push` and `pull_request`.
 

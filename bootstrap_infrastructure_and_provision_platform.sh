@@ -8,18 +8,35 @@ source "$SCRIPT_DIR/commons/scripts/common_logging.sh"
 
 usage() {
     cat <<'EOF'
-Usage: ./bootstrap_infrastructure_and_provision_platform.sh [--silent|-s] [--help|-h]
+Usage: ./bootstrap_infrastructure_and_provision_platform.sh [--silent|-s] [--video|-v] [--help|-h]
 
 Options:
   -s, --silent   Show concise terminal logs and write detailed command output to log files in logs/.
+  -v, --video    Redact end-of-run secret and identifier values for demos or screen recordings.
   -h, --help     Show this help message.
 
 Default behavior is verbose to make the provisioning flow easier to debug for newcomers.
 EOF
 }
 
+VIDEO_MODE=false
+
 parse_args() {
-    parse_silent_flag "$@"
+    local args=()
+    local arg
+
+    for arg in "$@"; do
+        case "$arg" in
+            -v|--video)
+                VIDEO_MODE=true
+                ;;
+            *)
+                args+=("$arg")
+                ;;
+        esac
+    done
+
+    parse_silent_flag "${args[@]}"
 
     if [[ ${#REMAINING_ARGS[@]} -eq 0 ]]; then
         return 0
@@ -37,6 +54,14 @@ parse_args() {
             exit 1
             ;;
     esac
+}
+
+redact_for_video() {
+    if [[ "$VIDEO_MODE" == true ]]; then
+        echo "[REDACTED FOR VIDEO]"
+    else
+        echo "$1"
+    fi
 }
 
 print_header() {
@@ -209,11 +234,11 @@ print_first_run_instructions() {
     echo "POSTGRES_ZONE=${POSTGRES_ZONE:-1}"
     echo
     highlight_line "Confirm these GitHub repository secrets are set:"
-    echo "AZURE_SUBSCRIPTION_ID=${SUBSCRIPTION_ID:-<your-subscription-id>}"
-    echo "AZURE_CLIENT_ID=${RESOLVED_AZURE_CLIENT_ID}"
-    echo "AZURE_TENANT_ID=${RESOLVED_AZURE_TENANT_ID}"
-    echo "POSTGRES_ADMIN_PASSWORD=<set this as a GitHub secret>"
-    echo "GRAFANA_ADMIN_PASSWORD=<optional now, required later if you automate the observability stack from GitHub Actions>"
+    echo "AZURE_SUBSCRIPTION_ID=$(redact_for_video "${SUBSCRIPTION_ID:-<your-subscription-id>}")"
+    echo "AZURE_CLIENT_ID=$(redact_for_video "$RESOLVED_AZURE_CLIENT_ID")"
+    echo "AZURE_TENANT_ID=$(redact_for_video "$RESOLVED_AZURE_TENANT_ID")"
+    echo "POSTGRES_ADMIN_PASSWORD=$(redact_for_video "<set this as a GitHub secret>")"
+    echo "GRAFANA_ADMIN_PASSWORD=$(redact_for_video "<optional now, required later if you automate the observability stack from GitHub Actions>")"
     echo
     highlight_line "Secret contract note:"
     echo "- POSTGRES_ADMIN_PASSWORD is reused in Stage 1 for:"
@@ -305,11 +330,21 @@ run_oidc_setup() {
         print_header "Azure OIDC For GitHub"
         log_info "STEP 5/5 - Creating or reconciling Azure OIDC for GitHub..."
         if [[ "$SILENT_MODE" == true ]]; then
-            run_command_with_context "Azure OIDC reconciliation" \
-                "$SCRIPT_DIR/infrastructure/azure/oidc/create_az_oidc.sh" --silent
+            if [[ "$VIDEO_MODE" == true ]]; then
+                run_command_with_context "Azure OIDC reconciliation" \
+                    "$SCRIPT_DIR/infrastructure/azure/oidc/create_az_oidc.sh" --silent --video
+            else
+                run_command_with_context "Azure OIDC reconciliation" \
+                    "$SCRIPT_DIR/infrastructure/azure/oidc/create_az_oidc.sh" --silent
+            fi
         else
-            run_command_with_context "Azure OIDC reconciliation" \
-                "$SCRIPT_DIR/infrastructure/azure/oidc/create_az_oidc.sh"
+            if [[ "$VIDEO_MODE" == true ]]; then
+                run_command_with_context "Azure OIDC reconciliation" \
+                    "$SCRIPT_DIR/infrastructure/azure/oidc/create_az_oidc.sh" --video
+            else
+                run_command_with_context "Azure OIDC reconciliation" \
+                    "$SCRIPT_DIR/infrastructure/azure/oidc/create_az_oidc.sh"
+            fi
         fi
     else
         log_info "STEP 5/5 - Skipping the creation or reconciliation of Azure OIDC for GitHub."
@@ -330,6 +365,9 @@ main() {
         log_info "Main log file: $LOG_FILE"
     else
         log_info "Verbose mode enabled by default to help debug the provisioning flow."
+    fi
+    if [[ "$VIDEO_MODE" == true ]]; then
+        log_info "Video mode enabled. End-of-run secret and identifier values will be redacted."
     fi
 
     ensure_env_file_exists

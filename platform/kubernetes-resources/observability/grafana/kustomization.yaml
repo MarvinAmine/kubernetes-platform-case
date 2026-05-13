@@ -3,9 +3,13 @@ kind: Kustomization
 namespace: monitoring
 
 configMapGenerator:
-  - name: payment-exception-review-overview-dashboard
+  - name: payment-exception-review-platform-runtime-dashboard
     files:
-      - payment-exception-review-overview.json=dashboards/payment-exception-review-overview.json
+      - payment-exception-review-platform-runtime.json=dashboards/payment-exception-review-platform-runtime.json
+
+  - name: payment-exception-review-service-health-dashboard
+    files:
+      - payment-exception-review-service-health.json=staged/reliability/payment-exception-review-service-health.json
   
   - name: kubernetes-networking-namespace-pods-curated
     files:

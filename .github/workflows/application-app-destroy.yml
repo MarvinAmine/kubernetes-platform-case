@@ -1,4 +1,4 @@
-name: Observability Provision
+name: Application App Destroy
 
 on:
     workflow_dispatch:
@@ -8,17 +8,14 @@ permissions:
     contents: read
 
 jobs:
-    observability-provision:
+    app-destroy:
         runs-on: ubuntu-latest
 
         env:
-            MONITORING_NAMESPACE: monitoring
-            RELEASE_NAME: kube-prometheus-stack
-            GRAFANA_ADMIN_USER: admin
-            GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+            APP_NAMESPACE: payment-exception-review-stage1
+            RELEASE_NAME: payment-exception-review-service
             EXPECTED_RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
             EXPECTED_AKS_CLUSTER_NAME: ${{ vars.AKS_CLUSTER_NAME }}
-            EXPECTED_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
             ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
             ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
             ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -44,7 +41,6 @@ jobs:
                     ARM_CLIENT_ID
                     ARM_TENANT_ID
                     ARM_SUBSCRIPTION_ID
-                    GRAFANA_ADMIN_PASSWORD
                 )
                 for name in "${required_secrets[@]}"; do
                     if [[ -z "${!name:-}" ]]; then
@@ -70,17 +66,17 @@ jobs:
             - name: Setup Helm
               uses: azure/setup-helm@v4
 
-            - name: Preflight AKS access
-              run: |
-                kubectl config current-context
-                kubectl cluster-info
-                kubectl get ns kube-system
+            - name: Preflight Kubernetes namespace
+              run: kubectl get namespace "${APP_NAMESPACE}"
 
-            - name: Install shared observability stack
-              run: bash ./platform/kubernetes-resources/observability/install_dev_observability_stack.sh
-
-            - name: Verify shared observability stack
+            - name: Uninstall Helm release
               run: |
-                kubectl get ns "${MONITORING_NAMESPACE}"
-                kubectl get pods -n "${MONITORING_NAMESPACE}"
-                kubectl get svc -n "${MONITORING_NAMESPACE}"
+                if helm status "${RELEASE_NAME}" --namespace "${APP_NAMESPACE}" >/dev/null 2>&1; then
+                    helm uninstall "${RELEASE_NAME}" --namespace "${APP_NAMESPACE}"
+                else
+                    echo "Release ${RELEASE_NAME} does not exist in namespace ${APP_NAMESPACE}. Nothing to uninstall."
+                fi
+
+            - name: Verify application removal
+              run: |
+                kubectl get all -n "${APP_NAMESPACE}"

@@ -1,4 +1,4 @@
-name: Observability Destroy
+name: Platform Observability Provision
 
 on:
     workflow_dispatch:
@@ -8,12 +8,14 @@ permissions:
     contents: read
 
 jobs:
-    observability-destroy:
+    observability-provision:
         runs-on: ubuntu-latest
 
         env:
             MONITORING_NAMESPACE: monitoring
             RELEASE_NAME: kube-prometheus-stack
+            GRAFANA_ADMIN_USER: admin
+            GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
             EXPECTED_RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
             EXPECTED_AKS_CLUSTER_NAME: ${{ vars.AKS_CLUSTER_NAME }}
             EXPECTED_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -42,6 +44,7 @@ jobs:
                     ARM_CLIENT_ID
                     ARM_TENANT_ID
                     ARM_SUBSCRIPTION_ID
+                    GRAFANA_ADMIN_PASSWORD
                 )
                 for name in "${required_secrets[@]}"; do
                     if [[ -z "${!name:-}" ]]; then
@@ -67,8 +70,17 @@ jobs:
             - name: Setup Helm
               uses: azure/setup-helm@v4
 
-            - name: Uninstall shared observability stack
-              run: bash ./platform/kubernetes-resources/observability/destroy_dev_observability_stack.sh
+            - name: Preflight AKS access
+              run: |
+                kubectl config current-context
+                kubectl cluster-info
+                kubectl get ns kube-system
 
-            - name: Verify shared observability removal
-              run: kubectl get all -n "${MONITORING_NAMESPACE}"
+            - name: Install shared observability stack
+              run: bash ./platform/kubernetes-resources/observability/install_dev_observability_stack.sh
+
+            - name: Verify shared observability stack
+              run: |
+                kubectl get ns "${MONITORING_NAMESPACE}"
+                kubectl get pods -n "${MONITORING_NAMESPACE}"
+                kubectl get svc -n "${MONITORING_NAMESPACE}"

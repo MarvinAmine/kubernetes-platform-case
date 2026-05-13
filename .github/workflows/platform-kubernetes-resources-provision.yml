@@ -1,10 +1,10 @@
-name: Kubernetes Resources
+name: Platform Kubernetes Resources Provision
 
 on:
   push:
     paths:
       - 'platform/kubernetes-resources/terraform/**'
-      - '.github/workflows/kubernetes-resources-provision.yml'
+      - '.github/workflows/platform-kubernetes-resources-provision.yml'
   workflow_dispatch:
 
 permissions:

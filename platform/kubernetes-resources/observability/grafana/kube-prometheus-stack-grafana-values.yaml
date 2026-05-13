@@ -21,10 +21,15 @@ grafana:
           options:
             path: /var/lib/grafana/dashboards/payment-exception-review
   extraConfigmapMounts:
-    - name: payment-exception-review-overview-dashboard
-      configMap: payment-exception-review-overview-dashboard
-      mountPath: /var/lib/grafana/dashboards/payment-exception-review/payment-exception-review-overview.json
-      subPath: payment-exception-review-overview.json
+    - name: payment-exception-review-platform-runtime-dashboard
+      configMap: payment-exception-review-platform-runtime-dashboard
+      mountPath: /var/lib/grafana/dashboards/payment-exception-review/payment-exception-review-platform-runtime.json
+      subPath: payment-exception-review-platform-runtime.json
+      readOnly: true
+    - name: payment-exception-review-service-health-dashboard
+      configMap: payment-exception-review-service-health-dashboard
+      mountPath: /var/lib/grafana/dashboards/payment-exception-review/payment-exception-review-service-health.json
+      subPath: payment-exception-review-service-health.json
       readOnly: true
     - name: kubernetes-networking-namespace-pods-curated
       configMap: kubernetes-networking-namespace-pods-curated

@@ -275,17 +275,17 @@ The remaining standard GitHub Actions path is:
 | Layer | Already created by the bootstrap script? | Remaining to create from GitHub Actions? | Workflow | Why it still matters |
 | --- | --- | --- | --- | --- |
 | Remote Terraform backend | Yes | No | none | it is a bootstrap prerequisite before the normal cloud workflows can use remote Terraform state |
-| Azure foundation | Yes | Usually no | `azure-provision.yml` | use later when you want the standard Infrastructure team reconciliation path from GitHub Actions |
-| Kubernetes resources | Yes | Usually no | `kubernetes-resources-provision.yml` | use later when you want the standard Platform team reconciliation path from GitHub Actions |
-| Shared observability | Yes | Usually no | `observability-provision.yml` | use later when you want the standard Platform team observability reconciliation path from GitHub Actions |
-| Application | No | Yes | `app-deploy.yml` | this is usually the main remaining GitHub Actions step after a successful full bootstrap |
+| Azure foundation | Yes | Usually no | `infrastructure-azure-provision.yml` | use later when you want the standard Infrastructure team reconciliation path from GitHub Actions |
+| Kubernetes resources | Yes | Usually no | `platform-kubernetes-resources-provision.yml` | use later when you want the standard Platform team reconciliation path from GitHub Actions |
+| Shared observability | Yes | Usually no | `platform-observability-provision.yml` | use later when you want the standard Platform team observability reconciliation path from GitHub Actions |
+| Application | No | Yes | `application-app-deploy.yml` | this is usually the main remaining GitHub Actions step after a successful full bootstrap |
 
 Important exceptions:
 - the remote Terraform backend is still a bootstrap concern and is not part of
   the normal GitHub Actions workflow chain
 - after a successful full bootstrap, the main remaining GitHub Actions action
-  is usually `app-deploy.yml`
-- `observability-provision.yml` and `app-deploy.yml` are manual
+  is usually `application-app-deploy.yml`
+- `platform-observability-provision.yml` and `application-app-deploy.yml` are manual
   `workflow_dispatch` workflows
 
 The detailed workflow matrix, destroy order, and credential paths are in:
@@ -319,7 +319,7 @@ It destroys:
 │            GitHub                            │
 │----------------------------------------------│
 │ infrastructure/azure/terraform/              │
-│ .github/workflows/azure-provision.yml        │
+│ .github/workflows/infrastructure-azure-provision.yml        │
 └──────────────────────────────────────────────┘
       │
       │ triggers
@@ -366,7 +366,7 @@ It destroys:
 This layer is represented by:
 
 - `./infrastructure/azure/create_azure_resources.sh`
-- `.github/workflows/azure-provision.yml`
+- `.github/workflows/infrastructure-azure-provision.yml`
 
 ## 2. KUBERNETES BOOTSTRAP PATH MANAGED BY THE PLATFORM TEAM
 
@@ -434,7 +434,7 @@ This layer is represented by:
 This layer is represented by:
 
 - `./platform/kubernetes-resources/apply_dev_kubernetes_resources.sh`
-- `.github/workflows/kubernetes-resources-provision.yml`
+- `.github/workflows/platform-kubernetes-resources-provision.yml`
 
 ## 3. APP DELIVERY PATH USED BY THE APPLICATION TEAM 
 
@@ -454,9 +454,9 @@ This layer is represented by:
 │ - Helm chart                 │
 │ - app docs                   │
 │ .github/workflows/           │
-│ - app-ci.yml                 │
-│ - app-deploy.yml             │
-│ - app-destroy.yml            │
+│ - application-app-ci.yml                 │
+│ - application-app-deploy.yml             │
+│ - application-app-destroy.yml            │
 └──────────────────────────────┘
       │
       │ triggers
@@ -647,15 +647,15 @@ The structure below represents the current Stage 1 repository architecture:
 kubernetes-platform-case/
 ├── .github/
 │   └── workflows/
-│       ├── azure-provision.yml
-│       ├── azure-destroy.yml
-│       ├── observability-provision.yml
-│       ├── observability-destroy.yml
-│       ├── kubernetes-resources-provision.yml
-│       ├── kubernetes-resources-destroy.yml
-│       ├── app-ci.yml
-│       ├── app-deploy.yml
-│       └── app-destroy.yml
+│       ├── infrastructure-azure-provision.yml
+│       ├── infrastructure-azure-destroy.yml
+│       ├── platform-observability-provision.yml
+│       ├── platform-observability-destroy.yml
+│       ├── platform-kubernetes-resources-provision.yml
+│       ├── platform-kubernetes-resources-destroy.yml
+│       ├── application-app-ci.yml
+│       ├── application-app-deploy.yml
+│       └── application-app-destroy.yml
 │
 ├── .env
 ├── .env.example

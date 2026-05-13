@@ -108,18 +108,24 @@ For Stage 1, the dashboard source of truth should be a separate JSON file in
 the repository, not a very long inline JSON blob committed directly inside a
 Kubernetes ConfigMap manifest.
 
-Recommended location:
+Recommended locations:
 
-- `dashboards/`
+- Platform-owned shared dashboards:
+  `dashboards/`
+- Reliability-owned service dashboards:
+  `../../../../reliability/observability/grafana/dashboards/`
 
 Recommended naming style:
 
 - one dashboard per file
 - clear service or platform scope in the filename
 
-Example:
+Examples:
 
-- `dashboards/payment-exception-review-overview.json`
+- `dashboards/prometheus-overview-curated.json`
+- `dashboards/kubernetes-networking-namespace-pods-curated.json`
+- `dashboards/payment-exception-review-platform-runtime.json`
+- `../../../../reliability/observability/grafana/dashboards/payment-exception-review-service-health.json`
 
 That keeps the repo easier to review and lets the ConfigMap generation or
 application logic stay separate from the dashboard content itself.
@@ -135,7 +141,7 @@ This is the usual platform-oriented workflow for Grafana dashboards:
 4. create the dashboard in the Grafana UI first
 5. save and validate the dashboard visually
 6. export the dashboard JSON from Grafana
-7. store that exported JSON in the repository under `dashboards/`
+7. store that exported JSON in the repository under the owning team location
 8. clean up any obviously environment-specific noise before committing it
 9. only then wire that JSON into the Kubernetes ConfigMap or generation logic
 
@@ -171,29 +177,14 @@ local Kubernetes, see:
 - [Scenario 5 - 404 dashboard panel shows no data](../troubleshooting/scenario-5-404-dashboard-panel-shows-no-data.md)
 - [Scenario 6 - Grafana classic file provisioning rejects v2 dashboard JSON](../troubleshooting/scenario-6-grafana-classic-file-provisioning-rejects-v2-dashboard-json.md)
 
-## Manual work still to do
+## Ownership split
 
-This repository intentionally stops at the documentation and folder-structure
-stage for dashboard provisioning.
+- Platform team owns the shared Grafana stack, provider wiring, Helm values,
+  lifecycle scripts, and shared platform dashboards under
+  `platform/kubernetes-resources/observability/`.
+- Reliability Team owns service-specific dashboard JSON content under
+  `reliability/observability/grafana/dashboards/`.
 
-The remaining implementation work should be written manually:
-
-1. create the real dashboard JSON file under `dashboards/`
-2. create the Kubernetes ConfigMap manifest that wraps that JSON
-3. create the install logic that applies the ConfigMap
-4. create the destroy logic that removes the ConfigMap
-5. wire those steps into the existing local and dev observability lifecycle if
-   you decide that Stage 1 should provision dashboards automatically
-
-Recommended manual deliverables:
-
-- `dashboards/payment-exception-review-overview.json`
-- a Grafana dashboard ConfigMap manifest
-- install hook or script update for the shared observability path
-- destroy hook or script update for the shared observability path
-
-Keep the roles separated:
-
-- the dashboard content stays in the JSON file
-- the Kubernetes wrapping stays in the ConfigMap manifest
-- the lifecycle integration stays in the install and destroy logic
+This keeps the operational content separate from the Platform-owned shared
+observability stack while still letting Kustomize generate the dashboard
+ConfigMaps for Grafana.

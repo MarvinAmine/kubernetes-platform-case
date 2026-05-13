@@ -1,0 +1,81 @@
+name: Reliability Observability Dashboard Validate
+
+on:
+  pull_request:
+    paths:
+      - 'reliability/observability/grafana/dashboards/**/*.json'
+      - '.github/workflows/reliability-observability-dashboard-validate.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'reliability/observability/grafana/dashboards/**/*.json'
+      - '.github/workflows/reliability-observability-dashboard-validate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reliability-observability-dashboard-validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Stage reliability dashboard into shared Grafana Kustomize tree
+        run: ./platform/kubernetes-resources/observability/grafana/sync_reliability_dashboards.sh
+
+      - name: Validate reliability dashboard JSON and shared render contract
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          dashboard_dir = Path("reliability/observability/grafana/dashboards")
+          files = sorted(dashboard_dir.glob("*.json"))
+
+          if not files:
+              print(f"ERROR: no dashboard JSON files found in {dashboard_dir}", file=sys.stderr)
+              sys.exit(1)
+
+          v2_keys = {"kind", "spec", "elements", "layout"}
+          errors = []
+
+          for path in files:
+              try:
+                  data = json.loads(path.read_text())
+              except Exception as exc:
+                  errors.append(f"{path}: invalid JSON: {exc}")
+                  continue
+
+              if not isinstance(data, dict):
+                  errors.append(f"{path}: top-level JSON value must be an object")
+                  continue
+
+              present_v2 = sorted(v2_keys.intersection(data.keys()))
+              if present_v2:
+                  errors.append(
+                      f"{path}: appears to use Grafana v2 schema keys {present_v2}; "
+                      "classic file provisioning requires classic dashboard JSON"
+                  )
+
+              if "title" not in data:
+                  errors.append(f"{path}: missing classic dashboard field 'title'")
+
+          if errors:
+              print("Dashboard validation failed:", file=sys.stderr)
+              for error in errors:
+                  print(f"- {error}", file=sys.stderr)
+              sys.exit(1)
+
+          print(f"Validated {len(files)} Reliability dashboard file(s).")
+          PY
+
+      - name: Validate shared Grafana Kustomize render
+        run: kubectl kustomize platform/kubernetes-resources/observability/grafana > /tmp/reliability-observability-grafana-dashboards.yaml

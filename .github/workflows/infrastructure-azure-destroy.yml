@@ -1,4 +1,4 @@
-name: Azure Destroy
+name: Infrastructure Azure Destroy
 
 on:
     workflow_dispatch:

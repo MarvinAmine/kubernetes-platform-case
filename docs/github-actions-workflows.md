@@ -105,7 +105,7 @@ Local script path:
 - or the higher-level orchestrator: `./bootstrap_infrastructure_and_provision_platform.sh`
 
 GitHub Actions workflow:
-- `.github/workflows/azure-provision.yml`
+- `.github/workflows/infrastructure-azure-provision.yml`
 
 Requirements:
 - remote Terraform backend already exists
@@ -127,7 +127,7 @@ Local script path:
 - or the higher-level orchestrator: `./bootstrap_infrastructure_and_provision_platform.sh`
 
 GitHub Actions workflow:
-- `.github/workflows/kubernetes-resources-provision.yml`
+- `.github/workflows/platform-kubernetes-resources-provision.yml`
 
 Requirements:
 - remote Terraform backend already exists
@@ -150,7 +150,7 @@ Local script path:
 - or the higher-level orchestrator: `./bootstrap_infrastructure_and_provision_platform.sh`
 
 GitHub Actions workflow:
-- `.github/workflows/observability-provision.yml`
+- `.github/workflows/platform-observability-provision.yml`
 
 Requirements:
 - Azure foundation already exists
@@ -175,7 +175,7 @@ Local script path:
 - `./application/payment-exception-review-service/create_dev_app_with_helm.sh`
 
 GitHub Actions workflow:
-- `.github/workflows/app-deploy.yml`
+- `.github/workflows/application-app-deploy.yml`
 
 Requirements:
 - Azure foundation already exists
@@ -213,7 +213,7 @@ Local script path:
 - `./application/payment-exception-review-service/destroy_dev_app_with_helm.sh`
 
 GitHub Actions workflow:
-- `.github/workflows/app-destroy.yml`
+- `.github/workflows/application-app-destroy.yml`
 
 Requirements:
 - Azure foundation still exists
@@ -226,7 +226,7 @@ Local script path:
 - `./platform/kubernetes-resources/observability/destroy_dev_observability_stack.sh`
 
 GitHub Actions workflow:
-- `.github/workflows/observability-destroy.yml`
+- `.github/workflows/platform-observability-destroy.yml`
 
 Requirements:
 - Azure foundation still exists
@@ -239,7 +239,7 @@ Local script path:
 - `./platform/kubernetes-resources/destroy_dev_kubernetes_resources.sh`
 
 GitHub Actions workflow:
-- `.github/workflows/kubernetes-resources-destroy.yml`
+- `.github/workflows/platform-kubernetes-resources-destroy.yml`
 
 Requirements:
 - remote Terraform backend still exists
@@ -254,7 +254,7 @@ Local script path:
 - or the higher-level orchestrator: `./destroy_infrastructure_and_platform.sh`
 
 GitHub Actions workflow:
-- `.github/workflows/azure-destroy.yml`
+- `.github/workflows/infrastructure-azure-destroy.yml`
 
 Requirements:
 - remote Terraform backend still exists

@@ -14,6 +14,7 @@ VALUES_FILE_GRAFANA="${OBSERVABILITY_ROOT}/grafana/kube-prometheus-stack-grafana
 VALUES_FILE_ALERTMANAGER="${OBSERVABILITY_ROOT}/alertmanager/kube-prometheus-stack-alertmanager-values.yaml"
 OBSERVABILITY_EXTRA_VALUES_FILE="${OBSERVABILITY_EXTRA_VALUES_FILE:-}"
 DASHBOARD_KUSTOMIZE_DIR="${OBSERVABILITY_ROOT}/grafana"
+SYNC_RELIABILITY_DASHBOARDS_SCRIPT="${DASHBOARD_KUSTOMIZE_DIR}/sync_reliability_dashboards.sh"
 
 if ! command -v helm >/dev/null 2>&1; then
     echo "ERROR: helm is required to install the observability stack."
@@ -34,6 +35,7 @@ kubectl get namespace "$MONITORING_NAMESPACE" >/dev/null 2>&1 || kubectl create 
 
 # Custom dashboard ConfigMaps must exist before Grafana starts because the
 # Helm-managed pod mounts them directly.
+"$SYNC_RELIABILITY_DASHBOARDS_SCRIPT"
 kubectl apply -k "$DASHBOARD_KUSTOMIZE_DIR"
 
 TEMP_VALUES="$(mktemp)"

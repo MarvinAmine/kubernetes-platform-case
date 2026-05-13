@@ -1,4 +1,4 @@
-name: App Destroy
+name: Platform Observability Destroy
 
 on:
     workflow_dispatch:
@@ -8,14 +8,15 @@ permissions:
     contents: read
 
 jobs:
-    app-destroy:
+    observability-destroy:
         runs-on: ubuntu-latest
 
         env:
-            APP_NAMESPACE: payment-exception-review-stage1
-            RELEASE_NAME: payment-exception-review-service
+            MONITORING_NAMESPACE: monitoring
+            RELEASE_NAME: kube-prometheus-stack
             EXPECTED_RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
             EXPECTED_AKS_CLUSTER_NAME: ${{ vars.AKS_CLUSTER_NAME }}
+            EXPECTED_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
             ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
             ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
             ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -66,17 +67,8 @@ jobs:
             - name: Setup Helm
               uses: azure/setup-helm@v4
 
-            - name: Preflight Kubernetes namespace
-              run: kubectl get namespace "${APP_NAMESPACE}"
+            - name: Uninstall shared observability stack
+              run: bash ./platform/kubernetes-resources/observability/destroy_dev_observability_stack.sh
 
-            - name: Uninstall Helm release
-              run: |
-                if helm status "${RELEASE_NAME}" --namespace "${APP_NAMESPACE}" >/dev/null 2>&1; then
-                    helm uninstall "${RELEASE_NAME}" --namespace "${APP_NAMESPACE}"
-                else
-                    echo "Release ${RELEASE_NAME} does not exist in namespace ${APP_NAMESPACE}. Nothing to uninstall."
-                fi
-
-            - name: Verify application removal
-              run: |
-                kubectl get all -n "${APP_NAMESPACE}"
+            - name: Verify shared observability removal
+              run: kubectl get all -n "${MONITORING_NAMESPACE}"

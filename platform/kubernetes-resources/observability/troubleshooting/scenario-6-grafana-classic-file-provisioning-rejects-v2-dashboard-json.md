@@ -53,7 +53,7 @@ dashboard export format were mismatched.
 The sidecar correctly detected and reloaded the file:
 
 ```text
-Writing /tmp/dashboards/payment-exception-review-overview.json
+Writing /tmp/dashboards/payment-exception-review-service-health.json
 ... Dashboards config reloaded
 ```
 
@@ -74,7 +74,7 @@ kubectl -n monitoring logs deploy/kube-prometheus-stack-grafana -c grafana --tai
 1. Confirm the dashboard `ConfigMap` exists in `monitoring`:
 
 ```bash
-kubectl -n monitoring get configmap payment-exception-review-overview-dashboard -o yaml
+kubectl -n monitoring get configmap payment-exception-review-service-health-dashboard -o yaml
 ```
 
 2. Confirm the Grafana sidecar saw the file and triggered reload:
@@ -102,7 +102,7 @@ dashboard appears to be in v2 format
 2. Replace the JSON file stored under:
 
 ```text
-platform/kubernetes-resources/observability/grafana/dashboards/
+reliability/observability/grafana/dashboards/
 ```
 
 3. Re-apply the Kustomize folder:

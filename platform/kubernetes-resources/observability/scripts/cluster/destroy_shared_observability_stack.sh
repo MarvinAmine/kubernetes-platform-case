@@ -7,6 +7,7 @@ OBSERVABILITY_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 MONITORING_NAMESPACE="${MONITORING_NAMESPACE:-monitoring}"
 RELEASE_NAME="${RELEASE_NAME:-kube-prometheus-stack}"
 DASHBOARD_KUSTOMIZE_DIR="${OBSERVABILITY_ROOT}/grafana"
+SYNC_RELIABILITY_DASHBOARDS_SCRIPT="${DASHBOARD_KUSTOMIZE_DIR}/sync_reliability_dashboards.sh"
 
 if ! command -v helm >/dev/null 2>&1; then
     echo "ERROR: helm is required to destroy the observability stack."
@@ -24,4 +25,5 @@ else
     echo "Observability release ${RELEASE_NAME} is not installed in namespace ${MONITORING_NAMESPACE}. Nothing to do."
 fi
 
+"$SYNC_RELIABILITY_DASHBOARDS_SCRIPT"
 kubectl delete -k "$DASHBOARD_KUSTOMIZE_DIR" --ignore-not-found

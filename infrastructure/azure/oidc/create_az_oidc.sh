@@ -9,11 +9,35 @@ TEMPLATE_FILE="$SCRIPT_DIR/github-oidc-credential.template.json"
 OUTPUT_FILE="$SCRIPT_DIR/github-oidc-credential.json"
 source "$SCRIPT_DIR/../../../commons/scripts/common_logging.sh"
 
+VIDEO_MODE=false
+
 parse_args() {
-    parse_silent_flag "$@"
+    local args=()
+    local arg
+
+    for arg in "$@"; do
+        case "$arg" in
+            -v|--video)
+                VIDEO_MODE=true
+                ;;
+            *)
+                args+=("$arg")
+                ;;
+        esac
+    done
+
+    parse_silent_flag "${args[@]}"
     if [[ ${#REMAINING_ARGS[@]} -gt 0 ]]; then
         echo "Unknown argument: ${REMAINING_ARGS[0]}"
         exit 1
+    fi
+}
+
+redact_for_video() {
+    if [[ "$VIDEO_MODE" == true ]]; then
+        echo "[REDACTED FOR VIDEO]"
+    else
+        echo "$1"
     fi
 }
 
@@ -145,6 +169,6 @@ run_command_with_context "Federated credential created" \
 
 
 log_success "OIDC setup completed. Add these GitHub secrets in your github repository:"
-echo "AZURE_CLIENT_ID=$APP_ID"
-echo "AZURE_TENANT_ID=$TENANT_ID"
-echo "AZURE_SUBSCRIPTION_ID=$SUBSCRIPTION_ID"
+echo "AZURE_CLIENT_ID=$(redact_for_video "$APP_ID")"
+echo "AZURE_TENANT_ID=$(redact_for_video "$TENANT_ID")"
+echo "AZURE_SUBSCRIPTION_ID=$(redact_for_video "$SUBSCRIPTION_ID")"
