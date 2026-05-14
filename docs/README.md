@@ -13,19 +13,6 @@
 </p>
 
 # Stage 1 of 3 - Governed AKS delivery foundation for an internal payment review service
-<p align="left">
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/azure.svg" alt="Azure" width="22" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/kubernetes.svg" alt="Kubernetes" width="22" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/terraform.svg" alt="Terraform" width="22" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github-actions.svg" alt="GitHub Actions" width="22" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github.svg" alt="GHCR / GitHub" width="22" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/docker.svg" alt="Docker" width="22" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/helm.svg" alt="Helm" width="22" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/spring-boot.svg" alt="Spring Boot" width="22" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/postgresql.svg" alt="PostgreSQL" width="22" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/prometheus.svg" alt="Prometheus" width="22" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/grafana.svg" alt="Grafana" width="22" />
-</p>
 
 Kubernetes delivery foundation on AKS for an internal payment review service. Reflect a realistic operating model where an infrastructure team bootstraps the resource group, AKS cluster, remote Terraform backend, and managed PostgreSQL foundation with Terraform, a platform team provisions the governed Kubernetes application boundary and shared observability services such as Prometheus and Grafana on top of that foundation, and an application team deploys a Spring Boot service through GitHub Actions, Docker, and Helm. I also designed the service around PostgreSQL persistence, health probes, observability, and failure scenarios so the repeatable operating model demonstrates delivery, observability, and troubleshooting instead of only deployment.
 
@@ -172,13 +159,13 @@ For the fuller technology progression and stage-by-stage stack rationale, see
 ### Stage 1 — Governed delivery foundation
 | Area | Technologies | Purpose |
 | --- | --- | --- |
-| Cloud foundation | Azure AKS, Kubernetes, Azure OIDC / federated CI authentication | Governed cloud delivery foundation |
-| Infrastructure | Terraform, Azure Storage remote backend for Terraform state | Repeatable infrastructure bootstrap |
-| Delivery | GitHub Actions, GitHub, GHCR | Controlled CI/CD path |
-| Packaging | Docker, Helm, Kustomize | Application packaging, image publishing, deployment, and Kubernetes-native dashboard resource generation |
-| Application runtime | Java Spring Boot | Internal microservice runtime |
-| Data | PostgreSQL (Azure and Local) | Stateful service credibility |
-| Operations | Prometheus, Grafana | Probes, config validation, observability, and troubleshooting signals |
+| Cloud foundation | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/azure.svg" alt="Azure" width="16" /> Azure AKS, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/kubernetes.svg" alt="Kubernetes" width="16" /> Kubernetes, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/microsoft.svg" alt="OIDC" width="16" /> Azure OIDC / federated CI authentication | Governed cloud delivery foundation |
+| Infrastructure | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/terraform.svg" alt="Terraform" width="16" /> Terraform, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/azure.svg" alt="Azure Storage" width="16" /> Azure Storage remote backend for Terraform state | Repeatable infrastructure bootstrap |
+| Delivery | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github-actions.svg" alt="GitHub Actions" width="16" /> GitHub Actions, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github.svg" alt="GitHub" width="16" /> GitHub, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github.svg" alt="GHCR" width="16" /> GHCR | Controlled CI/CD path |
+| Packaging | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/docker.svg" alt="Docker" width="16" /> Docker, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/helm.svg" alt="Helm" width="16" /> Helm, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/kubernetes.svg" alt="Kustomize" width="16" /> Kustomize | Application packaging, image publishing, deployment, and Kubernetes-native dashboard resource generation |
+| Application runtime | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/spring-boot.svg" alt="Spring Boot" width="16" /> Java Spring Boot | Internal microservice runtime |
+| Data | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/postgresql.svg" alt="PostgreSQL" width="16" /> PostgreSQL (Azure and Local) | Stateful service credibility |
+| Operations | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/prometheus.svg" alt="Prometheus" width="16" /> Prometheus, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/grafana.svg" alt="Grafana" width="16" /> Grafana | Probes, config validation, observability, and troubleshooting signals |
 
 Outcome:
 An infrastructure team bootstraps the foundation, a platform team provisions a governed Kubernetes environment on top of it, and an application team deploys the Payment Exception Review Status API into it through a controlled path.
@@ -187,11 +174,11 @@ An infrastructure team bootstraps the foundation, a platform team provisions a g
 | Additive scope | Technologies | Purpose |
 | --- | --- | --- |
 | Inheritance | All Stage 1 technologies | Keep the governed delivery base |
-| Governance | OpenShift, ArgoCD, HashiCorp Vault, Ansible | Stronger platform controls, GitOps discipline, and shared-platform standards |
-| Security | OpenShift, Kubernetes, HashiCorp Vault | Stronger AppSec controls and secret-aware hardening |
-| Deferred next-step mesh | OpenShift Service Mesh (Istio-based) | Enterprise traffic governance and mTLS when the platform grows beyond Stage 2 core scope |
-| Observability | Elasticsearch, Kibana | Deeper observability with logs and security posture |
-| Operations | Linux / Red Hat or Ubuntu | More enterprise-oriented platform operations |
+| Governance | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/openshift.svg" alt="OpenShift" width="16" /> OpenShift, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/git-orange.svg" alt="ArgoCD" width="16" /> ArgoCD, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/vault.svg" alt="Vault" width="16" /> HashiCorp Vault, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/ansible.svg" alt="Ansible" width="16" /> Ansible | Stronger platform controls, GitOps discipline, and shared-platform standards |
+| Security | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/openshift.svg" alt="OpenShift" width="16" /> OpenShift, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/kubernetes.svg" alt="Kubernetes" width="16" /> Kubernetes, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/vault.svg" alt="Vault" width="16" /> HashiCorp Vault | Stronger AppSec controls and secret-aware hardening |
+| Deferred next-step mesh | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/openshift.svg" alt="OpenShift Service Mesh" width="16" /> OpenShift Service Mesh (Istio-based) | Enterprise traffic governance and mTLS when the platform grows beyond Stage 2 core scope |
+| Observability | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/elasticsearch.svg" alt="Elasticsearch" width="16" /> Elasticsearch, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/kibana.svg" alt="Kibana" width="16" /> Kibana | Deeper observability with logs and security posture |
+| Operations | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/ubuntu.svg" alt="Linux" width="16" /> Linux / Red Hat or Ubuntu | More enterprise-oriented platform operations |
 
 Outcome:
 The platform evolves from controlled delivery to controlled and secured delivery, with Security and IAM becoming an explicit part of the operating model.
@@ -200,13 +187,13 @@ The platform evolves from controlled delivery to controlled and secured delivery
 | Additive scope | Technologies | Purpose |
 | --- | --- | --- |
 | Inheritance | All Stage 2 technologies | Keep the governed shared-platform base |
-| Hybrid platform | AWS, Azure, OpenShift, OnPrem | Multi-cloud hybrid platform direction for stronger production governance |
-| Service mesh | OpenShift Service Mesh (Istio-based) | Enterprise east-west traffic governance, mTLS, and mesh-level policy |
-| Terraform orchestration | Terragrunt | Reduce repeated Terraform structure and coordinate more complex multi-environment stacks |
-| Observability | DataDog, Thanos, Prometheus, Grafana | Advanced observability for SRE / Production Engineering visibility |
-| Identity | Okta | Stronger enterprise identity and access alignment |
-| Promotion model | local, dev, prod | Multi-environment promotion across hybrid platform boundaries |
-| Operations | AWS EKS, Azure AKS, Okta, Ansible, GitHub Actions | Enterprise-grade operations narrative |
+| Hybrid platform | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/aws.svg" alt="AWS" width="16" /> AWS, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/azure.svg" alt="Azure" width="16" /> Azure, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/openshift.svg" alt="OpenShift" width="16" /> OpenShift, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/onprem.svg" alt="On-premises" width="16" /> OnPrem | Multi-cloud hybrid platform direction for stronger production governance |
+| Service mesh | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/openshift.svg" alt="OpenShift Service Mesh" width="16" /> OpenShift Service Mesh (Istio-based) | Enterprise east-west traffic governance, mTLS, and mesh-level policy |
+| Terraform orchestration | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/terraform.svg" alt="Terragrunt" width="16" /> Terragrunt | Reduce repeated Terraform structure and coordinate more complex multi-environment stacks |
+| Observability | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/datadog.svg" alt="DataDog" width="16" /> DataDog, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/thanos.svg" alt="Thanos" width="16" /> Thanos, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/prometheus.svg" alt="Prometheus" width="16" /> Prometheus, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/grafana.svg" alt="Grafana" width="16" /> Grafana | Advanced observability for SRE / Production Engineering visibility |
+| Identity | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/okta.svg" alt="Okta" width="16" /> Okta | Stronger enterprise identity and access alignment |
+| Promotion model | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/ubuntu.svg" alt="Local" width="16" /> local, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/azure.svg" alt="Dev" width="16" /> dev, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/openshift.svg" alt="Prod" width="16" /> prod | Multi-environment promotion across hybrid platform boundaries |
+| Operations | <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/eks.svg" alt="EKS" width="16" /> AWS EKS, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/azure.svg" alt="AKS" width="16" /> Azure AKS, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/okta.svg" alt="Okta" width="16" /> Okta, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/ansible.svg" alt="Ansible" width="16" /> Ansible, <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github-actions.svg" alt="GitHub Actions" width="16" /> GitHub Actions | Enterprise-grade operations narrative |
 
 Outcome:
 The platform becomes a broader enterprise platform case aligned with highly regulated environments.
