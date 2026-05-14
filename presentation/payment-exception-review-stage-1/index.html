@@ -1,0 +1,2824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stage 1 Presentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #efe6d8;
+      --bg-deep: #ddd0bf;
+      --card: rgba(255, 250, 242, 0.72);
+      --card-strong: rgba(255, 250, 242, 0.9);
+      --ink: #1d231f;
+      --muted: #5d655f;
+      --line: rgba(29, 35, 31, 0.1);
+      --green: #0e6b57;
+      --green-deep: #0a4f40;
+      --clay: #a44b28;
+      --gold: #b98924;
+      --shadow: 0 30px 90px rgba(49, 43, 34, 0.16);
+      --radius-xl: 34px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --max: 1240px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Manrope", sans-serif;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(14, 107, 87, 0.14), transparent 25%),
+        radial-gradient(circle at 100% 20%, rgba(169, 75, 40, 0.12), transparent 20%),
+        linear-gradient(180deg, #f5ecdf 0%, #e9dfd1 48%, #e1d6c6 100%);
+      min-height: 100vh;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      background: rgba(245, 236, 223, 0.68);
+      border-bottom: 1px solid rgba(29, 35, 31, 0.08);
+    }
+
+    .topbar-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand {
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--green-deep);
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .nav a {
+      text-decoration: none;
+      font-size: 13px;
+      color: var(--muted);
+      padding: 10px 14px;
+      border-radius: 999px;
+      transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+    }
+
+    .nav a:hover {
+      background: rgba(14, 107, 87, 0.08);
+      color: var(--green-deep);
+      transform: translateY(-1px);
+    }
+
+    .repo-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 18px;
+      padding: 12px 15px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.76);
+      border: 1px solid rgba(29, 35, 31, 0.1);
+      color: var(--green-deep);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .repo-link:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.94);
+      box-shadow: 0 16px 28px rgba(49, 43, 34, 0.09);
+    }
+
+    .repo-link img {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
+    }
+
+    main {
+      padding: 28px 20px 90px;
+    }
+
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+
+    .hero {
+      min-height: calc(100vh - 92px);
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 28px;
+      align-items: center;
+      padding: 30px 4px 10px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      background: rgba(14, 107, 87, 0.1);
+      color: var(--green-deep);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      margin: 20px 0 14px;
+      font-size: clamp(52px, 8vw, 94px);
+      line-height: 0.93;
+      letter-spacing: -0.06em;
+      max-width: 9.5ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 48ch;
+      color: var(--muted);
+      font-size: clamp(17px, 2vw, 22px);
+      line-height: 1.55;
+    }
+
+    .hero-card {
+      position: relative;
+      padding: 30px;
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(160deg, rgba(255,255,255,0.84), rgba(255,247,237,0.66)),
+        rgba(255, 255, 255, 0.64);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero-card::before,
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(0);
+      opacity: 0.9;
+    }
+
+    .hero-card::before {
+      width: 180px;
+      height: 180px;
+      top: -45px;
+      right: -20px;
+      background: radial-gradient(circle at center, rgba(14, 107, 87, 0.22), transparent 70%);
+    }
+
+    .hero-card::after {
+      width: 150px;
+      height: 150px;
+      bottom: -50px;
+      left: -30px;
+      background: radial-gradient(circle at center, rgba(164, 75, 40, 0.18), transparent 70%);
+    }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .metric {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid var(--line);
+    }
+
+    .metric .label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 800;
+    }
+
+    .metric .value {
+      display: block;
+      font-size: 28px;
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      font-weight: 800;
+      color: var(--green-deep);
+    }
+
+    .metric .value.has-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .metric .value.has-icon img {
+      width: 26px;
+      height: 26px;
+      flex: 0 0 auto;
+    }
+
+    .section {
+      padding: 48px 0 0;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(34px, 4.4vw, 56px);
+      letter-spacing: -0.05em;
+      line-height: 0.98;
+    }
+
+    .section-head p {
+      margin: 0;
+      max-width: 42ch;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.55);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+    }
+
+    .grid-3,
+    .grid-2 {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .card {
+      background: var(--card-strong);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      min-height: 100%;
+    }
+
+    .context-grid {
+      gap: 20px;
+      margin-bottom: 8px;
+    }
+
+    .context-grid .card {
+      padding: 24px 24px 22px;
+      border-radius: 26px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,248,240,0.84));
+      box-shadow: 0 18px 38px rgba(49, 43, 34, 0.08);
+    }
+
+    .context-grid .card h3 {
+      margin: 0 0 10px;
+      font-size: 24px;
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+    }
+
+    .context-grid .card p {
+      font-size: 15px;
+      line-height: 1.68;
+      max-width: 40ch;
+    }
+
+    .card h3 {
+      margin: 0 0 12px;
+      font-size: 22px;
+      letter-spacing: -0.04em;
+    }
+
+    .title-with-icon,
+    .tech-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .title-with-icon img,
+    .tech-inline img {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .media-frame {
+      margin-top: 18px;
+      background: rgba(255,255,255,0.86);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .media-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .video-embed {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #111715;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      margin-top: 18px;
+    }
+
+    .video-embed iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .media-proof {
+      padding: 18px 18px 0;
+      background: linear-gradient(180deg, rgba(22, 28, 25, 0.98), rgba(17, 23, 21, 0.98));
+      color: #e8f3ed;
+    }
+
+    .proof-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .media-proof .proof-kicker {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      color: #bfe8d7;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .media-proof h4 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      letter-spacing: -0.04em;
+      color: #f4fbf7;
+    }
+
+    .media-proof p {
+      margin: 0 0 14px;
+      max-width: 58ch;
+      color: rgba(232,243,237,0.8);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .media-proof pre {
+      margin: 0;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(0,0,0,0.22);
+      border: 1px solid rgba(126,232,183,0.12);
+      color: #d8ece3;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .proof-pair .media-frame,
+    .proof-pair .media-proof {
+      height: 100%;
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    .mermaid-shell {
+      padding: 18px 12px 8px;
+      overflow-x: auto;
+      background:
+        linear-gradient(180deg, rgba(244, 241, 235, 0.9), rgba(239, 232, 222, 0.9));
+    }
+
+    .mermaid-shell .mermaid {
+      min-width: 980px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .media-frame.tall-media img {
+      max-height: 750px;
+      object-fit: contain;
+      margin: 0 auto;
+    }
+
+    .media-frame.tall-media {
+      text-align: center;
+    }
+
+    .zoom-wrap {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      margin: 0 auto;
+    }
+
+    .zoom-wrap img {
+      cursor: none;
+    }
+
+    .zoom-lens {
+      position: absolute;
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.95);
+      box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.22),
+        0 0 0 1px rgba(14, 107, 87, 0.14);
+      background-repeat: no-repeat;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.88);
+      transition: opacity 140ms ease, transform 140ms ease;
+      z-index: 3;
+      backdrop-filter: blur(1px);
+    }
+
+    .zoom-wrap.is-active .zoom-lens {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .media-caption {
+      padding: 14px 16px 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .pill {
+      padding: 11px 14px;
+      border-radius: 999px;
+      background: rgba(14, 107, 87, 0.08);
+      color: var(--green-deep);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .pill.tech {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pill.tech img {
+      width: 15px;
+      height: 15px;
+      flex: 0 0 auto;
+    }
+
+    .journey {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .journey-step {
+      padding: 20px;
+      background: rgba(255,255,255,0.78);
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      min-height: 180px;
+    }
+
+    .journey-step .num {
+      display: inline-flex;
+      width: 34px;
+      height: 34px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-weight: 800;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .journey-step h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      letter-spacing: -0.04em;
+    }
+
+    .journey-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .workflow-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .workflow-group {
+      background: rgba(255,255,255,0.82);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+    }
+
+    .workflow-group h3 {
+      margin: 0 0 14px;
+      font-size: 22px;
+      letter-spacing: -0.04em;
+    }
+
+    .workflow-group ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .workflow-group li {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 13px;
+      color: var(--ink);
+      background: rgba(14, 107, 87, 0.06);
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+
+    .runtime-grid,
+    .proof-grid {
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      gap: 18px;
+    }
+
+    .runtime-map {
+      display: grid;
+      gap: 16px;
+    }
+
+    .runtime-flow,
+    .proof-note {
+      padding: 24px;
+      border-radius: 26px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid var(--line);
+    }
+
+    .runtime-actor {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(14, 107, 87, 0.1);
+      color: var(--green-deep);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
+    .runtime-actor img,
+    .proof-badges img {
+      width: 15px;
+      height: 15px;
+      flex: 0 0 auto;
+    }
+
+    .runtime-route {
+      position: relative;
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+      padding-left: 28px;
+    }
+
+    .runtime-route::before {
+      content: "";
+      position: absolute;
+      left: 8px;
+      top: 4px;
+      bottom: 4px;
+      width: 2px;
+      background: linear-gradient(180deg, rgba(14,107,87,0.16), rgba(14,107,87,0.62), rgba(14,107,87,0.16));
+    }
+
+    .runtime-item {
+      position: relative;
+      padding: 18px 18px 18px 20px;
+      border-radius: 22px;
+      background: rgba(255,250,242,0.88);
+      border: 1px solid rgba(29, 35, 31, 0.08);
+    }
+
+    .runtime-item::before {
+      content: "";
+      position: absolute;
+      left: -25px;
+      top: 22px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fff;
+      border: 3px solid var(--green);
+      box-shadow: 0 0 0 5px rgba(14,107,87,0.08);
+    }
+
+    .runtime-item strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      color: var(--green-deep);
+    }
+
+    .runtime-item code {
+      display: inline-block;
+      margin-bottom: 8px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: rgba(14,107,87,0.08);
+      color: var(--green-deep);
+      font-size: 12px;
+    }
+
+    .runtime-item p,
+    .runtime-item li,
+    .proof-note p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.62;
+      font-size: 15px;
+    }
+
+    .runtime-item ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    .runtime-lifecycle {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .runtime-lifecycle span {
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: rgba(164,75,40,0.1);
+      color: #7d371c;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .proof-note h3 {
+      margin: 0 0 10px;
+      font-size: 24px;
+      letter-spacing: -0.04em;
+    }
+
+    .proof-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .proof-badges span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.94);
+      border: 1px solid rgba(29, 35, 31, 0.08);
+      color: var(--green-deep);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .terminal-shell {
+      min-height: 640px;
+      border-radius: 28px;
+      overflow: hidden;
+      background: #131816;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 26px 60px rgba(18, 22, 18, 0.28);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .terminal-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .terminal-dots {
+      display: inline-flex;
+      gap: 8px;
+    }
+
+    .terminal-dots span {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+
+    .terminal-dots span:nth-child(1) { background: #ff6b6b; }
+    .terminal-dots span:nth-child(2) { background: #ffd166; }
+    .terminal-dots span:nth-child(3) { background: #3ddc97; }
+
+    .terminal-title {
+      color: rgba(244, 250, 244, 0.7);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .terminal-body {
+      position: relative;
+      flex: 1;
+      padding: 20px 22px 24px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(61,220,151,0.07), transparent 24%),
+        linear-gradient(180deg, rgba(19,24,22,0.98), rgba(12,16,14,1));
+    }
+
+    .terminal-body pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow: hidden;
+      color: #d7efe3;
+      font-size: 13px;
+      line-height: 1.58;
+      font-family: "IBM Plex Mono", monospace;
+    }
+
+    .terminal-line {
+      display: block;
+    }
+
+    .terminal-line.comment {
+      color: #8aa4ff;
+    }
+
+    .terminal-line.info {
+      color: #7fd7ff;
+    }
+
+    .terminal-line.success {
+      color: #79f0b3;
+    }
+
+    .terminal-line.error {
+      color: #ff8e8e;
+    }
+
+    .terminal-line.heading {
+      color: #ffd587;
+    }
+
+    .terminal-line.output {
+      color: #d7efe3;
+    }
+
+    .terminal-seg.prompt {
+      color: #8cf0bf;
+    }
+
+    .terminal-seg.command {
+      color: #f5f0e6;
+    }
+
+    .terminal-seg.value {
+      color: #ffd587;
+    }
+
+    .terminal-seg.note {
+      color: #9eb3c9;
+    }
+
+    .terminal-cursor {
+      display: inline-block;
+      width: 9px;
+      height: 1.1em;
+      margin-left: 2px;
+      vertical-align: -0.18em;
+      background: #7ee8b7;
+      border-radius: 2px;
+      box-shadow: 0 0 12px rgba(126,232,183,0.35);
+    }
+
+    .terminal-foot {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      padding: 14px 18px;
+      background: rgba(255,255,255,0.03);
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .terminal-tab {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: rgba(228, 240, 231, 0.72);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 180ms ease, color 180ms ease, border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .terminal-tab:hover {
+      transform: translateY(-1px);
+      border-color: rgba(126,232,183,0.3);
+      color: #ebfff5;
+    }
+
+    .terminal-tab.is-active {
+      background: linear-gradient(180deg, rgba(126,232,183,0.18), rgba(126,232,183,0.08));
+      border-color: rgba(126,232,183,0.42);
+      color: #ebfff5;
+      box-shadow: 0 0 0 1px rgba(126,232,183,0.12) inset, 0 12px 22px rgba(0,0,0,0.18);
+    }
+
+    .contrast-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .contrast {
+      padding: 24px;
+      border-radius: 26px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.8);
+    }
+
+    .contrast .tag {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .contrast.platform .tag {
+      background: rgba(14, 107, 87, 0.1);
+      color: var(--green-deep);
+    }
+
+    .contrast.ops .tag {
+      background: rgba(169, 75, 40, 0.12);
+      color: #7d371c;
+    }
+
+    .contrast h3 {
+      margin: 0 0 10px;
+      font-size: 28px;
+      letter-spacing: -0.05em;
+    }
+
+    .contrast p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .contrast ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--ink);
+    }
+
+    .contrast li {
+      margin: 8px 0;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .iac-proof {
+      margin-top: 18px;
+      padding: 22px 24px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(246,241,233,0.92));
+      box-shadow: var(--shadow);
+    }
+
+    .iac-proof h3 {
+      margin: 0 0 10px;
+      font-size: 24px;
+      letter-spacing: -0.04em;
+    }
+
+    .iac-proof p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 15px;
+      max-width: 68ch;
+    }
+
+    .iac-flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 16px;
+    }
+
+    .iac-step {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(14, 107, 87, 0.08);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .iac-proof pre {
+      margin: 0;
+      padding: 18px 20px;
+      overflow-x: auto;
+      border-radius: 18px;
+      background: #111715;
+      color: #dcebe4;
+      border: 1px solid rgba(126, 232, 183, 0.14);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .iac-proof code {
+      font-family: "IBM Plex Mono", monospace;
+    }
+
+    .code-path { color: #9fd8ff; }
+    .code-key { color: #7ee8b7; }
+    .code-value { color: #ffd479; }
+    .code-cmd { color: #ffb86b; }
+    .code-comment { color: #8aa39a; }
+
+    .scenario-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .evolution-surface {
+      position: relative;
+      overflow: hidden;
+      border-radius: 34px;
+      padding: 18px;
+      background:
+        linear-gradient(180deg, rgba(14, 107, 87, 0.045) 0%, rgba(14, 107, 87, 0.045) 33.333%, rgba(183, 123, 34, 0.048) 33.333%, rgba(183, 123, 34, 0.048) 66.666%, rgba(169, 75, 40, 0.05) 66.666%, rgba(169, 75, 40, 0.05) 100%);
+      border: 1px solid rgba(81, 93, 102, 0.08);
+    }
+
+    .evolution-background {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .evo-band {
+      position: absolute;
+      left: 0;
+      right: 0;
+      overflow: hidden;
+    }
+
+    .evo-band.stage1 {
+      top: 0;
+      height: 33.333%;
+    }
+
+    .evo-band.stage2 {
+      top: 33.333%;
+      height: 33.333%;
+    }
+
+    .evo-band.stage3 {
+      top: 66.666%;
+      height: 33.334%;
+    }
+
+    .tech-float {
+      position: absolute;
+      width: 42px;
+      height: 42px;
+      opacity: 0.15;
+      filter: saturate(0.9);
+      will-change: transform;
+    }
+
+    .tech-float.small {
+      width: 28px;
+      height: 28px;
+      opacity: 0.11;
+    }
+
+    .tech-float.large {
+      width: 56px;
+      height: 56px;
+      opacity: 0.12;
+    }
+
+    .evolution {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-areas:
+        "stage1 . ."
+        ". spacer1 ."
+        ". stage2 ."
+        ". . spacer2"
+        ". . stage3";
+      gap: 18px;
+      margin-top: 6px;
+    }
+
+    .evo-card {
+      position: relative;
+      z-index: 2;
+      padding: 22px;
+      border-radius: 28px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.82);
+      overflow: hidden;
+      width: min(560px, 100%);
+    }
+
+    .evo-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      border-radius: 28px 0 0 28px;
+      background: linear-gradient(180deg, var(--green), var(--gold));
+    }
+
+    .evo-card.stage2::before {
+      background: linear-gradient(180deg, var(--gold), #c96e2e);
+    }
+
+    .evo-card.stage3::before {
+      background: linear-gradient(180deg, var(--clay), #6f3340);
+    }
+
+    .evo-card .stage-tag {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .evo-card h3 {
+      margin: 0 0 8px;
+      font-size: 26px;
+      letter-spacing: -0.05em;
+    }
+
+    .evo-card p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .evo-emphasis {
+      display: grid;
+      gap: 10px;
+      margin: 0 0 16px;
+    }
+
+    .evo-env-card {
+      padding: 14px 15px 13px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.96);
+      border: 1px solid rgba(29, 35, 31, 0.08);
+      box-shadow: 0 12px 28px rgba(49, 43, 34, 0.08);
+    }
+
+    .evo-env-card .label {
+      display: block;
+      margin-bottom: 9px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green-deep);
+    }
+
+    .evo-env-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .evo-env-list span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: rgba(14, 107, 87, 0.08);
+      color: var(--green-deep);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .evo-env-list span img {
+      width: 14px;
+      height: 14px;
+      flex: 0 0 auto;
+    }
+
+    .evo-subfocus {
+      padding: 10px 14px;
+      border-radius: 16px;
+      background: rgba(29, 35, 31, 0.04);
+      border: 1px solid rgba(29, 35, 31, 0.06);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .evo-subfocus strong {
+      color: var(--ink);
+    }
+
+    .evo-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .evo-pills span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(14, 107, 87, 0.08);
+      color: var(--green-deep);
+    }
+
+    .evo-pills span img {
+      width: 14px;
+      height: 14px;
+      flex: 0 0 auto;
+    }
+
+    .evo-row.stage1 {
+      grid-area: stage1;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .evo-row.stage2 {
+      grid-area: stage2;
+      display: flex;
+      justify-content: center;
+    }
+
+    .evo-row.stage3 {
+      grid-area: stage3;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .evo-spacer {
+      min-height: 70px;
+    }
+
+    .evo-spacer.stage1-2 {
+      grid-area: spacer1;
+    }
+
+    .evo-spacer.stage2-3 {
+      grid-area: spacer2;
+    }
+
+    .scenario {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid var(--line);
+    }
+
+    .scenario-link {
+      display: block;
+      text-decoration: none;
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .scenario-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 38px rgba(49, 43, 34, 0.09);
+      border-color: rgba(14, 107, 87, 0.18);
+      background: rgba(255,255,255,0.92);
+    }
+
+    .scenario strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .scenario span {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .scenario-link .more {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      color: var(--green-deep);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .close-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+    }
+
+    .big-quote {
+      font-size: clamp(26px, 3vw, 42px);
+      line-height: 1.1;
+      letter-spacing: -0.05em;
+      margin: 0;
+      max-width: 13ch;
+    }
+
+    .kpi-hero {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin: 0;
+    }
+
+    .kpi-chip {
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 108px;
+      padding: 18px 22px;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,0.42);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.24), transparent 36%),
+        linear-gradient(135deg, rgba(14,107,87,0.92), rgba(39,130,164,0.88) 46%, rgba(169,75,40,0.84));
+      box-shadow:
+        0 24px 50px rgba(35, 36, 34, 0.18),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+      color: #f8fffb;
+      isolation: isolate;
+    }
+
+    .kpi-chip::before {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.28) 48%, transparent 64%);
+      transform: translateX(-120%) rotate(6deg);
+      animation: kpi-shine 5.8s ease-in-out infinite;
+      z-index: -1;
+    }
+
+    .kpi-chip::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), transparent 38%);
+      pointer-events: none;
+    }
+
+    .kpi-chip.primary {
+      min-width: 240px;
+      background:
+        radial-gradient(circle at 18% 16%, rgba(255,255,255,0.26), transparent 36%),
+        linear-gradient(135deg, rgba(8,94,77,0.96), rgba(14,107,87,0.94) 38%, rgba(33,143,184,0.88));
+    }
+
+    .kpi-chip.secondary {
+      min-width: 220px;
+    }
+
+    .kpi-chip.tertiary {
+      min-width: 200px;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(255,255,255,0.24), transparent 34%),
+        linear-gradient(135deg, rgba(169,75,40,0.92), rgba(194,135,44,0.9) 48%, rgba(14,107,87,0.82));
+    }
+
+    .kpi-chip .kpi-value {
+      display: block;
+      font-size: clamp(28px, 3.1vw, 44px);
+      line-height: 0.96;
+      letter-spacing: -0.07em;
+      font-weight: 800;
+      text-shadow: 0 3px 12px rgba(0,0,0,0.18);
+    }
+
+    .kpi-chip .kpi-label {
+      display: block;
+      margin-top: 10px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: rgba(248,255,251,0.8);
+    }
+
+    @keyframes kpi-shine {
+      0%, 18% {
+        transform: translateX(-125%) rotate(6deg);
+        opacity: 0;
+      }
+      24% {
+        opacity: 1;
+      }
+      42% {
+        transform: translateX(115%) rotate(6deg);
+        opacity: 0.9;
+      }
+      100% {
+        transform: translateX(115%) rotate(6deg);
+        opacity: 0;
+      }
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .image-grid.three {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .full-span {
+      grid-column: 1 / -1;
+    }
+
+    .muted-note {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .reveal-item {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+
+    @media (max-width: 1100px) {
+      .hero,
+      .grid-3,
+      .grid-2,
+      .journey,
+      .runtime-grid,
+      .proof-grid,
+      .proof-pair,
+      .workflow-list,
+      .contrast-row,
+      .scenario-list,
+      .close-grid,
+      .image-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .evo-row.stage2,
+      .evo-row.stage3 {
+        justify-content: flex-start;
+      }
+
+      .evo-card {
+        width: 100%;
+      }
+
+      .evolution-surface {
+        padding: 14px;
+      }
+
+      .evolution {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "stage1"
+          "spacer1"
+          "stage2"
+          "spacer2"
+          "stage3";
+      }
+
+      .section-head {
+        display: block;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero {
+        min-height: auto;
+        padding-top: 18px;
+      }
+
+      .hero-card,
+      .panel {
+        padding: 22px;
+      }
+
+      .hero-metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .terminal-shell {
+        min-height: 560px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">Stage 1 / Regulated Payment Exception Review Platform</div>
+      <nav class="nav">
+        <a href="#context">Context</a>
+        <a href="#model">Model</a>
+        <a href="#delivery">Delivery</a>
+        <a href="#finops">FinOps</a>
+        <a href="#runtime">Runtime</a>
+        <a href="#ops">Observability</a>
+        <a href="#scenarios">Scenarios</a>
+        <a href="#close">Close</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <section class="hero">
+        <div>
+          <div class="eyebrow reveal-item">Stage 1 Video Narrative</div>
+          <h1 class="reveal-item">Governed AKS delivery for a regulated internal service.</h1>
+          <p class="reveal-item">
+            A concise presentation page for the <strong>Payment Exception Review Status API</strong>:
+            infrastructure, platform, application delivery, observability, and real troubleshooting,
+            without demo-bloat or slide clutter.
+          </p>
+          <a class="repo-link reveal-item" href="https://github.com/MarvinAmine/kubernetes-platform-case" target="_blank" rel="noopener">
+            <img src="./assets/presentation-icons/github.svg" alt="">
+            View GitHub repository
+          </a>
+        </div>
+        <aside class="hero-card reveal-item">
+          <div class="hero-metrics">
+            <div class="metric">
+              <span class="label">Cloud</span>
+              <span class="value has-icon"><img src="./assets/presentation-icons/azure.svg" alt="">Azure + AKS</span>
+            </div>
+            <div class="metric">
+              <span class="label">Service</span>
+              <span class="value has-icon"><img src="./assets/presentation-icons/spring-boot.svg" alt="">Spring Boot</span>
+            </div>
+            <div class="metric">
+              <span class="label">Delivery</span>
+              <span class="value has-icon"><img src="./assets/presentation-icons/github-actions.svg" alt="">GitHub Actions</span>
+            </div>
+            <div class="metric">
+              <span class="label">Signals</span>
+              <span class="value has-icon"><img src="./assets/presentation-icons/grafana.svg" alt="">Metrics + Dashboards</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="section" style="padding-top: 8px;">
+        <div class="panel reveal-item">
+          <div class="terminal-shell">
+            <div class="terminal-top">
+              <div class="terminal-dots"><span></span><span></span><span></span></div>
+              <div class="terminal-title">Stage 1 runbook / live terminal loop</div>
+            </div>
+            <div class="terminal-body">
+              <pre id="runbook-terminal"></pre><span class="terminal-cursor" id="runbook-cursor" aria-hidden="true"></span>
+            </div>
+            <div class="terminal-foot">
+              <button class="terminal-tab is-active" data-terminal-tab="bootstrap" type="button">Bootstrap</button>
+              <button class="terminal-tab" data-terminal-tab="aks" type="button">AKS proof</button>
+              <button class="terminal-tab" data-terminal-tab="grafana" type="button">Grafana proof</button>
+              <button class="terminal-tab" data-terminal-tab="teardown" type="button">Teardown proof</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="context">
+        <div class="section-head reveal-item">
+          <h2>Business context</h2>
+          <p>
+            Framed with STAR: a regulated payment flow creates the operational situation, the internal service has a precise responsibility, and Stage 1 proves the first credible delivery result.
+          </p>
+        </div>
+        <div class="panel reveal-item">
+          <div class="grid-2 context-grid">
+            <article class="card">
+              <h3>Exceptions happen</h3>
+              <p>In a regulated payment environment, not every transaction can stay on the fully automated path. Some payments fall into exception handling because of thresholds, missing metadata, suspicious duplicates, or blocked destinations.</p>
+            </article>
+            <article class="card">
+              <h3>Status must be visible</h3>
+              <p>The platform needs a governed internal backend that exposes the lifecycle of those exceptions so operators and internal consumers can see whether a case is pending review, under investigation, approved, or rejected.</p>
+            </article>
+            <article class="card">
+              <h3>Delivery must be governed</h3>
+              <p>Stage 1 implements that service as a Spring Boot API delivered through an Azure and AKS path with explicit ownership boundaries across Infrastructure, Platform, and Application, plus shared observability and documented troubleshooting.</p>
+            </article>
+            <article class="card">
+              <h3>The result is credible</h3>
+              <p>The result is not just a running app. It is a credible enterprise baseline: controlled delivery, team accountability, visible runtime signals, and operational evidence strong enough to support an interview-level discussion.</p>
+            </article>
+          </div>
+          <div class="media-frame">
+            <div class="mermaid-shell">
+              <div class="mermaid">
+flowchart TB
+  classDef control fill:#4a4a4a,color:#ffffff,stroke:#2f2f2f,stroke-width:1px;
+  classDef repo fill:#f2ebff,color:#1d231f,stroke:#8b6ee8,stroke-width:1px;
+  classDef internal fill:#eefae9,color:#1d231f,stroke:#73b86e,stroke-width:1px;
+  classDef env fill:#dcebf7,color:#1d231f,stroke:#5a94c8,stroke-width:2px,stroke-dasharray: 5 4;
+  classDef azure fill:#fff2e8,color:#1d231f,stroke:#d98a52,stroke-width:1px;
+  classDef cluster fill:#eef4ff,color:#1d231f,stroke:#5f84f5,stroke-width:2px;
+  classDef workload fill:#1e1e1e,color:#ffffff,stroke:#222222,stroke-width:1px;
+  classDef obs fill:#fff8f2,color:#1d231f,stroke:#ee9656,stroke-width:1px;
+
+  subgraph CD["Controlled Delivery Path"]
+    direction TB
+    GH["GitHub Repository"]:::repo --> GHA["GitHub Actions"]:::repo
+    GHA --> OIDC["Microsoft Entra ID / OIDC"]:::repo
+    OIDC --> HELM["Terraform / Helm Delivery"]:::repo
+  end
+  style CD fill:#4a4a4a,stroke:#4a4a4a,color:#ffffff
+
+  subgraph IA["Internal Access Path"]
+    direction TB
+    DEV["Internal Dev"]:::internal --> CLI["Azure CLI / kubectl context"]:::internal
+    CLI --> PF["kubectl port-forward"]:::internal
+  end
+  style IA fill:#4a4a4a,stroke:#4a4a4a,color:#ffffff
+
+  subgraph AZ["Azure Dev Environment"]
+    direction LR
+    subgraph TFSTATE["Resource Groupe: rg-stage1-tfstate"]
+      direction TB
+      SA["Azure Storage Account"]:::azure
+      STATE["Terraform Remote State"]:::azure
+      SA --> STATE
+    end
+
+    subgraph APPRG["Resource Groupe: rg-stage1-aks / Private Virtual Network"]
+      direction TB
+      subgraph AKS["AKS Platform"]
+        direction LR
+        APP["Java Spring Boot Payment Exception Review API"]:::workload
+        GRAF["Prometheus / Grafana"]:::obs
+      end
+      DB["Azure PostgreSQL"]:::azure
+      AKS --> DB
+    end
+  end
+  style AZ fill:#dcebf7,stroke:#5a94c8,stroke-width:2px,stroke-dasharray: 5 4
+  style AKS fill:#eef4ff,stroke:#5f84f5,stroke-width:2px
+
+  HELM --> AKS
+  PF --> AKS
+              </div>
+            </div>
+            <div class="media-caption">
+              Business and operating context in one view: controlled delivery path, internal access path,
+              Azure dev environment, AKS platform, PostgreSQL, Terraform state, and shared observability.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="model">
+        <div class="section-head reveal-item">
+          <h2>Three-team operating model</h2>
+          <p>
+            Stage 1 is built around a clean separation of responsibility rather than one blended DevOps persona.
+          </p>
+        </div>
+        <div class="panel reveal-item">
+          <div class="grid-3">
+            <article class="card">
+              <h3><span class="title-with-icon"><img src="./assets/presentation-icons/azure.svg" alt="">Infrastructure</span></h3>
+              <p>Owns Azure foundations, AKS, PostgreSQL base hosting pattern, remote Terraform backend, and cloud access prerequisites.</p>
+              <div class="pill-row">
+                <span class="pill tech"><img src="./assets/presentation-icons/terraform.svg" alt="">Terraform</span>
+                <span class="pill tech"><img src="./assets/presentation-icons/kubernetes.svg" alt="">AKS</span>
+                <span class="pill tech"><img src="./assets/presentation-icons/microsoft.svg" alt="">OIDC</span>
+              </div>
+            </article>
+            <article class="card">
+              <h3><span class="title-with-icon"><img src="./assets/presentation-icons/kubernetes.svg" alt="">Platform</span></h3>
+              <p>Owns Kubernetes bootstrap resources, namespace standards, workload delivery conventions, shared observability, and platform dashboards.</p>
+              <div class="pill-row">
+                <span class="pill tech"><img src="./assets/presentation-icons/kubernetes.svg" alt="">Namespaces</span>
+                <span class="pill tech"><img src="./assets/presentation-icons/helm.svg" alt="">Helm</span>
+                <span class="pill tech"><img src="./assets/presentation-icons/grafana.svg" alt="">Grafana</span>
+              </div>
+            </article>
+            <article class="card">
+              <h3><span class="title-with-icon"><img src="./assets/presentation-icons/spring-boot.svg" alt="">Application</span></h3>
+              <p>Owns the Spring Boot service, Docker image, Helm chart values, probes, metrics exposure, and service troubleshooting.</p>
+              <div class="pill-row">
+                <span class="pill tech"><img src="./assets/presentation-icons/java.svg" alt="">Java</span>
+                <span class="pill tech"><img src="./assets/presentation-icons/docker.svg" alt="">Docker</span>
+                <span class="pill tech"><img src="./assets/presentation-icons/spring-boot.svg" alt="">Actuator</span>
+              </div>
+            </article>
+          </div>
+          <div class="image-grid three">
+            <div class="media-frame">
+              <img src="./assets/infrastructure_bootstrap_path.png" alt="Infrastructure bootstrap path">
+              <div class="media-caption">
+                Infrastructure path: backend bootstrap, Azure foundation, AKS, and cloud prerequisites.
+              </div>
+            </div>
+            <div class="media-frame">
+              <img src="./assets/platform_provision_path.png" alt="Platform provision path">
+              <div class="media-caption">
+                Platform path: governed Kubernetes resources and shared runtime conventions.
+              </div>
+            </div>
+            <div class="media-frame">
+              <img src="./assets/app_delivery_path.png" alt="Application delivery path">
+              <div class="media-caption">
+                Application path: build, package, and deploy the Spring Boot service inside the governed boundary.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="delivery">
+        <div class="section-head reveal-item">
+          <h2>Controlled delivery journey</h2>
+          <p>
+            The important thing is not just that the app runs, but that each layer has a clear delivery path and ownership boundary.
+          </p>
+        </div>
+        <div class="panel reveal-item">
+          <div class="journey">
+            <article class="journey-step">
+              <div class="num">1</div>
+              <h3><span class="title-with-icon"><img src="./assets/presentation-icons/terraform.svg" alt="">Infrastructure</span></h3>
+              <p>Provision Azure and AKS through the Infrastructure-owned Terraform path.</p>
+            </article>
+            <article class="journey-step">
+              <div class="num">2</div>
+              <h3><span class="title-with-icon"><img src="./assets/presentation-icons/kubernetes.svg" alt="">Platform</span></h3>
+              <p>Create the governed Kubernetes application boundary and runtime prerequisites.</p>
+            </article>
+            <article class="journey-step">
+              <div class="num">3</div>
+              <h3><span class="title-with-icon"><img src="./assets/presentation-icons/github-actions.svg" alt="">Application</span></h3>
+              <p>Build, push, and deploy the Spring Boot image through the approved Helm workflow.</p>
+            </article>
+            <article class="journey-step">
+              <div class="num">4</div>
+              <h3><span class="title-with-icon"><img src="./assets/presentation-icons/prometheus.svg" alt="">Observability</span></h3>
+              <p>Install the shared monitoring stack and wire the dashboard delivery model.</p>
+            </article>
+          </div>
+          <div class="media-frame tall-media">
+            <div class="zoom-wrap" data-zoom>
+              <img src="./assets/iac_lifecycle_dependencies.png" alt="Infrastructure and platform lifecycle dependency map">
+              <div class="zoom-lens" aria-hidden="true"></div>
+            </div>
+            <div class="media-caption">
+              Lifecycle dependency map: the delivery path is sequenced intentionally so infrastructure,
+              platform, observability, and application changes reconcile in the right order.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="runtime">
+        <div class="section-head reveal-item">
+          <h2>Application runtime</h2>
+          <p>
+            Stage 1 does not stop at deployment. The service exposes a clear operational run path for internal consumers and platform verification.
+          </p>
+        </div>
+        <div class="panel reveal-item">
+          <div class="runtime-grid">
+            <div class="runtime-map">
+              <div class="runtime-flow">
+                <span class="runtime-actor"><img src="./assets/presentation-icons/spring-boot.svg" alt="">Client / Internal consumer</span>
+                <div class="runtime-route">
+                  <div class="runtime-item">
+                    <strong>Service status and delivery identity</strong>
+                    <code>GET /api/payment-exceptions/service-status</code>
+                    <p>Returns the service status, version, validation mode, and environment-facing delivery metadata.</p>
+                  </div>
+                  <div class="runtime-item">
+                    <strong>Payment exception lifecycle state</strong>
+                    <code>GET /api/payment-exceptions/{id}/status</code>
+                    <p>Returns the simulated payment exception progression used to prove the business path.</p>
+                    <div class="runtime-lifecycle">
+                      <span>RECEIVED</span>
+                      <span>VALIDATING</span>
+                      <span>PENDING_REVIEW</span>
+                      <span>APPROVED</span>
+                      <span>REJECTED</span>
+                      <span>ESCALATED</span>
+                    </div>
+                  </div>
+                  <div class="runtime-item">
+                    <strong>Configuration validation signal</strong>
+                    <code>GET /api/payment-exceptions/config-check</code>
+                    <p>Surfaces whether runtime configuration resolves the expected values for the service.</p>
+                  </div>
+                  <div class="runtime-item">
+                    <strong>Operational actuator endpoints</strong>
+                    <code>/actuator/*</code>
+                    <ul>
+                      <li><code>/actuator/health</code> for readiness and liveness checks</li>
+                      <li><code>/actuator/info</code> for runtime metadata</li>
+                      <li><code>/actuator/prometheus</code> for Prometheus scraping</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="proof-note">
+              <h3>Why this matters</h3>
+              <p>
+                This run path is the operational contract of the Stage 1 service. It gives the Application team a business-facing API, gives the Platform team health and scrape endpoints, and gives shared observability a reliable signal source.
+              </p>
+              <div class="proof-badges">
+                <span><img src="./assets/presentation-icons/spring-boot.svg" alt="">Business path</span>
+                <span><img src="./assets/presentation-icons/prometheus.svg" alt="">Metrics path</span>
+                <span><img src="./assets/presentation-icons/kubernetes.svg" alt="">Probe path</span>
+                <span><img src="./assets/presentation-icons/grafana.svg" alt="">Dashboard path</span>
+              </div>
+              <div class="media-frame">
+                <img src="./assets/grafana_custom_dashboard_for_backend.png" alt="Grafana dashboard for the backend service">
+                <div class="media-caption">
+                  Runtime signals are not abstract. They feed the service dashboard and make the deployment observable once the app is live in AKS.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="finops">
+        <div class="section-head reveal-item">
+          <h2>FinOps choices were explicit</h2>
+          <p>
+            Stage 1 was designed to stay credible without pretending cloud cost does not matter. The repo documents both the technical baseline and the cost-control tradeoffs.
+          </p>
+        </div>
+        <div class="panel reveal-item">
+          <div class="contrast-row">
+            <article class="contrast platform">
+              <span class="tag">Design choices</span>
+              <h3><span class="title-with-icon"><img src="./assets/presentation-icons/azure.svg" alt="">Cost-aware by design</span></h3>
+              <p>
+                The Azure path is not treated as always-on by default. Local validation exists specifically to reduce cloud spend and shorten iteration time before using AKS.
+              </p>
+              <ul>
+                <li>The AKS-managed resource group shown here costs about <strong>CA$1.16 per day</strong> while it exists.</li>
+                <li>Using the local <code>kind</code> cluster for most iterations avoids carrying that Azure runtime cost during everyday development.</li>
+                <li>The repo explicitly recommends destroying AKS and Azure resources after use, so you do not keep paying that daily platform cost outside active work windows.</li>
+                <li>The remote Terraform backend stays almost negligible at <strong>&lt; CA$0.01 per day</strong>, so the expensive part is the live runtime, not the state layer.</li>
+              </ul>
+            </article>
+            <article class="contrast ops">
+              <span class="tag">ADR-backed</span>
+              <h3><span class="title-with-icon"><img src="./assets/presentation-icons/terraform.svg" alt="">Baseline vs fallback</span></h3>
+              <p>
+                The VM-size decision is documented in the ADRs. The repo keeps a stronger default while still acknowledging cheaper fallback options for personal Azure subscriptions.
+              </p>
+              <ul>
+                <li><code>Standard_D2als_v6</code> stays the default Stage 1 baseline.</li>
+                <li><code>Standard_B2als_v2</code> is documented as the lower-cost fallback when quota and region availability allow it, specifically to make the project more accessible on tighter personal budgets.</li>
+                <li>The cost screenshots show the practical target state: about <strong>CA$3.59 forecast for the month</strong> when the estate is kept minimal and destroyed after use instead of left running continuously.</li>
+                <li>Quota-awareness and subscription-budget realism are part of the delivery story, even when the repo keeps a stronger default baseline.</li>
+              </ul>
+            </article>
+          </div>
+          <div class="image-grid">
+            <div class="media-frame">
+              <img src="./assets/azure_infra_cost_analysis_per_service.png" alt="Azure cost analysis by service">
+              <div class="media-caption">
+                Cost analysis by Azure service: roughly <strong>CA$0.60</strong> for virtual machines, <strong>CA$0.47</strong> for storage, <strong>CA$0.10</strong> for virtual network, and about <strong>CA$0.01</strong> for Azure DNS. The platform is small enough to reason about cost component by component.
+              </div>
+            </div>
+            <div class="media-frame">
+              <img src="./assets/azure_infra_finops_4_dollards_per_month.png" alt="Low monthly Azure infrastructure cost view">
+              <div class="media-caption">
+                FinOps proof point: the captured Azure view shows <strong>CA$1.17 actual cost</strong> at that moment and a <strong>CA$3.59 monthly forecast</strong>, which supports the strategy of local-first development plus teardown of unused cloud runtime.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head reveal-item">
+          <h2>Tech stack evolution</h2>
+          <p>
+            Stage 1 is delivery credibility. Stage 2 is governance and shared-platform maturity.
+            Stage 3 is enterprise architecture scale and hybrid realism.
+          </p>
+        </div>
+        <div class="panel reveal-item">
+          <div class="evolution-surface">
+            <div class="evolution-background" aria-hidden="true">
+              <div class="evo-band stage1">
+                <img class="tech-float large" style="left:5%; top:18%;" src="./assets/presentation-icons/github-actions.svg" alt="">
+                <img class="tech-float" style="left:16%; top:58%;" src="./assets/presentation-icons/terraform.svg" alt="">
+                <img class="tech-float small" style="left:31%; top:12%;" src="./assets/presentation-icons/helm.svg" alt="">
+                <img class="tech-float" style="left:43%; top:62%;" src="./assets/presentation-icons/kubernetes.svg" alt="">
+                <img class="tech-float small" style="left:61%; top:16%;" src="./assets/presentation-icons/kubernetes.svg" alt="">
+                <img class="tech-float large" style="left:72%; top:52%;" src="./assets/presentation-icons/spring-boot.svg" alt="">
+                <img class="tech-float" style="left:84%; top:18%;" src="./assets/presentation-icons/prometheus.svg" alt="">
+                <img class="tech-float small" style="left:91%; top:67%;" src="./assets/presentation-icons/grafana.svg" alt="">
+              </div>
+              <div class="evo-band stage2">
+                <img class="tech-float" style="left:9%; top:21%;" src="./assets/presentation-icons/openshift.svg" alt="">
+                <img class="tech-float small" style="left:19%; top:68%;" src="./assets/presentation-icons/git-orange.svg" alt="">
+                <img class="tech-float large" style="left:34%; top:14%;" src="./assets/presentation-icons/vault.svg" alt="">
+                <img class="tech-float" style="left:49%; top:64%;" src="./assets/presentation-icons/elasticsearch.svg" alt="">
+                <img class="tech-float small" style="left:62%; top:20%;" src="./assets/presentation-icons/kibana.svg" alt="">
+                <img class="tech-float" style="left:77%; top:55%;" src="./assets/presentation-icons/ansible.svg" alt="">
+                <img class="tech-float large" style="left:88%; top:16%;" src="./assets/presentation-icons/github.svg" alt="">
+              </div>
+              <div class="evo-band stage3">
+                <img class="tech-float small" style="left:7%; top:28%;" src="./assets/presentation-icons/aws.svg" alt="">
+                <img class="tech-float large" style="left:18%; top:68%;" src="./assets/presentation-icons/eks.svg" alt="">
+                <img class="tech-float" style="left:36%; top:19%;" src="./assets/presentation-icons/okta.svg" alt="">
+                <img class="tech-float small" style="left:51%; top:61%;" src="./assets/presentation-icons/terraform.svg" alt="">
+                <img class="tech-float" style="left:66%; top:16%;" src="./assets/presentation-icons/datadog.svg" alt="">
+                <img class="tech-float large" style="left:81%; top:56%;" src="./assets/presentation-icons/thanos.svg" alt="">
+                <img class="tech-float small" style="left:92%; top:24%;" src="./assets/presentation-icons/cloudwatch.svg" alt="">
+              </div>
+            </div>
+            <div class="evolution">
+              <div class="evo-row stage1">
+                <article class="evo-card stage1" id="stage-1-card">
+                  <span class="stage-tag">Stage 1</span>
+                  <h3>Governed delivery foundation</h3>
+                  <p>One stateful regulated internal service delivered safely through a controlled AKS path.</p>
+                  <div class="evo-emphasis">
+                    <div class="evo-env-card">
+                      <span class="label">Formalized environments</span>
+                      <div class="evo-env-list">
+                        <span><img src="./assets/presentation-icons/ubuntu.svg" alt="">Local</span>
+                        <span><img src="./assets/presentation-icons/azure.svg" alt="">Dev</span>
+                      </div>
+                    </div>
+                    <div class="evo-subfocus">
+                      <strong>Scope:</strong> one governed internal service boundary, not yet a shared multi-tenant platform.
+                    </div>
+                  </div>
+                  <div class="evo-pills">
+                    <span><img src="./assets/presentation-icons/kubernetes.svg" alt="">AKS</span>
+                    <span><img src="./assets/presentation-icons/terraform.svg" alt="">Terraform</span>
+                    <span><img src="./assets/presentation-icons/github-actions.svg" alt="">GitHub Actions</span>
+                    <span><img src="./assets/presentation-icons/github.svg" alt="">GitHub</span>
+                    <span><img src="./assets/presentation-icons/docker.svg" alt="">Docker</span>
+                    <span><img src="./assets/presentation-icons/github.svg" alt="">GHCR</span>
+                    <span><img src="./assets/presentation-icons/helm.svg" alt="">Helm</span>
+                    <span><img src="./assets/presentation-icons/kubernetes.svg" alt="">Kustomize</span>
+                    <span><img src="./assets/presentation-icons/spring-boot.svg" alt="">Spring Boot</span>
+                    <span><img src="./assets/presentation-icons/azure.svg" alt="">Azure Storage backend</span>
+                    <span><img src="./assets/presentation-icons/microsoft.svg" alt="">Federated OIDC</span>
+                    <span><img src="./assets/presentation-icons/postgresql.svg" alt="">Azure PostgreSQL</span>
+                    <span><img src="./assets/presentation-icons/postgresql.svg" alt="">Local PostgreSQL</span>
+                    <span><img src="./assets/presentation-icons/ubuntu.svg" alt="">Linux / Ubuntu</span>
+                    <span><img src="./assets/presentation-icons/prometheus.svg" alt="">Prometheus</span>
+                    <span><img src="./assets/presentation-icons/grafana.svg" alt="">Grafana</span>
+                  </div>
+                </article>
+              </div>
+              <div class="evo-spacer stage1-2" aria-hidden="true"></div>
+              <div class="evo-row stage2">
+                <article class="evo-card stage2" id="stage-2-card">
+                  <span class="stage-tag">Stage 2</span>
+                  <h3>Governed shared platform</h3>
+                  <p>More tenants, stronger controls, centralized secrets, GitOps-style reconciliation, and broader operational governance.</p>
+                  <div class="evo-emphasis">
+                    <div class="evo-env-card">
+                      <span class="label">Formalized environments</span>
+                      <div class="evo-env-list">
+                        <span><img src="./assets/presentation-icons/azure.svg" alt="">Dev</span>
+                        <span><img src="./assets/presentation-icons/openshift.svg" alt="">Prod</span>
+                      </div>
+                    </div>
+                    <div class="evo-subfocus">
+                      <strong>Isolation:</strong> multi-team and multi-tenant shared platform with namespace and policy boundaries.
+                    </div>
+                  </div>
+                  <div class="evo-pills">
+                    <span><img src="./assets/presentation-icons/openshift.svg" alt="">OpenShift</span>
+                    <span><img src="./assets/presentation-icons/github.svg" alt="">GitHub</span>
+                    <span><img src="./assets/presentation-icons/git-orange.svg" alt="">ArgoCD</span>
+                    <span><img src="./assets/presentation-icons/vault.svg" alt="">Vault</span>
+                    <span><img src="./assets/presentation-icons/elasticsearch.svg" alt="">ElasticSearch</span>
+                    <span><img src="./assets/presentation-icons/kibana.svg" alt="">Kibana</span>
+                    <span><img src="./assets/presentation-icons/ansible.svg" alt="">Ansible</span>
+                  </div>
+                </article>
+              </div>
+              <div class="evo-spacer stage2-3" aria-hidden="true"></div>
+              <div class="evo-row stage3">
+                <article class="evo-card stage3" id="stage-3-card">
+                  <span class="stage-tag">Stage 3</span>
+                  <h3>Enterprise hybrid platform</h3>
+                  <p>Identity maturity, broader observability layering, service-mesh traffic governance, hybrid-cloud credibility, and large-scale governance patterns.</p>
+                  <div class="evo-emphasis">
+                    <div class="evo-env-card">
+                      <span class="label">Formalized environments</span>
+                      <div class="evo-env-list">
+                        <span><img src="./assets/presentation-icons/ubuntu.svg" alt="">Local</span>
+                        <span><img src="./assets/presentation-icons/azure.svg" alt="">Dev</span>
+                        <span><img src="./assets/presentation-icons/openshift.svg" alt="">Prod</span>
+                      </div>
+                    </div>
+                    <div class="evo-subfocus">
+                      <strong>Hybrid scope:</strong> Azure, AWS, and on-premises operating patterns standardized under one enterprise model.
+                    </div>
+                  </div>
+                  <div class="evo-pills">
+                    <span><img src="./assets/presentation-icons/aws.svg" alt="">AWS</span>
+                    <span><img src="./assets/presentation-icons/azure.svg" alt="">Azure</span>
+                    <span><img src="./assets/presentation-icons/openshift.svg" alt="">OpenShift</span>
+                    <span><img src="./assets/presentation-icons/openshift.svg" alt="">OpenShift Service Mesh</span>
+                    <span><img src="./assets/presentation-icons/eks.svg" alt="">EKS</span>
+                    <span><img src="./assets/presentation-icons/okta.svg" alt="">Okta</span>
+                    <span><img src="./assets/presentation-icons/terraform.svg" alt="">Terragrunt</span>
+                    <span><img src="./assets/presentation-icons/datadog.svg" alt="">DataDog</span>
+                    <span><img src="./assets/presentation-icons/thanos.svg" alt="">Thanos</span>
+                    <span><img src="./assets/presentation-icons/cloudwatch.svg" alt="">CloudWatch</span>
+                    <span><img src="./assets/presentation-icons/onprem.svg" alt="">On-premises</span>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head reveal-item">
+          <h2>GitHub Actions by team</h2>
+          <p>
+            Workflow files stay flat for GitHub, but the naming now makes accountability obvious.
+          </p>
+        </div>
+        <div class="panel reveal-item">
+          <div class="workflow-list">
+            <article class="workflow-group">
+              <h3><span class="title-with-icon"><img src="https://api.iconify.design/logos:microsoft-azure.svg" alt="">Infrastructure</span></h3>
+              <ul>
+                <li>infrastructure-azure-provision.yml</li>
+                <li>infrastructure-azure-destroy.yml</li>
+              </ul>
+            </article>
+            <article class="workflow-group">
+              <h3><span class="title-with-icon"><img src="https://cdn.simpleicons.org/kubernetes/326CE5" alt="">Platform</span></h3>
+              <ul>
+                <li>platform-kubernetes-resources-provision.yml</li>
+                <li>platform-kubernetes-resources-destroy.yml</li>
+                <li>platform-observability-provision.yml</li>
+                <li>platform-observability-destroy.yml</li>
+                <li>platform-observability-validate.yml</li>
+              </ul>
+            </article>
+            <article class="workflow-group">
+              <h3><span class="title-with-icon"><img src="https://cdn.simpleicons.org/springboot/6DB33F" alt="">Application</span></h3>
+              <ul>
+                <li>application-app-ci.yml</li>
+                <li>application-app-deploy.yml</li>
+                <li>application-app-destroy.yml</li>
+              </ul>
+            </article>
+          </div>
+          <div class="media-frame">
+            <img src="./assets/github_actions_all_workflows.png" alt="GitHub Actions deployment workflow with Helm">
+            <div class="media-caption">
+              Delivery proof in GitHub Actions: the repo does not stop at diagrams, it drives a real Helm-based application deployment path.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="ops">
+        <div class="section-head reveal-item">
+          <h2>Stage 1 observability proves the platform is alive</h2>
+          <p>
+            The immediate goal is simple: prove that AKS, Prometheus, and Grafana are up, scraping, and exposing usable platform signals.
+            Stage 2 is where the focus shifts toward richer application metrics, logs, and alerting.
+          </p>
+        </div>
+        <div class="panel reveal-item">
+          <div class="contrast-row">
+            <article class="contrast platform">
+              <span class="tag">Stage 1</span>
+              <h3><span class="title-with-icon"><img src="./assets/presentation-icons/kubernetes.svg" alt="">First prove the infrastructure and platform are up</span></h3>
+              <p>
+                If Grafana can already show Kubernetes, node, and namespace-level signals in AKS,
+                then the cloud foundation, cluster monitoring stack, and shared platform path are working.
+              </p>
+              <ul>
+                <li>bootstrap the shared Prometheus and Grafana stack</li>
+                <li>confirm built-in dashboards render real AKS node and namespace data</li>
+                <li>use curated platform dashboards only as fast proof, not as the end state</li>
+              </ul>
+            </article>
+            <article class="contrast ops">
+              <span class="tag">Stage 2</span>
+              <h3><span class="title-with-icon"><img src="./assets/presentation-icons/grafana.svg" alt="">Then go deeper into application signals</span></h3>
+              <p>
+                Once the platform path is stable, observability becomes more application-centered:
+                request metrics, business-health dashboards, logs, and alerting contracts.
+              </p>
+              <ul>
+                <li>service-specific metrics such as request volume, error split, and DB pool usage</li>
+                <li>logs and alerting become first-class operational assets</li>
+                <li>the backend dashboard becomes one proof point inside a broader application-observability layer</li>
+              </ul>
+            </article>
+          </div>
+          <div class="image-grid three">
+            <div class="media-frame">
+              <img src="./assets/grafana_auto_created_dashboards_in_aks.png" alt="Auto-created Grafana dashboards in AKS">
+              <div class="media-caption">
+                Stage 1 proof: Grafana already exposes useful AKS dashboards out of the box. That is enough to prove the shared stack is alive.
+              </div>
+            </div>
+            <div class="media-frame">
+              <img src="./assets/grafana_node_explorer.png" alt="Grafana node explorer dashboard">
+              <div class="media-caption">
+                Node-level visibility is a strong platform signal: infrastructure, exporters, and Prometheus ingestion are all working together.
+              </div>
+            </div>
+            <div class="media-frame">
+              <img src="./assets/grafana_custom_dashboard_for_backend.png" alt="Custom backend dashboard in Grafana">
+              <div class="media-caption">
+                Stage 2 direction: once the base is proven, the next layer is application metrics, then logs, then alerts around real service behavior.
+              </div>
+            </div>
+          </div>
+          <div class="iac-proof">
+            <h3><span class="title-with-icon"><img src="./assets/presentation-icons/helm.svg" alt="">Dashboards are also delivered as code</span></h3>
+            <p>
+              The screenshots are not manual Grafana clicks. The dashboards live as versioned JSON in the repo,
+              Kustomize turns them into Kubernetes ConfigMaps, and the Grafana Helm values mount them into the shared stack.
+            </p>
+            <div class="iac-flow">
+              <span class="iac-step">JSON dashboards in Git</span>
+              <span class="iac-step">Kustomize ConfigMaps</span>
+              <span class="iac-step">Helm mounts into Grafana</span>
+              <span class="iac-step">Provisioned on install</span>
+            </div>
+            <pre><code><span class="code-path">platform/kubernetes-resources/observability/grafana/dashboards/</span>
+  - <span class="code-value">kubernetes-networking-namespace-pods-curated.json</span>
+  - <span class="code-value">payment-exception-review-platform-runtime.json</span>
+  - <span class="code-value">prometheus-overview-curated.json</span>
+
+<span class="code-path">platform/kubernetes-resources/observability/grafana/kustomization.yaml</span>
+  <span class="code-key">configMapGenerator</span>:
+    - <span class="code-key">name</span>: <span class="code-value">payment-exception-review-platform-runtime-dashboard</span>
+    - <span class="code-key">name</span>: <span class="code-value">kubernetes-networking-namespace-pods-curated</span>
+    - <span class="code-key">name</span>: <span class="code-value">prometheus-overview-curated</span>
+
+<span class="code-comment">install flow</span>:
+  <span class="code-cmd">kubectl apply -k platform/kubernetes-resources/observability/grafana</span>
+  <span class="code-cmd">helm upgrade --install kube-prometheus-stack ...</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="scenarios">
+        <div class="section-head reveal-item">
+          <h2>Troubleshooting is part of the asset, not an afterthought</h2>
+          <p>
+            The strongest operational signal in this repo is that the real failure modes were captured and explained.
+          </p>
+        </div>
+        <div class="panel reveal-item">
+          <div class="scenario-list">
+            <a class="scenario scenario-link" href="./troubleshooting/scenario-1.html">
+              <strong>Helm install timeout</strong>
+              <span>Differentiate generic rollout delay from an actual blocked release.</span>
+              <span class="more">Open scenario</span>
+            </a>
+            <a class="scenario scenario-link" href="./troubleshooting/scenario-2.html">
+              <strong>Prometheus query issue</strong>
+              <span>Showed how observability failures can come from the query contract, not only the app.</span>
+              <span class="more">Open scenario</span>
+            </a>
+            <a class="scenario scenario-link" href="./troubleshooting/scenario-3.html">
+              <strong>Grafana datasource validation</strong>
+              <span>Captured the local-vs-runtime mismatch around localhost assumptions.</span>
+              <span class="more">Open scenario</span>
+            </a>
+            <a class="scenario scenario-link" href="./troubleshooting/scenario-4.html">
+              <strong>Local PVC permission failure</strong>
+              <span>Turned a repeated Grafana local failure into a durable local-only design fix.</span>
+              <span class="more">Open scenario</span>
+            </a>
+            <a class="scenario scenario-link" href="./troubleshooting/scenario-5.html">
+              <strong>Dashboard no-data case</strong>
+              <span>Distinguished dashboard wiring issues from real metric coverage gaps.</span>
+              <span class="more">Open scenario</span>
+            </a>
+            <a class="scenario scenario-link" href="./troubleshooting/scenario-6.html">
+              <strong>Grafana v2 vs classic JSON</strong>
+              <span>Documented the exact schema mismatch between modern export format and file provisioning.</span>
+              <span class="more">Open scenario</span>
+            </a>
+          </div>
+          <div class="proof-pair">
+            <div class="media-proof">
+              <span class="proof-kicker">Scenario 1 evidence</span>
+              <h4>Helm was blocked, not just slow</h4>
+              <p>
+                The release did not merely take longer than expected. Helm stayed in <code>pending-upgrade</code>,
+                returned <code>context deadline exceeded</code>, and Grafana pods were still not initializing.
+              </p>
+              <pre><code>STATUS: pending-upgrade
+Error: context deadline exceeded
+
+kubectl get pods -n monitoring
+kube-prometheus-stack-grafana-...   0/3   PodInitializing</code></pre>
+            </div>
+            <div class="media-proof">
+              <span class="proof-kicker">Scenario 4 evidence</span>
+              <h4>Grafana was the only unhealthy component</h4>
+              <p>
+                Prometheus, Alertmanager, and the operator were healthy, but Grafana stayed stuck in
+                <code>Init:CrashLoopBackOff</code>. The init container logs showed permission errors under
+                <code>/var/lib/grafana</code>.
+              </p>
+              <pre><code>chown: /var/lib/grafana/pdf: Permission denied
+chown: /var/lib/grafana/png: Permission denied
+chown: /var/lib/grafana/csv: Permission denied</code></pre>
+            </div>
+          </div>
+          <div class="image-grid">
+            <div class="media-frame full-span">
+              <img src="./assets/kubernetes_port_fowarding_for_helm_app_curls.png" alt="Port-forward and curl proof for the Helm application">
+              <div class="media-caption">
+                Fix-oriented proof: once the platform and application path are healthy again, port-forwarding and curl checks confirm the service is reachable and behaving correctly.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="close">
+        <div class="section-head reveal-item">
+          <h2>Stage 1 outcome</h2>
+          <p>
+            Executive summary: one governed delivery path, one replayable bootstrap, one measurable cloud-cost story, and one credible internal service running on AKS.
+          </p>
+        </div>
+        <div class="panel reveal-item">
+          <div class="close-grid">
+            <div class="card">
+              <div class="kpi-hero" aria-label="Stage 1 key outcomes">
+                <div class="kpi-chip primary">
+                  <div>
+                    <span class="kpi-value">20 min</span>
+                    <span class="kpi-label">Bootstrap</span>
+                  </div>
+                </div>
+                <div class="kpi-chip secondary">
+                  <div>
+                    <span class="kpi-value">&lt; CA$4</span>
+                    <span class="kpi-label">Per month</span>
+                  </div>
+                </div>
+                <div class="kpi-chip tertiary">
+                  <div>
+                    <span class="kpi-value">1 script</span>
+                    <span class="kpi-label">Main entrypoint</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pill-row">
+                <span class="pill">3 teams</span>
+                <span class="pill">1 internal service</span>
+                <span class="pill">AKS + PostgreSQL</span>
+                <span class="pill">Shared observability</span>
+              </div>
+              <p class="muted-note">
+                The core result is operational simplicity with enterprise structure: bootstrap the foundation, validate the runtime, deploy the app through GitHub Actions, and tear the environment down when it is not needed.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Executive takeaways</h3>
+              <ul style="margin:0; padding-left:18px; color:var(--muted); line-height:1.7;">
+                <li>Cloud foundation, Kubernetes boundary, observability, and application delivery are all codified.</li>
+                <li>The Azure runtime is cheap enough to demo, and explicit enough to optimize.</li>
+                <li>The local path absorbs most iteration work so AKS is used only when managed-cloud proof matters.</li>
+                <li>Troubleshooting, dashboards, and destroy paths are part of the asset, not hidden cleanup work.</li>
+              </ul>
+              <a class="repo-link" href="https://github.com/MarvinAmine/kubernetes-platform-case" target="_blank" rel="noopener">
+                <img src="./assets/presentation-icons/github.svg" alt="">
+                Explore the full repository
+              </a>
+            </div>
+          </div>
+          <div class="video-embed" aria-label="Stage 1 video walkthrough">
+            <iframe
+              src="https://www.youtube.com/embed/Ktm2KMxnBwE"
+              title="Stage 1 video walkthrough"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leader-line-new@1.1.9/leader-line.min.js"></script>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "base",
+      securityLevel: "loose",
+      themeVariables: {
+        background: "#f8f4ed",
+        primaryColor: "#f8f4ed",
+        primaryTextColor: "#1d231f",
+        primaryBorderColor: "#5a94c8",
+        lineColor: "#5c6672",
+        secondaryColor: "#eef4ff",
+        tertiaryColor: "#fff2e8",
+        fontFamily: "Manrope, sans-serif"
+      },
+      flowchart: {
+        curve: "basis",
+        useMaxWidth: false,
+        htmlLabels: true
+      }
+    });
+  </script>
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting || entry.target.dataset.animated === "true") return;
+        entry.target.dataset.animated = "true";
+
+        anime({
+          targets: entry.target,
+          opacity: [0, 1],
+          translateY: [18, 0],
+          duration: 900,
+          easing: "easeOutExpo"
+        });
+      });
+    }, { threshold: 0.18 });
+
+    document.querySelectorAll(".reveal-item").forEach((el) => observer.observe(el));
+
+    anime({
+      targets: ".hero-card",
+      translateY: [10, 0],
+      opacity: [0, 1],
+      duration: 1200,
+      easing: "easeOutExpo",
+      delay: 260
+    });
+
+    anime({
+      targets: ".metric",
+      translateY: [18, 0],
+      opacity: [0, 1],
+      duration: 820,
+      delay: anime.stagger(110, { start: 380 }),
+      easing: "easeOutExpo"
+    });
+
+    const terminalTabs = {
+      bootstrap: [
+`marvin@streaming: kubernetes$ ls .env*
+.env  .env.example
+# Loading Environment Variables
+marvin@streaming: kubernetes$ set -a
+marvin@streaming: kubernetes$ source .env
+marvin@streaming: kubernetes$ set +a
+marvin@streaming: kubernetes$ ./bootstrap_infrastructure_and_provision_platform.sh -s -v`,
+`==================================================
+Platform Provisioning Wizard
+==================================================
+INFO: Silent mode enabled. Detailed command output will be written to log files.
+INFO: Video mode enabled. End-of-run secret and identifier values will be redacted.
+
+STEP 1/5 - Remote Terraform backend ... SUCCESS in 3m 51s
+STEP 2/5 - Azure infrastructure (AKS + PostgreSQL) ... SUCCESS in 9m 7s
+STEP 3/5 - Kubernetes resources ... SUCCESS in 1m 21s
+STEP 4/5 - Shared observability stack ... SUCCESS in 3m 47s
+STEP 5/5 - Azure OIDC for GitHub ... SUCCESS in 36s`,
+`Required GitHub repository variables:
+TF_BACKEND_RESOURCE_GROUP=rg-stage1-tfstate
+TF_BACKEND_STORAGE_ACCOUNT=marvintfbackendstage1
+TF_BACKEND_CONTAINER=tfstate
+RESOURCE_GROUP=rg-stage1-aks
+AKS_CLUSTER_NAME=aks-stage1-platform
+POSTGRES_SERVER_NAME=psql-stage1-platform
+
+Confirm these secrets exist:
+AZURE_SUBSCRIPTION_ID=[REDACTED FOR VIDEO]
+AZURE_CLIENT_ID=[REDACTED FOR VIDEO]
+AZURE_TENANT_ID=[REDACTED FOR VIDEO]
+POSTGRES_ADMIN_PASSWORD=[REDACTED FOR VIDEO]
+GRAFANA_ADMIN_PASSWORD=[REDACTED FOR VIDEO]`
+      ],
+      aks: [
+`marvin@streaming: kubernetes$ k config current-context
+aks-stage1-platform
+marvin@streaming: kubernetes$ k config get-contexts
+CURRENT   NAME                  CLUSTER
+*         aks-stage1-platform   aks-stage1-platform
+          kind-local-dev        kind-local-dev`,
+`marvin@streaming: kubernetes$ k get namespaces
+default
+kube-system
+monitoring
+payment-exception-review-stage1
+
+marvin@streaming: kubernetes$ k -n monitoring get service
+kube-prometheus-stack-grafana
+kube-prometheus-stack-prometheus`,
+`marvin@streaming: kubernetes$ kubectl -n monitoring port-forward services/kube-prometheus-stack-grafana 3000:80 &
+marvin@streaming: kubernetes$ kubectl -n monitoring port-forward services/kube-prometheus-stack-prometheus 9090 &
+marvin@streaming: kubernetes$ kubectl -n payment-exception-review-stage1 port-forward services/payment-exception-review-service 8080:80 &
+
+marvin@streaming: kubernetes$ curl http://localhost:8080/actuator/health
+{"status":"UP","groups":["liveness","readiness"]}
+marvin@streaming: kubernetes$ curl http://localhost:8080/api/payment-exceptions/service-status
+{"service":"payment-exception-review-service","environmentName":"stage1","validationMode":"STANDARD"}`],
+      grafana: [
+`marvin@streaming: kubernetes$ cat .env | grep GRAFANA_ADMIN_PASSWORD
+GRAFANA_ADMIN_PASSWORD='GRAFANAmonitoringStack%0987'
+
+# Seems good
+# Let's delete a Grafana dashboard, since dashboards are created by ConfigMap in Kubernetes`,
+`marvin@streaming: kubernetes$ k -n monitoring get configmaps
+payment-exception-review-platform-runtime-dashboard
+payment-exception-review-service-health-dashboard
+prometheus-overview-curated`,
+`marvin@streaming: kubernetes$ k -n monitoring delete configmaps payment-exception-review-service-health-dashboard
+configmap "payment-exception-review-service-health-dashboard" deleted
+
+marvin@streaming: kubernetes$ ps aux | grep port-forward
+kubectl -n monitoring port-forward ...
+kubectl -n payment-exception-review-stage1 port-forward ...`],
+      teardown: [
+`# Let's teardown the infra, platform and app
+marvin@streaming: kubernetes$ ./destroy_infrastructure_and_platform.sh -s
+
+STEP 1/5 - Application Helm teardown ... SUCCESS in 20s
+STEP 2/5 - Kubernetes resources destruction ... SUCCESS in 1m 59s
+STEP 3/5 - Azure infrastructure destruction ... SUCCESS in 8m 29s
+STEP 4/5 - Remote Terraform backend destruction ... SUCCESS in 2m 5s
+STEP 5/5 - Skipping Azure OIDC federation destruction.
+
+SUCCESS: Platform teardown completed in 12m 53s.`,
+`marvin@streaming: kubernetes$ k get namespaces
+ERROR: Unable to connect to the server: dial tcp ... no such host
+
+# The AKS cluster seems tear down`,
+`marvin@streaming: kubernetes$ k config use-context kind-local-dev
+Switched to context "kind-local-dev".
+marvin@streaming: kubernetes$ k get namespaces
+default
+monitoring
+payment-exception-review-local
+
+# The Azure infra is gone. The local kind platform is still available.`]
+    };
+
+    const terminalEl = document.getElementById("runbook-terminal");
+    const cursorEl = document.getElementById("runbook-cursor");
+    const terminalTabsEls = document.querySelectorAll("[data-terminal-tab]");
+    let activeTerminalTab = "bootstrap";
+    let terminalLoopTimer = null;
+    let terminalRunId = 0;
+
+    function escapeHtml(text) {
+      return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function getLineClass(line) {
+      if (line.startsWith("#")) return "comment";
+      if (line.startsWith("INFO:")) return "info";
+      if (line.startsWith("SUCCESS:")) return "success";
+      if (line.startsWith("ERROR:")) return "error";
+      if (line.startsWith("===")) return "heading";
+      return "output";
+    }
+
+    function getLineSegments(line) {
+      const promptMatch = line.match(/^(marvin@streaming: kubernetes\$ )(.*)$/);
+      if (promptMatch) {
+        return [
+          { text: promptMatch[1], cls: "prompt" },
+          { text: promptMatch[2], cls: "command" }
+        ];
+      }
+
+      if (line.startsWith("#")) {
+        return [{ text: line, cls: "note" }];
+      }
+
+      return [{ text: line, cls: "" }];
+    }
+
+    function renderLineSegments(segments, count) {
+      let remaining = count;
+      return segments.map(({ text, cls }) => {
+        const visible = text.slice(0, Math.max(0, Math.min(text.length, remaining)));
+        remaining -= visible.length;
+        if (!visible) return "";
+        const escaped = escapeHtml(visible);
+        return cls ? `<span class="terminal-seg ${cls}">${escaped}</span>` : escaped;
+      }).join("");
+    }
+
+    function renderCompletedLines(lines, upTo) {
+      return lines.slice(0, upTo).map((line) => {
+        const cls = getLineClass(line);
+        const html = renderLineSegments(getLineSegments(line), line.length);
+        return `<span class="terminal-line ${cls}">${html}</span>`;
+      }).join("");
+    }
+
+    function setActiveTerminalTab(tabName) {
+      activeTerminalTab = tabName;
+      terminalTabsEls.forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.terminalTab === tabName);
+      });
+    }
+
+    function startTerminalLoop(tabName = activeTerminalTab, frameIndex = 0) {
+      if (!terminalEl) return;
+      terminalRunId += 1;
+      const runId = terminalRunId;
+      setActiveTerminalTab(tabName);
+      if (terminalLoopTimer) {
+        clearTimeout(terminalLoopTimer);
+        terminalLoopTimer = null;
+      }
+
+      const frames = terminalTabs[tabName];
+      const frame = frames[frameIndex];
+      const lines = frame.split("\n");
+      let lineIndex = 0;
+      terminalEl.innerHTML = "";
+
+      function typeLine() {
+        if (runId !== terminalRunId) return;
+        if (lineIndex >= lines.length) {
+          terminalLoopTimer = window.setTimeout(() => {
+            startTerminalLoop(tabName, (frameIndex + 1) % frames.length);
+          }, 1900);
+          return;
+        }
+
+        const line = lines[lineIndex];
+        const lineSegments = getLineSegments(line);
+        const lineClass = getLineClass(line);
+        let charIndex = 0;
+
+        function typeChar() {
+          if (runId !== terminalRunId) return;
+          if (charIndex <= line.length) {
+            terminalEl.innerHTML =
+              renderCompletedLines(lines, lineIndex) +
+              `<span class="terminal-line ${lineClass}">${renderLineSegments(lineSegments, charIndex)}</span>`;
+            charIndex += 1;
+            setTimeout(typeChar, line.startsWith("INFO:") || line.startsWith("STEP") || line.startsWith("SUCCESS") ? 12 : 7);
+          } else {
+            lineIndex += 1;
+            terminalEl.parentElement.scrollTop = terminalEl.parentElement.scrollHeight;
+            setTimeout(typeLine, 70);
+          }
+        }
+
+        typeChar();
+      }
+
+      typeLine();
+    }
+
+    if (cursorEl) {
+      anime({
+        targets: cursorEl,
+        opacity: [1, 0.2],
+        easing: "steps(1)",
+        direction: "alternate",
+        loop: true,
+        duration: 620
+      });
+    }
+
+    terminalTabsEls.forEach((button) => {
+      button.addEventListener("click", () => {
+        startTerminalLoop(button.dataset.terminalTab, 0);
+      });
+    });
+
+    startTerminalLoop("bootstrap", 0);
+
+    document.querySelectorAll(".tech-float").forEach((icon, index) => {
+      const baseOpacity = parseFloat(getComputedStyle(icon).opacity);
+
+      anime({
+        targets: icon,
+        translateX: [0, anime.random(-18, 18)],
+        translateY: [0, anime.random(-24, 24)],
+        rotate: [0, anime.random(-12, 12)],
+        direction: "alternate",
+        loop: true,
+        easing: "easeInOutSine",
+        duration: anime.random(5200, 8600),
+        delay: index * 110
+      });
+
+      anime({
+        targets: icon,
+        opacity: [baseOpacity * 0.72, baseOpacity],
+        direction: "alternate",
+        loop: true,
+        easing: "easeInOutQuad",
+        duration: anime.random(5600, 9000),
+        delay: anime.random(0, 700)
+      });
+    });
+
+    document.querySelectorAll("[data-zoom]").forEach((wrap) => {
+      const img = wrap.querySelector("img");
+      const lens = wrap.querySelector(".zoom-lens");
+      const zoom = 1.25;
+
+      const activate = () => {
+        lens.style.backgroundImage = `url("${img.getAttribute("src")}")`;
+        wrap.classList.add("is-active");
+      };
+
+      const deactivate = () => {
+        wrap.classList.remove("is-active");
+      };
+
+      const move = (event) => {
+        const wrapRect = wrap.getBoundingClientRect();
+        const rect = img.getBoundingClientRect();
+
+        if (
+          event.clientX < rect.left ||
+          event.clientX > rect.right ||
+          event.clientY < rect.top ||
+          event.clientY > rect.bottom
+        ) {
+          deactivate();
+          return;
+        }
+
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        const lensSize = lens.offsetWidth;
+        const lensRadius = lensSize / 2;
+        const overflowAllowance = lensRadius * 0.45;
+        const minX = lensRadius - overflowAllowance;
+        const maxX = rect.width - lensRadius + overflowAllowance;
+        const minY = lensRadius - overflowAllowance;
+        const maxY = rect.height - lensRadius + overflowAllowance;
+        const clampedX = Math.max(minX, Math.min(x, maxX));
+        const clampedY = Math.max(minY, Math.min(y, maxY));
+
+        activate();
+
+        lens.style.left = `${rect.left - wrapRect.left + clampedX}px`;
+        lens.style.top = `${rect.top - wrapRect.top + clampedY}px`;
+        lens.style.backgroundSize = `${rect.width * zoom}px ${rect.height * zoom}px`;
+        lens.style.backgroundPosition = `-${x * zoom - lensSize / 2}px -${y * zoom - lensSize / 2}px`;
+      };
+
+      img.addEventListener("mouseenter", activate);
+      img.addEventListener("mouseleave", deactivate);
+      img.addEventListener("mousemove", move);
+      wrap.addEventListener("mouseleave", deactivate);
+    });
+
+    const stage1 = document.getElementById("stage-1-card");
+    const stage2 = document.getElementById("stage-2-card");
+    const stage3 = document.getElementById("stage-3-card");
+    const evoLines = [];
+
+    const buildEvolutionLines = () => {
+      evoLines.forEach((line) => line.remove());
+      evoLines.length = 0;
+
+      if (window.innerWidth <= 1100) {
+        return;
+      }
+
+      evoLines.push(
+        new LeaderLine(stage1, stage2, {
+          color: "rgba(10, 79, 64, 0.62)",
+          size: 3,
+          startSocket: "right",
+          endSocket: "top",
+          path: "fluid",
+          dash: { animation: false, len: 10, gap: 10 },
+          startPlug: "behind",
+          endPlug: "arrow3",
+          endPlugSize: 1.2
+        })
+      );
+
+      evoLines.push(
+        new LeaderLine(stage2, stage3, {
+          color: "rgba(10, 79, 64, 0.62)",
+          size: 3,
+          startSocket: "right",
+          endSocket: "left",
+          path: "fluid",
+          dash: { animation: false, len: 10, gap: 10 },
+          startPlug: "behind",
+          endPlug: "arrow3",
+          endPlugSize: 1.2
+        })
+      );
+    };
+
+    const refreshEvolutionLines = () => {
+      buildEvolutionLines();
+      requestAnimationFrame(() => evoLines.forEach((line) => line.position()));
+    };
+
+    window.addEventListener("load", refreshEvolutionLines);
+    window.addEventListener("resize", refreshEvolutionLines);
+    window.addEventListener("scroll", () => {
+      evoLines.forEach((line) => line.position());
+    }, { passive: true });
+  </script>
+</body>
+</html>

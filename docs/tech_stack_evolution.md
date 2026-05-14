@@ -65,6 +65,8 @@ Evolve the initial delivery foundation into a governed shared platform for multi
 * Linux / Red Hat or Ubuntu
 * GitHub
 
+**Deferred next-step mesh choice:** OpenShift Service Mesh (Istio-based)
+
 **What this stage is really about:**
 
 * stronger governance
@@ -92,6 +94,7 @@ Show that the platform can evolve into an enterprise-ready model with stronger i
 **Technologies:**
 
 * OpenShift
+* OpenShift Service Mesh (Istio-based)
 * Kubernetes
 * Helm
 * GitHub Actions

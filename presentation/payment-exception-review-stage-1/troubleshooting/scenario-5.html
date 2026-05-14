@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scenario 5 - 404 Panel Shows No Data</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="topbar"><div class="topbar-inner"><div class="brand">Troubleshooting / Scenario 5</div><nav class="nav"><a href="./index.html">All scenarios</a><a href="../index.html#scenarios">Stage 1</a></nav></div></header>
+  <main><div class="wrap">
+    <section class="hero">
+      <div class="breadcrumbs"><a class="crumb" href="./index.html">Troubleshooting index</a><a class="crumb" href="../index.html#scenarios">Stage 1 deck</a></div>
+      <div class="eyebrow">Scenario 5</div>
+      <h1>A 404 dashboard panel was empty even though the query looked reasonable.</h1>
+      <p>This one shows why “no data” is not automatically a Grafana or Prometheus failure.</p>
+    </section>
+    <section class="section">
+      <div class="panel">
+        <div class="summary-grid">
+          <div class="metric"><span class="label">Symptom</span><span class="value">Empty panel</span></div>
+          <div class="metric"><span class="label">Cause</span><span class="value">No traffic + strict filter</span></div>
+          <div class="metric"><span class="label">Fix</span><span class="value">Generate traffic</span></div>
+          <div class="metric"><span class="label">Best label</span><span class="value">job regex</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="detail-grid">
+        <div class="card">
+          <span class="kicker symptom">What looked wrong</span>
+          <h3>The panel was blank</h3>
+          <p>A query targeting 404 activity returned no data, which initially looked like missing metrics or a broken dashboard.</p>
+          <pre class="symptom-log"><code>Request volume                  No data
+Successful vs error requests   No data
+HikariCP connections           No data
+JDBC active connections        No data</code></pre>
+        </div>
+        <div class="card">
+          <span class="kicker cause">What was actually happening</span>
+          <h3>The query window had nothing to show</h3>
+          <p>No recent 404 traffic had been generated yet, and the original filter was too narrow for the metric labels. Once traffic was generated and the query was widened to the right application label, the panel started returning data.</p>
+          <div class="visual-flow" aria-label="Diagnosis flow">
+            <div class="visual-step">
+              <span class="visual-label">Signal</span>
+              <strong>The dashboard rendered but returned empty series</strong>
+              <p>The panel itself loaded correctly; only the chart data stayed blank.</p>
+            </div>
+            <div class="visual-step">
+              <span class="visual-label">Reading</span>
+              <strong>The filter was too strict for recent traffic</strong>
+              <p>No 404 traffic had been generated yet and the query scope was too narrow.</p>
+            </div>
+            <div class="visual-step">
+              <span class="visual-label">Decision</span>
+              <strong>Generate requests and widen labels</strong>
+              <p>Use an application-level regex label and create real traffic before judging the panel.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="panel">
+        <div class="command-grid">
+          <div class="card"><h3>Generate real traffic</h3><pre><code>kubectl -n payment-exception-review-local port-forward svc/payment-exception-review-service 8080:80
+curl http://localhost:8080/actuator/health
+curl http://localhost:8080/api/payment-exceptions/payexc-100045/bob</code></pre></div>
+          <div class="card"><h3>Working query</h3><pre><code>sum(
+  rate(http_server_requests_seconds_count{
+    job=~".*payment-exception-review.*",
+    status="404"
+  }[5m])
+)</code></pre></div>
+        </div>
+      </div>
+    </section>
+  </div></main>
+</body>
+</html>

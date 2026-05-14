@@ -17,6 +17,7 @@ Stage 3 extends that model by introducing:
 - hybrid platform credibility across **Azure**, **AWS**, and **on-prem**
 - stronger enterprise identity and access patterns
 - broader observability strategy across environments
+- service-mesh traffic governance through **OpenShift Service Mesh (Istio-based)**
 - stronger portability and standardization considerations
 - a more mature enterprise supportability model
 - full **local / dev / prod** operating model formalization
@@ -28,6 +29,7 @@ This stage is where the broader architecture concerns become explicit, such as:
 - hybrid Azure and AWS platform direction
 - on-prem operating model compatibility
 - multi-cluster operating patterns across different hosting models
+- enterprise service-mesh patterns with OpenShift Service Mesh (Istio-based)
 - stronger portability and standardization between environments
 - broader enterprise identity integration across environments
 - cross-environment observability strategy and wider enterprise visibility
@@ -97,6 +99,7 @@ This stage is built to reflect that reality.
 This stage signals hands-on exposure and architectural thinking around:
 
 - OpenShift
+- OpenShift Service Mesh (Istio-based)
 - Kubernetes
 - Helm
 - GitHub Actions

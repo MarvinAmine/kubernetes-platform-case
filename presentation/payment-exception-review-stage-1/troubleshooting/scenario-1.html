@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scenario 1 - Helm Timeout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="topbar"><div class="topbar-inner"><div class="brand">Troubleshooting / Scenario 1</div><nav class="nav"><a href="./index.html">All scenarios</a><a href="../index.html#scenarios">Stage 1</a></nav></div></header>
+  <main><div class="wrap">
+    <section class="hero">
+      <div class="breadcrumbs"><a class="crumb" href="./index.html">Troubleshooting index</a><a class="crumb" href="../index.html#scenarios">Stage 1 deck</a></div>
+      <div class="eyebrow">Scenario 1</div>
+      <h1>Helm timed out before Grafana was ready.</h1>
+      <p>The valuable move here was to distinguish a genuinely broken install from a local first-run startup delay inside the observability stack.</p>
+    </section>
+    <section class="section">
+      <div class="panel">
+        <div class="summary-grid">
+          <div class="metric"><span class="label">Symptom</span><span class="value">context deadline exceeded</span></div>
+          <div class="metric"><span class="label">Healthy</span><span class="value">Prometheus stack</span></div>
+          <div class="metric"><span class="label">Lagging</span><span class="value">Grafana init</span></div>
+          <div class="metric"><span class="label">Outcome</span><span class="value">Wait, don’t rewrite</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="detail-grid">
+        <div class="card">
+          <span class="kicker symptom">Symptom</span>
+          <h3>Helm reported a failed install</h3>
+          <p>The shared observability installation returned <code>context deadline exceeded</code>. At first glance that looks like a broken configuration, but the pod view showed a more specific story: Prometheus, Alertmanager, the operator, and node-exporter were already healthy while Grafana was still initializing.</p>
+          <pre class="symptom-log"><code>STATUS: pending-upgrade
+Error: context deadline exceeded
+
+kubectl get pods -n monitoring
+kube-prometheus-stack-grafana-...   0/3   PodInitializing</code></pre>
+        </div>
+        <div class="card">
+          <span class="kicker cause">Diagnosis</span>
+          <h3>This was timing, not misconfiguration</h3>
+          <p>On a first local run, Grafana can still be pulling and starting while Helm waits on the full stack. The right response was to verify component-level health instead of assuming the whole release was invalid.</p>
+          <div class="visual-flow" aria-label="Diagnosis flow">
+            <div class="visual-step">
+              <span class="visual-label">Signal</span>
+              <strong>Helm stopped first</strong>
+              <p>The wrapper timed out before every container became healthy.</p>
+            </div>
+            <div class="visual-step">
+              <span class="visual-label">Reading</span>
+              <strong>Grafana was still converging</strong>
+              <p>The pod state showed initialization, not a terminal failure.</p>
+            </div>
+            <div class="visual-step">
+              <span class="visual-label">Decision</span>
+              <strong>Wait, then continue</strong>
+              <p>Treat the event as rollout lag instead of rewriting the install path.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="panel">
+        <div class="section-head"><h2>Evidence and recovery</h2><p>These checks turn a generic Helm error into a specific readiness interpretation.</p></div>
+        <div class="command-grid">
+          <div class="card"><h3>Validation commands</h3><pre><code>kubectl get pods -n monitoring -w
+kubectl get events -n monitoring
+kubectl describe pod -n monitoring &lt;grafana-pod-name&gt;</code></pre></div>
+          <div class="card"><h3>Correct decision</h3><pre><code># Wait until Grafana reaches:
+3/3 Running
+
+# Then continue with the app path:
+./application/payment-exception-review-service/create_local_app_with_helm.sh -s</code></pre></div>
+        </div>
+      </div>
+    </section>
+  </div></main>
+</body>
+</html>

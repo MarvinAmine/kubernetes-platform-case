@@ -106,7 +106,7 @@ This stage uses a clear 3-team model:
 
 - **Infrastructure team** bootstraps the resource group, AKS cluster, remote Terraform backend, and managed PostgreSQL foundation with **Terraform (IaC)**
 - **Platform team** provisions the governed Kubernetes application boundary, runtime conventions, and shared observability services such as **Prometheus** and **Grafana** on top of that foundation
-- **Application team** builds and deploys a **Spring Boot** microservice through **GitHub Actions**, **Docker**, and **Helm**
+- **Application team** builds and deploys a **Spring Boot** microservice through **GitHub Actions**, **GHCR**, **Docker**, and **Helm**
 
 For the detailed responsibilities and role boundaries inside each team, see
 [project_team_ownership_model.md](./project_team_ownership_model.md).
@@ -147,8 +147,8 @@ For the fuller technology progression and stage-by-stage stack rationale, see
 | --- | --- | --- |
 | Cloud foundation | Azure AKS, Kubernetes, Azure OIDC / federated CI authentication | Governed cloud delivery foundation |
 | Infrastructure | Terraform, Azure Storage remote backend for Terraform state | Repeatable infrastructure bootstrap |
-| Delivery | GitHub Actions, GitHub | Controlled CI/CD path |
-| Packaging | Docker, Helm, Kustomize | Application packaging, deployment, and Kubernetes-native dashboard resource generation |
+| Delivery | GitHub Actions, GitHub, GHCR | Controlled CI/CD path |
+| Packaging | Docker, Helm, Kustomize | Application packaging, image publishing, deployment, and Kubernetes-native dashboard resource generation |
 | Application runtime | Java Spring Boot | Internal microservice runtime |
 | Data | PostgreSQL (Azure and Local) | Stateful service credibility |
 | Operations | Prometheus, Grafana | Probes, config validation, observability, and troubleshooting signals |
@@ -162,6 +162,7 @@ An infrastructure team bootstraps the foundation, a platform team provisions a g
 | Inheritance | All Stage 1 technologies | Keep the governed delivery base |
 | Governance | OpenShift, ArgoCD, HashiCorp Vault, Ansible | Stronger platform controls, GitOps discipline, and shared-platform standards |
 | Security | OpenShift, Kubernetes, HashiCorp Vault | Stronger AppSec controls and secret-aware hardening |
+| Deferred next-step mesh | OpenShift Service Mesh (Istio-based) | Enterprise traffic governance and mTLS when the platform grows beyond Stage 2 core scope |
 | Observability | Elasticsearch, Kibana | Deeper observability with logs and security posture |
 | Operations | Linux / Red Hat or Ubuntu | More enterprise-oriented platform operations |
 
@@ -173,6 +174,7 @@ The platform evolves from controlled delivery to controlled and secured delivery
 | --- | --- | --- |
 | Inheritance | All Stage 2 technologies | Keep the governed shared-platform base |
 | Hybrid platform | AWS, Azure, OpenShift, OnPrem | Multi-cloud hybrid platform direction for stronger production governance |
+| Service mesh | OpenShift Service Mesh (Istio-based) | Enterprise east-west traffic governance, mTLS, and mesh-level policy |
 | Terraform orchestration | Terragrunt | Reduce repeated Terraform structure and coordinate more complex multi-environment stacks |
 | Observability | DataDog, Thanos, Prometheus, Grafana | Advanced observability for SRE / Production Engineering visibility |
 | Identity | Okta | Stronger enterprise identity and access alignment |

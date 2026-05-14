@@ -58,6 +58,7 @@ features rather than the main purpose of Stage 2:
 - hybrid Azure and AWS platform design
 - on-prem platform compatibility direction
 - multi-cluster operating patterns across different hosting models
+- service-mesh traffic governance through OpenShift Service Mesh (Istio-based)
 - stronger portability design across providers
 - broader enterprise identity integration across environments
 - enterprise-wide observability federation and long-term cross-environment view
@@ -80,7 +81,8 @@ The better progression is:
 - Stage 2: use OpenShift for enterprise Kubernetes features and stronger
   platform governance
 - Stage 3: extend the platform story into wider hybrid and multi-environment
-  architecture concerns
+  architecture concerns, including OpenShift Service Mesh (Istio-based) where
+  mesh capabilities are justified
 
 ## Practical tradeoff
 
@@ -120,11 +122,11 @@ The repository uses this progression:
 - Stage 1: governed AKS delivery foundation
 - Stage 2: OpenShift-oriented enterprise Kubernetes features for shared-platform
   governance
-- Stage 3: broader hybrid-cloud and enterprise architecture direction
+- Stage 3: broader hybrid-cloud, enterprise architecture direction, and
+  OpenShift Service Mesh (Istio-based) when mesh-level controls are needed
 
 So the rule is:
 
 - OpenShift in Stage 2 is mainly about enterprise Kubernetes operating
   features
 - multi-cloud is a later architecture concern, not the primary justification
-

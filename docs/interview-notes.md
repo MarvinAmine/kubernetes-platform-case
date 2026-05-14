@@ -26,7 +26,7 @@ Stage 1 demonstrates how:
 - a **Platform team** bootstraps the governed Kubernetes runtime and shared
   observability layer
 - an **Application team** deploys a Spring Boot service through GitHub
-  Actions, Docker, and Helm
+  Actions, GHCR, Docker, and Helm
 
 The service is intentionally small, but the operating model is designed to
 feel realistic for regulated environments.

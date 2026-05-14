@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scenario 3 - Grafana Datasource Localhost</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="topbar"><div class="topbar-inner"><div class="brand">Troubleshooting / Scenario 3</div><nav class="nav"><a href="./index.html">All scenarios</a><a href="../index.html#scenarios">Stage 1</a></nav></div></header>
+  <main><div class="wrap">
+    <section class="hero">
+      <div class="breadcrumbs"><a class="crumb" href="./index.html">Troubleshooting index</a><a class="crumb" href="../index.html#scenarios">Stage 1 deck</a></div>
+      <div class="eyebrow">Scenario 3</div>
+      <h1>Grafana could not validate a datasource pointed at localhost.</h1>
+      <p>The real issue was context: localhost from the laptop shell is not localhost from inside the Grafana container.</p>
+    </section>
+    <section class="section">
+      <div class="panel">
+        <div class="summary-grid">
+          <div class="metric"><span class="label">Bad URL</span><span class="value">127.0.0.1:9090</span></div>
+          <div class="metric"><span class="label">Correct URL</span><span class="value">Service DNS</span></div>
+          <div class="metric"><span class="label">Risk</span><span class="value">Duplicate datasource</span></div>
+          <div class="metric"><span class="label">Fix</span><span class="value">Reuse provisioned default</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="detail-grid">
+        <div class="card">
+          <span class="kicker symptom">Symptom</span>
+          <h3>Datasource validation kept failing</h3>
+          <p>Testing Prometheus in Grafana with <code>http://127.0.0.1:9090</code> did not work, even though the local port-forward was valid from the workstation shell.</p>
+          <pre class="symptom-log"><code>Grafana datasource test failed
+URL: http://127.0.0.1:9090
+Error: connection refused</code></pre>
+        </div>
+        <div class="card">
+          <span class="kicker cause">Diagnosis</span>
+          <h3>Grafana lives inside the cluster</h3>
+          <p>Inside Grafana, <code>127.0.0.1</code> points back to the Grafana container itself. The datasource had to use the in-cluster Kubernetes service name instead. The best fix was to keep the provisioned default datasource and avoid creating a duplicate one manually.</p>
+          <div class="visual-flow" aria-label="Diagnosis flow">
+            <div class="visual-step">
+              <span class="visual-label">Signal</span>
+              <strong>The datasource test failed inside Grafana</strong>
+              <p>The URL worked from the laptop, but not from the dashboard container.</p>
+            </div>
+            <div class="visual-step">
+              <span class="visual-label">Reading</span>
+              <strong>Loopback resolved to the wrong process</strong>
+              <p><code>127.0.0.1</code> inside Grafana points back to Grafana itself.</p>
+            </div>
+            <div class="visual-step">
+              <span class="visual-label">Decision</span>
+              <strong>Use Kubernetes service DNS</strong>
+              <p>Keep the provisioned datasource and target Prometheus through in-cluster networking.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="panel">
+        <div class="command-grid">
+          <div class="card"><h3>Good validation flow</h3><pre><code>kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80
+kubectl -n monitoring port-forward svc/kube-prometheus-stack-prometheus 9090:9090
+curl 'http://127.0.0.1:9090/api/v1/query?query=up'</code></pre></div>
+          <div class="card"><h3>Correct datasource URL</h3><pre><code>http://kube-prometheus-stack-prometheus.monitoring:9090</code></pre></div>
+        </div>
+      </div>
+    </section>
+  </div></main>
+</body>
+</html>

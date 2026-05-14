@@ -91,6 +91,7 @@ It creates direct discussion points around:
 - AKS
 - Terraform
 - GitHub Actions
+- GHCR
 - Docker
 - Helm
 - RBAC
@@ -153,7 +154,7 @@ These are intentionally deferred to later stages:
 - Vault
 - ArgoCD
 - OpenShift
-- service mesh
+- OpenShift Service Mesh (Istio-based)
 - Kafka
 - advanced AppSec toolchain
 - multi-cloud failover
@@ -358,6 +359,7 @@ Inside the AKS cluster, the application runs with:
 - **Azure AKS**
 - **Terraform**
 - **GitHub Actions**
+- **GHCR**
 - **Docker**
 - **Helm**
 - **Kustomize**
@@ -479,6 +481,7 @@ Design Stage 1 so it can later absorb:
 - Okta or Entra ID
 - ELK/Kibana
 - OpenShift
+- OpenShift Service Mesh (Istio-based)
 - hybrid Azure/AWS
 - Kafka
 - stronger policy and governance controls
@@ -500,7 +503,7 @@ That is much stronger than just showing “I deployed a Java app on Kubernetes.�
 
 You can describe Stage 1 like this:
 
-**Stage 1 of the Regulated Payment Exception Review Platform simulates how a bank-like organization operates an internal payment exception service in Kubernetes. An infrastructure team provisions the Azure and AKS foundation with Terraform, a platform team provisions a governed Kubernetes application boundary on top of it, and an application team delivers a Spring Boot microservice through GitHub Actions, Docker, and Helm. The service exposes payment exception status, service health, config validation, and operational metrics, and includes realistic rollout and misconfiguration failure scenarios.**
+**Stage 1 of the Regulated Payment Exception Review Platform simulates how a bank-like organization operates an internal payment exception service in Kubernetes. An infrastructure team provisions the Azure and AKS foundation with Terraform, a platform team provisions a governed Kubernetes application boundary on top of it, and an application team delivers a Spring Boot microservice through GitHub Actions, GHCR, Docker, and Helm. The service exposes payment exception status, service health, config validation, and operational metrics, and includes realistic rollout and misconfiguration failure scenarios.**
 
 ## 18. Recommended repo naming
 
@@ -519,7 +522,7 @@ You should frame it as:
 - **regulated-environment Kubernetes delivery model**
 - **controlled CI/CD and environment governance**
 - **Spring Boot microservice on AKS**
-- **Terraform + Helm + GitHub Actions**
+- **Terraform + GHCR + Helm + GitHub Actions**
 - **observability and troubleshooting-focused**
 
 [NEXT: Stage 2 — Governed shared platform with enterprise Kubernetes features ->](./stage2.md)

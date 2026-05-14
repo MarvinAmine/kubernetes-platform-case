@@ -137,7 +137,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(http_server_requests_seconds_count{namespace=\"payment-exception-review-local\"}[5m]))",
+          "expr": "sum(rate(http_server_requests_seconds_count{job=~\".*payment-exception-review.*\"}[5m]))",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -237,7 +237,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (status) (rate(http_server_requests_seconds_count{namespace=\"payment-exception-review-local\"}[5m]))",
+          "expr": "sum by (status) (rate(http_server_requests_seconds_count{job=~\".*payment-exception-review.*\"}[5m]))",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -337,7 +337,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "hikaricp_connections{namespace=\"payment-exception-review-local\"}",
+          "expr": "hikaricp_connections{job=~\".*payment-exception-review.*\"}",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -437,7 +437,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "jdbc_connections_active{namespace=\"payment-exception-review-local\"}",
+          "expr": "jdbc_connections_active{job=~\".*payment-exception-review.*\"}",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"

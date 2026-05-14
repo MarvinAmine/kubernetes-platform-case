@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Troubleshooting Scenarios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">Stage 1 / Troubleshooting</div>
+      <nav class="nav">
+        <a href="../index.html#scenarios">Back to Stage 1</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div class="wrap">
+      <section class="hero">
+        <div class="breadcrumbs">
+          <a class="crumb" href="../index.html">Stage 1 presentation</a>
+        </div>
+        <div class="eyebrow">Operational evidence</div>
+        <h1>Real troubleshooting stories.</h1>
+        <p>Each page below turns a runbook into a presentation-friendly narrative: symptom, diagnosis, evidence, and durable fix.</p>
+        <div class="hero-media-grid">
+          <div class="hero-media">
+            <img src="../assets/local_kubernetes_grafana_port_forwarding.png" alt="Local Kubernetes Grafana port forwarding">
+            <div class="caption">
+              Local Grafana access path. Troubleshooting starts from concrete operator actions, not only abstract failure summaries.
+            </div>
+          </div>
+          <div class="hero-media">
+            <img src="../assets/kubernetes_port_fowarding_for_helm_app.png" alt="Kubernetes port forwarding for Helm application">
+            <div class="caption">
+              Helm-delivered application exposed through Kubernetes port-forwarding. This is the shortest path to prove the runtime is reachable.
+            </div>
+          </div>
+          <div class="hero-media">
+            <img src="../assets/kubernetes_port_fowarding_for_helm_app_curls.png" alt="Kubernetes port forwarding and curl checks for the Helm application">
+            <div class="caption">
+              Direct curl verification against the forwarded service. Health and business endpoints become part of the diagnosis evidence.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Scenario library</h2>
+          <p>The point is not to collect random failures. It is to show disciplined debugging on realistic infrastructure, platform, and observability issues.</p>
+        </div>
+        <div class="panel">
+          <div class="scenario-grid">
+            <a class="card scenario-link" href="./scenario-1.html">
+              <h3>Helm timeout</h3>
+              <p>Differentiate a slow local startup from a genuinely blocked release.</p>
+              <span class="more">Open scenario</span>
+            </a>
+            <a class="card scenario-link" href="./scenario-2.html">
+              <h3>Prometheus query contract</h3>
+              <p>Show that an API validation error can come from the request shape, not the platform itself.</p>
+              <span class="more">Open scenario</span>
+            </a>
+            <a class="card scenario-link" href="./scenario-3.html">
+              <h3>Grafana localhost mismatch</h3>
+              <p>Separate workstation port-forward assumptions from in-cluster service resolution.</p>
+              <span class="more">Open scenario</span>
+            </a>
+            <a class="card scenario-link" href="./scenario-4.html">
+              <h3>Grafana PVC permissions</h3>
+              <p>Turn a repeated local failure into a cleaner environment design.</p>
+              <span class="more">Open scenario</span>
+            </a>
+            <a class="card scenario-link" href="./scenario-5.html">
+              <h3>No-data dashboard panel</h3>
+              <p>Prove that empty telemetry can be a traffic and label-filter issue, not a broken stack.</p>
+              <span class="more">Open scenario</span>
+            </a>
+            <a class="card scenario-link" href="./scenario-6.html">
+              <h3>Grafana v2 schema mismatch</h3>
+              <p>Show the difference between a healthy provisioning path and the wrong dashboard export format.</p>
+              <span class="more">Open scenario</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

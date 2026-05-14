@@ -15,3 +15,4 @@ shared Prometheus, Grafana, and Alertmanager stack.
 - [Scenario 4 - Local Grafana PVC permission failure](./scenario-4-local-grafana-pvc-permission-failure.md)
 - [Scenario 5 - 404 dashboard panel shows no data](./scenario-5-404-dashboard-panel-shows-no-data.md)
 - [Scenario 6 - Grafana classic file provisioning rejects v2 dashboard JSON](./scenario-6-grafana-classic-file-provisioning-rejects-v2-dashboard-json.md)
+- [Scenario 7 - AKS dashboard panels are empty because queries are hardcoded to the local namespace](./scenario-7-aks-dashboard-panels-empty-because-queries-are-hardcoded-to-local-namespace.md)

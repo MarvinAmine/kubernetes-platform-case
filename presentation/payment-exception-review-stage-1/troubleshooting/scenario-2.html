@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scenario 2 - Prometheus Query Validation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="topbar"><div class="topbar-inner"><div class="brand">Troubleshooting / Scenario 2</div><nav class="nav"><a href="./index.html">All scenarios</a><a href="../index.html#scenarios">Stage 1</a></nav></div></header>
+  <main><div class="wrap">
+    <section class="hero">
+      <div class="breadcrumbs"><a class="crumb" href="./index.html">Troubleshooting index</a><a class="crumb" href="../index.html#scenarios">Stage 1 deck</a></div>
+      <div class="eyebrow">Scenario 2</div>
+      <h1>The Prometheus API was healthy. The request was wrong.</h1>
+      <p>This is a good example of an “observability failure” that was actually just a bad API contract on the client side.</p>
+    </section>
+    <section class="section">
+      <div class="panel">
+        <div class="summary-grid">
+          <div class="metric"><span class="label">Symptom</span><span class="value">bad_data</span></div>
+          <div class="metric"><span class="label">Cause</span><span class="value">Missing query</span></div>
+          <div class="metric"><span class="label">Healthy</span><span class="value">Prometheus API</span></div>
+          <div class="metric"><span class="label">Lesson</span><span class="value">Validate the call</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="detail-grid">
+        <div class="card">
+          <span class="kicker symptom">Symptom</span>
+          <h3>A validation error looked like a platform issue</h3>
+          <p>Calling <code>/api/v1/query</code> without a PromQL expression returned a parsing error. That can look alarming until you realize the endpoint was reachable and simply rejecting an incomplete request.</p>
+          <pre class="symptom-log"><code>{
+  "status": "error",
+  "errorType": "bad_data",
+  "error": "invalid parameter \"query\""
+}</code></pre>
+        </div>
+        <div class="card">
+          <span class="kicker cause">Diagnosis</span>
+          <h3>The API contract requires a real query</h3>
+          <p>Prometheus was fine. The failure was only that <code>api/v1/query</code> expects a <code>query=...</code> parameter. Once the request shape was corrected, the platform validated normally.</p>
+          <div class="visual-flow" aria-label="Diagnosis flow">
+            <div class="visual-step">
+              <span class="visual-label">Signal</span>
+              <strong>The API answered with structured JSON</strong>
+              <p>This was an application-level validation response, not a timeout.</p>
+            </div>
+            <div class="visual-step">
+              <span class="visual-label">Reading</span>
+              <strong>Prometheus was healthy</strong>
+              <p>A live error payload proves the endpoint was up and parsing the request.</p>
+            </div>
+            <div class="visual-step">
+              <span class="visual-label">Decision</span>
+              <strong>Fix the request shape</strong>
+              <p>Supply a real PromQL expression instead of debugging the cluster stack.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="panel">
+        <div class="command-grid">
+          <div class="card"><h3>Broken request</h3><pre><code>curl http://127.0.0.1:9090/api/v1/query</code></pre></div>
+          <div class="card"><h3>Working validation</h3><pre><code>curl 'http://127.0.0.1:9090/api/v1/query?query=up'
+curl http://127.0.0.1:9090/api/v1/targets</code></pre></div>
+        </div>
+      </div>
+    </section>
+  </div></main>
+</body>
+</html>

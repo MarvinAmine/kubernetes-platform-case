@@ -92,6 +92,7 @@ This stage is not primarily about:
 - hybrid Azure and AWS architecture
 - on-prem expansion strategy
 - multi-cluster portability across different hosting models
+- service-mesh traffic governance through OpenShift Service Mesh (Istio-based)
 - cross-environment identity standardization at broader enterprise scale
 - broader federated observability across environments
 
@@ -124,6 +125,9 @@ This stage signals hands-on exposure and architectural thinking around:
 - Ansible
 - Linux platform operations
 - governed platform delivery in regulated environments
+
+The later mesh choice, when Stage 3 justifies it, is **OpenShift Service Mesh
+(Istio-based)** rather than a standalone upstream mesh.
 
 ### Main soft skills demonstrated
 

@@ -1,0 +1,24 @@
+ 1033  2026-05-13 01:05:03 set -a
+ 1034  2026-05-13 01:05:10 source .env
+ 1035  2026-05-13 01:05:13 set +a
+ 1036  2026-05-13 01:05:29 ./bootstrap_infrastructure_and_provision_platform.sh -s -v
+ 1037  2026-05-13 01:23:38 k config current-context 
+ 1038  2026-05-13 01:25:51 k get namespaces
+ 1039  2026-05-13 01:26:22 k -n payment-exception-review-stage1 get service
+ 1040  2026-05-13 01:26:52 k -n monitoring get service
+ 1041  2026-05-13 01:40:13 # Trigger manually the "Application App deploy" GitHub Actions workflow
+ 1042  2026-05-13 01:40:17 k -n payment-exception-review-stage1 get service
+ 1043  2026-05-13 01:42:55 k -n monitoring port-forward services/kube-prometheus-stack-prometheus 9090 &
+ 1044  2026-05-13 01:44:05 k -n monitoring port-forward services/kube-prometheus-stack-grafana 3000:80
+ 1045  2026-05-13 01:47:27 k -n monitoring port-forward services/kube-prometheus-stack-grafana 3000:80 &
+ 1046  2026-05-13 01:48:44 k -n payment-exception-review-stage1 port-forward services/payment-exception-review-service 8080:80 &
+ 1047  2026-05-13 01:52:57 curl http://localhost:8080/actuator/health
+ 1048  2026-05-13 01:53:25 curl http://localhost:8080/api/payment-exceptions/service-status; echo
+ 1049  2026-05-13 01:53:44 curl http://localhost:8080/api/payment-exceptions/payexc-100045/status; echo
+ 1050  2026-05-13 02:05:20 # Trigger manually the "Application App destr" GitHub Actions workflow
+ 1051  2026-05-13 02:05:43 # Trigger manually the "Application App destroy" GitHub Actions
+ 1052  2026-05-13 02:08:02 curl http://localhost:8080/actuator/health
+ 1053  2026-05-13 02:08:15 k -n payment-exception-review-stage1 get service
+ 1054  2026-05-13 02:08:42 ./destroy_infrastructure_and_platform.sh 
+ 1055  2026-05-13 02:08:59 ./destroy_infrastructure_and_platform.sh -s -v
+ 1056  2026-05-13 02:09:02 ./destroy_infrastructure_and_platform.sh -s

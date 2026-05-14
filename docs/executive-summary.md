@@ -21,7 +21,7 @@ Stage 1 shows that three teams can collaborate through clear boundaries:
 - the **Platform team** bootstraps the governed Kubernetes runtime and shared
   observability layer
 - the **Application team** builds and deploys a Spring Boot service through
-  GitHub Actions, Docker, and Helm
+  GitHub Actions, GHCR, Docker, and Helm
 
 The resulting platform includes:
 

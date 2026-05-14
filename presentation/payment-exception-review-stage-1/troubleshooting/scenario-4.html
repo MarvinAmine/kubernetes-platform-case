@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scenario 4 - Local Grafana PVC Permission Failure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="topbar"><div class="topbar-inner"><div class="brand">Troubleshooting / Scenario 4</div><nav class="nav"><a href="./index.html">All scenarios</a><a href="../index.html#scenarios">Stage 1</a></nav></div></header>
+  <main><div class="wrap">
+    <section class="hero">
+      <div class="breadcrumbs"><a class="crumb" href="./index.html">Troubleshooting index</a><a class="crumb" href="../index.html#scenarios">Stage 1 deck</a></div>
+      <div class="eyebrow">Scenario 4</div>
+      <h1>Local Grafana persistence caused a repeatable permission failure.</h1>
+      <p>This was the strongest troubleshooting story because it moved from diagnosis into a durable repository design change.</p>
+    </section>
+    <section class="section">
+      <div class="panel">
+        <div class="summary-grid">
+          <div class="metric"><span class="label">Symptom</span><span class="value">Init:CrashLoopBackOff</span></div>
+          <div class="metric"><span class="label">Container</span><span class="value">init-chown-data</span></div>
+          <div class="metric"><span class="label">Root cause</span><span class="value">PVC permissions</span></div>
+          <div class="metric"><span class="label">Permanent fix</span><span class="value">Local no persistence</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="detail-grid">
+        <div class="card">
+          <span class="kicker symptom">What failed</span>
+          <h3>Grafana was the only unhealthy component</h3>
+          <p>Prometheus, Alertmanager, and the operator were healthy, but Grafana stayed stuck in <code>Init:CrashLoopBackOff</code>. The init container logs showed permission errors under <code>/var/lib/grafana</code>.</p>
+          <pre><code>chown: /var/lib/grafana/pdf: Permission denied
+chown: /var/lib/grafana/png: Permission denied
+chown: /var/lib/grafana/csv: Permission denied</code></pre>
+        </div>
+        <div class="card">
+          <span class="kicker fix">Why this mattered</span>
+          <h3>The fix changed the local platform design</h3>
+          <p>This was not treated as a random reinstall ritual. The repo now treats local Grafana persistence as a disposable-environment concern: local installs disable persistence, while dev / AKS keeps persistence enabled.</p>
+          <div class="visual-flow" aria-label="Diagnosis flow">
+            <div class="visual-step">
+              <span class="visual-label">Signal</span>
+              <strong>Only Grafana was unhealthy</strong>
+              <p>The rest of the observability stack reached a stable state.</p>
+            </div>
+            <div class="visual-step">
+              <span class="visual-label">Reading</span>
+              <strong>The PVC ownership was the friction</strong>
+              <p>The init container failed on local volume permissions, not on Helm config.</p>
+            </div>
+            <div class="visual-step">
+              <span class="visual-label">Decision</span>
+              <strong>Disable local persistence</strong>
+              <p>Keep the local platform fast and disposable while retaining persistence in AKS.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="panel">
+        <div class="command-grid">
+          <div class="card"><h3>Diagnosis checklist</h3><pre><code>kubectl -n monitoring get pods
+kubectl -n monitoring logs &lt;grafana-pod&gt; -c init-chown-data
+kubectl -n monitoring get pvc</code></pre></div>
+          <div class="card"><h3>Recovery path</h3><pre><code>helm uninstall kube-prometheus-stack -n monitoring
+kubectl -n monitoring delete pvc kube-prometheus-stack-grafana --ignore-not-found
+./platform/kubernetes-resources/observability/install_local_observability_stack.sh</code></pre></div>
+        </div>
+      </div>
+    </section>
+  </div></main>
+</body>
+</html>

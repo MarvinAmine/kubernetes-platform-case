@@ -182,6 +182,7 @@ Owns:
 
 - build and test automation
 - image packaging
+- image publishing to GHCR
 - deployment automation
 - rollout validation
 
