@@ -1,5 +1,60 @@
 # Stage 1 of 3 - Governed AKS delivery foundation for an internal payment review service
 
+<p align="left">
+  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/azure.svg" alt="Azure" width="22" />
+  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/kubernetes.svg" alt="Kubernetes" width="22" />
+  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/terraform.svg" alt="Terraform" width="22" />
+  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github-actions.svg" alt="GitHub Actions" width="22" />
+  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github.svg" alt="GHCR / GitHub" width="22" />
+  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/docker.svg" alt="Docker" width="22" />
+  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/helm.svg" alt="Helm" width="22" />
+  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/spring-boot.svg" alt="Spring Boot" width="22" />
+  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/postgresql.svg" alt="PostgreSQL" width="22" />
+  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/prometheus.svg" alt="Prometheus" width="22" />
+  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/grafana.svg" alt="Grafana" width="22" />
+</p>
+
+<p>
+  <strong>Azure AKS</strong> ·
+  <strong>Kubernetes</strong> ·
+  <strong>Terraform</strong> ·
+  <strong>GitHub Actions</strong> ·
+  <strong>GHCR</strong> ·
+  <strong>Docker</strong> ·
+  <strong>Helm</strong> ·
+  <strong>Spring Boot</strong> ·
+  <strong>PostgreSQL</strong> ·
+  <strong>Prometheus</strong> ·
+  <strong>Grafana</strong>
+</p>
+
+<p>
+  <strong>Infrastructure</strong><br/>
+  <a href="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/infrastructure-azure-provision.yml"><img src="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/infrastructure-azure-provision.yml/badge.svg" alt="Infrastructure Azure Provision" /></a>
+  <a href="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/infrastructure-azure-destroy.yml"><img src="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/infrastructure-azure-destroy.yml/badge.svg" alt="Infrastructure Azure Destroy" /></a>
+</p>
+
+<p>
+  <strong>Platform</strong><br/>
+  <a href="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/platform-kubernetes-resources-provision.yml"><img src="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/platform-kubernetes-resources-provision.yml/badge.svg" alt="Platform Kubernetes Resources Provision" /></a>
+  <a href="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/platform-kubernetes-resources-destroy.yml"><img src="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/platform-kubernetes-resources-destroy.yml/badge.svg" alt="Platform Kubernetes Resources Destroy" /></a>
+  <a href="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/platform-observability-provision.yml"><img src="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/platform-observability-provision.yml/badge.svg" alt="Platform Observability Provision" /></a>
+  <a href="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/platform-observability-destroy.yml"><img src="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/platform-observability-destroy.yml/badge.svg" alt="Platform Observability Destroy" /></a>
+  <a href="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/platform-observability-validate.yml"><img src="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/platform-observability-validate.yml/badge.svg" alt="Platform Observability Validate" /></a>
+</p>
+
+<p>
+  <strong>Reliability</strong><br/>
+  <a href="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/reliability-observability-dashboard-validate.yml"><img src="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/reliability-observability-dashboard-validate.yml/badge.svg" alt="Reliability Observability Dashboard Validate" /></a>
+</p>
+
+<p>
+  <strong>Application</strong><br/>
+  <a href="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/application-app-ci.yml"><img src="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/application-app-ci.yml/badge.svg" alt="Application App CI" /></a>
+  <a href="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/application-app-deploy.yml"><img src="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/application-app-deploy.yml/badge.svg" alt="Application App Deploy" /></a>
+  <a href="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/application-app-destroy.yml"><img src="https://github.com/MarvinAmine/kubernetes-platform-case/actions/workflows/application-app-destroy.yml/badge.svg" alt="Application App Destroy" /></a>
+</p>
+
 "Kubernetes delivery foundation on AKS for an internal payment review service. Reflect a realistic operating model where an infrastructure team bootstraps the resource group, AKS cluster, remote Terraform backend, and managed PostgreSQL foundation with Terraform, a platform team provisions the governed Kubernetes application boundary and shared observability services such as Prometheus and Grafana on top of that foundation, and an application team deploys a Spring Boot service through GitHub Actions, Docker, and Helm. I also designed the service around PostgreSQL persistence, health probes, observability, and failure scenarios so the repeatable operating model demonstrates delivery, observability, and troubleshooting instead of only deployment."
 
 ```mermaid
