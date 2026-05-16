@@ -6,7 +6,7 @@ load_repo_env() {
 
     if [[ ! -f "$env_file" ]]; then
         if [[ -n "$env_template" ]]; then
-            echo "Missing $env_file. Copy $env_template to $env_file and fill the values first."
+            echo "Missing $env_file. Copy $env_template to $env_file and set the required values first."
         else
             echo "Missing $env_file."
         fi
@@ -32,7 +32,7 @@ require_env_vars() {
     done
 
     if (( ${#missing[@]} > 0 )); then
-        echo "${missing[*]} must be set in $env_file"
+        echo "Missing required values in $env_file: ${missing[*]}"
         return 1
     fi
 }

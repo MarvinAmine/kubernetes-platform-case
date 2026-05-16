@@ -9,7 +9,7 @@ usage() {
 Usage: ./destroy_infrastructure_and_platform.sh [--silent|-s] [--help|-h]
 
 Options:
-  -s, --silent   Show concise terminal logs and write detailed command output to log files in logs/.
+  -s, --silent   Show concise terminal logs and write detailed command output to log files in the logs/ directory.
   -h, --help     Show this help message.
 
 Default behavior is verbose to make the teardown flow easier to debug.
@@ -64,7 +64,7 @@ main() {
 
     print_header "Platform Teardown"
     if [[ "$SILENT_MODE" == true ]]; then
-        log_info "Silent mode enabled. Detailed command output will be written to log files in logs/."
+        log_info "Silent mode enabled. Detailed command output will be written to log files in the logs/ directory."
         log_info "Main log file: $LOG_FILE"
     else
         log_info "Verbose mode enabled by default to help debug the teardown flow."

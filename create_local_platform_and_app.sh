@@ -7,6 +7,12 @@ source "$SCRIPT_DIR/commons/scripts/common_logging.sh"
 usage() {
     cat <<'EOF'
 Usage: ./create_local_platform_and_app.sh [--silent|-s] [--help|-h]
+
+Options:
+  -s, --silent   Show concise terminal logs and write detailed command output to log files in the logs/ directory.
+  -h, --help     Show this help message.
+
+Default behavior is verbose to make the local provisioning flow easier to debug.
 EOF
 }
 
@@ -23,6 +29,8 @@ parse_args() {
             ;;
         *)
             echo "Unknown argument: ${REMAINING_ARGS[0]}"
+            echo
+            usage
             exit 1
             ;;
     esac

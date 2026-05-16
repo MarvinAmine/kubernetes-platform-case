@@ -188,7 +188,7 @@ run_command_with_context() {
     if [[ "$SILENT_MODE" == true ]]; then
         echo "See detailed logs in: $LOG_FILE"
         if [[ "$SENSITIVE_LOGGING_MODE" == true ]]; then
-            echo "Sensitive logging mode is enabled, so log tails are not printed automatically."
+            echo "Sensitive logging mode is enabled, so log excerpts are not printed automatically."
         else
             echo "Last 40 log lines:"
             tail -n 40 "$LOG_FILE" || true

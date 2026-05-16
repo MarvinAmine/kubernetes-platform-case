@@ -152,6 +152,9 @@ GitHub Actions workflow landscape:
 For root-level platform-case decisions, see
 [Architecture Decision Records](./adrs/README.md).
 
+For the versioned Stage 1 snapshot, Git tag convention, GitHub Release process,
+and hosted presentation link, see [release-management.md](./release-management.md).
+
 ## Three-Stage Platform Evolution
 
 For the fuller technology progression and stage-by-stage stack rationale, see
@@ -236,6 +239,48 @@ The platform becomes a broader enterprise platform case aligned with highly regu
   <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/prometheus.svg" alt="Prometheus" width="18" />
   <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/grafana.svg" alt="Grafana" width="18" />
 </p>
+
+## FinOps and Cost Control
+
+Stage 1 applies a simple FinOps model: use local validation first, keep Azure
+costs visible, and tear down cloud resources when they are not needed.
+
+The FinOps model is:
+
+- use the local `kind` path as much as possible for fast iteration
+- use Azure AKS when managed-cloud proof matters
+- destroy unused Azure runtime resources after validation
+- keep the remote Terraform backend because its daily cost is negligible
+- document both the default node size and a lower-cost fallback
+
+Observed Stage 1 cost signals from the Azure view:
+
+| Cost signal | Value |
+| --- | --- |
+| AKS-managed runtime cost | about `CA$1.16/day` |
+| Terraform backend cost | less than `CA$0.01/day` |
+| Monthly Azure forecast shown during validation | about `CA$3.59` |
+| Virtual machines | about `CA$0.60` |
+| Storage | about `CA$0.47` |
+| Virtual network | about `CA$0.10` |
+| Azure DNS | about `CA$0.01` |
+
+The default AKS node size remains `Standard_D2als_v6` for a stable Stage 1
+baseline. `Standard_B2als_v2` is documented as the lower-cost fallback when it
+is available in the subscription and region.
+
+For the node-size decision, see
+[ADR-009 - Default to Standard_D2als_v6 While Documenting Standard_B2als_v2 as the Lower-Cost Fallback](./adrs/ADR-009-default-to-standard-d2als-v6-while-documenting-standard-b2als-v2-as-the-lower-cost-fallback.md).
+
+The Stage 1 presentation includes the supporting cost screenshots:
+
+```text
+https://marvinmeite.cloud/payment-exception-review-stage-1/
+```
+
+![Azure infrastructure cost analysis per service](../assets/azure_infra_cost_analysis_per_service.png)
+
+![Azure infrastructure monthly FinOps forecast](../assets/azure_infra_finops_4_dollards_per_month.png)
 
 ## 0. HOW TO USE IT?
 
@@ -363,7 +408,60 @@ It destroys:
 
 ![iac_lifecycle_dependencies](/assets/iac_lifecycle_dependencies.png)
 
-## 1. AZURE FOUNDATION PATH MANAGED BY THE INFRASTRUCTURE TEAM
+<details>
+<summary><strong>1. Ownership and layer responsibilities</strong></summary>
+
+## 1. OWNERSHIP AND LAYER RESPONSIBILITIES
+
+For the cross-stage team structure used in this repository, see
+[project_team_ownership_model.md](./project_team_ownership_model.md).
+
+For a reusable non-project-specific reference, see
+[generic_team_ownership_model.md](./generic_team_ownership_model.md).
+
+| Layer | Responsibility | Owner |
+| --- | --- | --- |
+| `infrastructure/terraform-backend` | Creates the shared Azure Storage backend for Terraform state | Infrastructure team |
+| `infrastructure/azure` | Provisions Azure resources such as the resource group, AKS cluster, and managed PostgreSQL foundation | Infrastructure team |
+| `platform/kubernetes-resources` | Bootstraps the namespace, service account, RBAC, baseline config, runtime secret pattern, and shared observability services | Platform team |
+| `application/` | Builds, packages, deploys, and operates the Spring Boot service workload | Application team |
+
+**Infrastructure team owns:**
+- Azure resource group
+- Terraform backend
+- AKS cluster provisioning
+- managed Azure PostgreSQL service
+- network and infrastructure prerequisites
+- infrastructure-level foundation standards
+
+**Platform team owns:**
+- Kubernetes bootstrap layer
+- namespace bootstrap
+- service account
+- role and rolebinding
+- baseline ConfigMap convention
+- shared observability services such as Prometheus and Grafana
+- runtime standards for app consumption of DB, secrets, and metrics
+- governed runtime standards
+
+**Application team owns:**
+- Spring Boot code
+- database schema usage and persistence logic
+- actuator endpoints and custom metrics
+- Dockerfile
+- Helm chart
+- Deployment and Service manifests
+- application ConfigMap values
+- application Secret usage pattern
+- application rollout behavior
+- application runbook notes
+
+</details>
+
+<details>
+<summary><strong>2. Azure foundation path managed by the Infrastructure team</strong></summary>
+
+## 2. AZURE FOUNDATION PATH MANAGED BY THE INFRASTRUCTURE TEAM
 
 ```text
 [Infrastructure Team]
@@ -423,7 +521,12 @@ This layer is represented by:
 - `./infrastructure/azure/create_azure_resources.sh`
 - `.github/workflows/infrastructure-azure-provision.yml`
 
-## 2. KUBERNETES BOOTSTRAP PATH MANAGED BY THE PLATFORM TEAM
+</details>
+
+<details>
+<summary><strong>3. Kubernetes bootstrap path managed by the Platform team</strong></summary>
+
+## 3. KUBERNETES BOOTSTRAP PATH MANAGED BY THE PLATFORM TEAM
 
 ```text
 [Platform Team]
@@ -491,7 +594,12 @@ This layer is represented by:
 - `./platform/kubernetes-resources/apply_dev_kubernetes_resources.sh`
 - `.github/workflows/platform-kubernetes-resources-provision.yml`
 
-## 3. APP DELIVERY PATH USED BY THE APPLICATION TEAM 
+</details>
+
+<details>
+<summary><strong>4. App delivery path used by the Application team</strong></summary>
+
+## 4. APP DELIVERY PATH USED BY THE APPLICATION TEAM 
 
 
 ```text
@@ -595,7 +703,7 @@ This layer is represented by:
 └──────────────────────────────────────────────────────────────┘
 ```
 
-### 2.1 Data persistence used by the service
+### 4.1 Data persistence used by the service
 
 The Stage 1 service is backed by PostgreSQL so the workload behaves like a real internal enterprise service rather than a stateless API shell.
 
@@ -610,7 +718,12 @@ The database stores payment review records such as:
 
 This makes Stage 1 more credible for regulated environments because the service must validate, persist, expose, and troubleshoot a real dependency.
 
-## 3. APPLICATION RUNTIME
+</details>
+
+<details>
+<summary><strong>5. Application runtime</strong></summary>
+
+## 5. APPLICATION RUNTIME
 
 ```text
 Client / Internal Consumer
@@ -630,9 +743,12 @@ Client / Internal Consumer
          -> health / info / prometheus
 ```
 
+</details>
 
+<details>
+<summary><strong>6. Observability path</strong></summary>
 
-## 4. OBSERVABILITY PATH
+## 6. OBSERVABILITY PATH
 
 ```text
 Kubernetes / Application
@@ -696,7 +812,13 @@ For the observability boundary between the current shared monitoring baseline
 and the later enterprise direction, see
 [observability-tradeoffs.md](./observability-tradeoffs.md).
 
-## 5. Repo architecture
+</details>
+
+<details>
+<summary><strong>7. Repo architecture</strong></summary>
+
+## 7. Repo architecture
+
 The structure below represents the current Stage 1 repository architecture:
 ```
 kubernetes-platform-case/
@@ -848,76 +970,47 @@ kubernetes-platform-case/
 │   └── adrs/
 ```
 
-## 6. OWNERSHIP AND LAYER RESPONSIBILITIES
+</details>
 
-For the cross-stage team structure used in this repository, see
-[project_team_ownership_model.md](./project_team_ownership_model.md).
+<details>
+<summary><strong>8. Failure scenarios used to demonstrate operational troubleshooting</strong></summary>
 
-For a reusable non-project-specific reference, see
-[generic_team_ownership_model.md](./generic_team_ownership_model.md).
+## 8. FAILURE SCENARIOS USED TO DEMONSTRATE OPERATIONAL TROUBLESHOOTING
 
-| Layer | Responsibility | Owner |
-| --- | --- | --- |
-| `infrastructure/terraform-backend` | Creates the shared Azure Storage backend for Terraform state | Infrastructure team |
-| `infrastructure/azure` | Provisions Azure resources such as the resource group, AKS cluster, and managed PostgreSQL foundation | Infrastructure team |
-| `platform/kubernetes-resources` | Bootstraps the namespace, service account, RBAC, baseline config, runtime secret pattern, and shared observability services | Platform team |
-| `application/` | Builds, packages, deploys, and operates the Spring Boot service workload | Application team |
+Stage 1 does not only show a successful deployment. It captures real failure
+modes that happened while building the platform and turns them into reusable
+runbooks.
 
-**Infrastructure team owns:**
-- Azure resource group
-- Terraform backend
-- AKS cluster provisioning
-- managed Azure PostgreSQL service
-- network and infrastructure prerequisites
-- infrastructure-level foundation standards
+**Main troubleshooting catalogs**
 
-**Platform team owns:**
-- Kubernetes bootstrap layer
-- namespace bootstrap
-- service account
-- role and rolebinding
-- baseline ConfigMap convention
-- shared observability services such as Prometheus and Grafana
-- runtime standards for app consumption of DB, secrets, and metrics
-- governed runtime standards
-
-**Application team owns:**
-- Spring Boot code
-- database schema usage and persistence logic
-- actuator endpoints and custom metrics
-- Dockerfile
-- Helm chart
-- Deployment and Service manifests
-- application ConfigMap values
-- application Secret usage pattern
-- application rollout behavior
-- application runbook notes
-
-
-## 7. FAILURE SCENARIOS USED TO DEMONSTRATE OPERATIONAL TROUBLESHOOTING
+- [Observability and platform troubleshooting](../platform/kubernetes-resources/observability/troubleshooting/README.md)
+- [Application and runtime failure scenarios](../application/docs/failure-scenarios/README.md)
+- [Presentation troubleshooting walkthrough](https://marvinmeite.cloud/payment-exception-review-stage-1/troubleshooting/)
 
 **Operational skills demonstrated**
 
 - reasoning about observability, probes, and deployment safety
 - diagnosing rollout failures in Kubernetes
 - validating application health and runtime configuration
-- reading and structuring Terraform layers
+- separating application issues from platform and observability issues
 - understanding ownership boundaries between infrastructure, platform, and application teams
 - handling a service with a real database dependency
 
-#### Scenario 1 - Bad readiness probe
-- application starts correctly
-- readiness probe path or port is wrong
-- pod stays unready
-- rollout appears broken
-- service is not available through standard routing
-- diagnosed through events, `kubectl describe`, rollout status, and health endpoint verification
+**Most relevant Stage 1 scenarios**
 
-#### Scenario 2 - Bad business configuration
-- the app receives an invalid validation configuration
-- example: `VALIDATION_MODE=AGGRESSIVE` when only `STRICT` or `STANDARD` are supported
-- startup validation fails or the application becomes unhealthy
-- issue is visible through logs, pod status, and config-check endpoint
-- demonstrates config governance and safe startup behavior in a regulated service
+| Area | Scenario | Why it matters |
+| --- | --- | --- |
+| Helm rollout | [`context deadline exceeded`](../platform/kubernetes-resources/observability/troubleshooting/scenario-1-helm-install-context-deadline-exceeded.md) | Shows how to distinguish a slow rollout from a blocked release and inspect the real pod state. |
+| Grafana storage | [Local PVC permission failure](../platform/kubernetes-resources/observability/troubleshooting/scenario-4-local-grafana-pvc-permission-failure.md) | Shows root-cause analysis from `Init:CrashLoopBackOff` to durable local environment design. |
+| Grafana datasource | [`localhost` validation mismatch](../platform/kubernetes-resources/observability/troubleshooting/scenario-3-grafana-datasource-validation-fails-with-localhost.md) | Shows the difference between workstation assumptions and in-cluster service resolution. |
+| Dashboard queries | [AKS panels empty because queries were hardcoded to local namespace](../platform/kubernetes-resources/observability/troubleshooting/scenario-7-aks-dashboard-panels-empty-because-queries-are-hardcoded-to-local-namespace.md) | Shows how empty dashboards can be caused by label and environment mismatch, not broken metrics. |
+| Dashboard provisioning | [Grafana v2 JSON rejected by classic file provisioning](../platform/kubernetes-resources/observability/troubleshooting/scenario-6-grafana-classic-file-provisioning-rejects-v2-dashboard-json.md) | Shows how to identify schema mismatch instead of misdiagnosing the ConfigMap path. |
+| Application config | [Invalid business configuration](../application/docs/failure-scenarios/scenario-2-invalid-business-configuration.md) | Shows safe startup validation for a regulated service with explicit configuration contracts. |
+| Database dependency | [Private PostgreSQL connectivity validation from AKS](../application/docs/failure-scenarios/scenario-3-private-postgresql-connectivity-validation-from-aks.md) | Shows how to validate the application dependency path from AKS to managed PostgreSQL. |
+
+These scenarios are practical: each one connects a visible
+symptom to a diagnosis path, a root cause, and a fix or design decision.
+
+</details>
 
 [NEXT: Read the detailed Stage 1 document ->](./stage1.md)

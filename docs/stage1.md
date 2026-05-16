@@ -28,6 +28,24 @@ The main Stage 1 design decisions are captured in:
 For the remaining implementation and validation steps still planned inside
 Stage 1, see [stage1-remaining-todo.md](./stage1-remaining-todo.md).
 
+## Stage 1 release artifact
+
+The completed Stage 1 state is intended to be preserved as a versioned Git tag
+and published as a GitHub Release:
+
+```text
+stage1-v1.0.0
+```
+
+The hosted Stage 1 presentation is part of the release evidence:
+
+```text
+https://marvinmeite.cloud/payment-exception-review-stage-1/
+```
+
+For the full tag and release convention, see
+[release-management.md](./release-management.md).
+
 ## 1. Stage 1 purpose
 
 Stage 1 demonstrates how an **infrastructure team**, a **platform team**, and an **application team** collaborate in a controlled Kubernetes environment similar to what is expected in regulated organizations such as banks, insurers, and government-adjacent institutions.

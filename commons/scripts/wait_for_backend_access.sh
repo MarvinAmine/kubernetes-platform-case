@@ -20,11 +20,11 @@ wait_for_backend_access() {
         fi
 
         if (( attempt >= max_attempts )); then
-            echo "ERROR: backend access is still not available after $((max_attempts * delay)) seconds."
+            echo "ERROR: remote backend access is still not available after $((max_attempts * delay)) seconds."
             return 1
         fi
 
-        echo "Backend access not ready yet. Waiting ${delay}s before retrying..."
+        echo "Remote backend access is not ready yet. Waiting ${delay}s before retrying..."
         sleep "$delay"
         attempt=$((attempt + 1))
     done
@@ -43,7 +43,7 @@ terraform_init_with_backend_retry() {
     wait_for_backend_access "$storage_account" "$container_name"
 
     while true; do
-        echo "Terraform init attempt ${attempt}/${max_attempts}..."
+        echo "Terraform initialization attempt ${attempt}/${max_attempts}..."
         if terraform init "$init_mode" \
             -backend-config="resource_group_name=$resource_group" \
             -backend-config="storage_account_name=$storage_account" \
@@ -54,11 +54,11 @@ terraform_init_with_backend_retry() {
         fi
 
         if (( attempt >= max_attempts )); then
-            echo "ERROR: terraform init failed after ${max_attempts} attempts."
+            echo "ERROR: Terraform initialization failed after ${max_attempts} attempts."
             return 1
         fi
 
-        echo "Terraform init failed. Waiting ${delay}s before retrying..."
+        echo "Terraform initialization failed. Waiting ${delay}s before retrying..."
         sleep "$delay"
         attempt=$((attempt + 1))
     done
