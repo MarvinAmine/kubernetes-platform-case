@@ -135,14 +135,14 @@ Stage 1 video walkthroughs:
 <table>
   <tr>
     <td width="50%">
-      <a href="https://www.youtube.com/watch?v=AldbfGGDvjE">
+      <a href="https://www.youtube.com/watch?v=AldbfGGDvjE" target="_blank" rel="noopener">
         <img src="https://img.youtube.com/vi/AldbfGGDvjE/maxresdefault.jpg" alt="Global presentation - governed AKS delivery foundation" width="100%">
       </a>
       <br>
       <strong>Global presentation - governed AKS delivery foundation</strong>
     </td>
     <td width="50%">
-      <a href="https://www.youtube.com/watch?v=uNUSJL7OH0I">
+      <a href="https://www.youtube.com/watch?v=uNUSJL7OH0I" target="_blank" rel="noopener">
         <img src="https://img.youtube.com/vi/uNUSJL7OH0I/maxresdefault.jpg" alt="Demo - bootstrap, runtime proof, Grafana, and teardown" width="100%">
       </a>
       <br>
