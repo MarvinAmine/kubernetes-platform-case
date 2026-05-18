@@ -20,6 +20,7 @@ Stage 2 extends that base into a shared platform model by introducing:
 - multi-tenant / multi-team isolation through platform boundaries
 - GitOps-style reconciliation for safer and more controlled deployments
 - centralized secrets handling
+- automated dependency update visibility through controlled pull requests
 - stronger shared-platform observability and operational governance
 - enterprise Kubernetes capabilities better aligned with real production platform teams
 
@@ -41,6 +42,7 @@ This is the point where the platform starts to look less like a single applicati
 - **GitHub Actions** continues to build, package, and publish application artifacts
 - **ArgoCD** introduces a stronger GitOps-style deployment and reconciliation model
 - **Vault** strengthens secrets centralization and reduces secret exposure inside delivery pipelines
+- **Dependabot** adds dependency update visibility across Maven, GitHub Actions, Docker, and Terraform provider surfaces
 - **Helm** continues to package Kubernetes application resources in a reusable and controlled way
 - **Ansible** supports repeatable platform standardization and operational tasks
 - **Prometheus, Grafana, Elasticsearch, and Kibana** improve platform-wide observability for monitoring, investigation, and operational diagnosis
@@ -53,6 +55,7 @@ Highly regulated organizations usually need more than successful deployments. Th
 - controlled promotions across environments
 - stronger secret management
 - auditable and repeatable delivery behavior
+- automated dependency update signals that still require CI, review, and promotion controls before adoption
 - shared platform standards
 - operational visibility across multiple workloads
 - reduced misconfiguration risk in production
@@ -104,6 +107,7 @@ Those concerns are treated as Stage 3 architecture features.
 - practical understanding of **dev / prod separation**
 - practical understanding of **multi-tenant / multi-team isolation**
 - ability to combine **CI** and **GitOps-style CD** in a more controlled operating model
+- ability to treat dependency updates as governed change requests rather than ad hoc local upgrades
 - stronger judgment around secrets handling, platform guardrails, and operational supportability
 - stronger enterprise Kubernetes credibility through OpenShift-oriented platform thinking
 
@@ -115,6 +119,7 @@ This stage signals hands-on exposure and architectural thinking around:
 - Kubernetes
 - Terraform
 - GitHub Actions
+- Dependabot
 - ArgoCD
 - Vault
 - Helm
@@ -151,6 +156,7 @@ This stage is meant to show a platform that can:
 - reduce repeated manual platform setup work
 - reduce inconsistent deployment behavior between teams
 - reduce secret handling risk
+- reduce dependency drift across application, CI/CD, container, and infrastructure layers
 - improve promotion safety between environments
 - improve shared-platform observability
 - increase confidence in operating internal services under stricter governance constraints

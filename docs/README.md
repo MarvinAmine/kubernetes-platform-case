@@ -15,7 +15,27 @@
 
 # Stage 1 of 3 - Governed AKS delivery foundation for an internal payment review service
 
-Kubernetes delivery foundation on AKS for an internal payment review service. Reflect a realistic operating model where an infrastructure team bootstraps the resource group, AKS cluster, remote Terraform backend, and managed PostgreSQL foundation with Terraform, a platform team provisions the governed Kubernetes application boundary and shared observability services such as Prometheus and Grafana on top of that foundation, and an application team deploys a Spring Boot service through GitHub Actions, Docker, and Helm. I also designed the service around PostgreSQL persistence, health probes, observability, and failure scenarios so the repeatable operating model demonstrates delivery, observability, and troubleshooting instead of only deployment.
+Kubernetes delivery foundation on AKS for an internal payment review service.
+
+This stage reflects a realistic operating model where an Infrastructure team bootstraps the resource group, AKS cluster, remote Terraform backend, and managed PostgreSQL foundation with Terraform.
+
+A Platform team provisions the governed Kubernetes application boundary and shared Prometheus/Grafana observability baseline. An Application team deploys a Spring Boot service through GitHub Actions, GHCR, Docker, and Helm.
+
+The service includes PostgreSQL persistence, health probes, observability, and documented failure scenarios so the platform demonstrates delivery, runtime operations, and troubleshooting instead of only deployment.
+
+This repository is also a market-positioning artifact. After recruiter conversations and Montreal job-market analysis, the recurring signal was that regulated teams increasingly expect Azure, Kubernetes, CI/CD, observability, and platform ownership from day one. Stage 1 turns that signal into a concrete AKS delivery foundation with proof, not only a certificate or tutorial.
+
+**Outcomes:** 
+- ~20 min full bootstrap from Terraform backend to AKS platform baseline
+- ~13 min full teardown path to stop cloud cost after demos
+- < CA$4/month Azure forecast for the Stage 1 demo footprint
+- 1 main bootstrap script and 1 main teardown script for the full cloud path
+- 125h34 recorded Stage 1 build effort compressed into a replayable platform path
+- 3-team operating model with clear Infrastructure, Platform, and Application ownership
+- 11 GitHub Actions workflows covering infrastructure, platform, observability, and application delivery
+- AKS + managed PostgreSQL + Azure Storage remote state provisioned as a repeatable Terraform foundation
+- Prometheus/Grafana delivered as shared observability with dashboards as code
+- 7 documented troubleshooting scenarios with symptoms, diagnosis, root cause, and fix path
 
 ```mermaid
 flowchart TB
@@ -110,6 +130,27 @@ flowchart TB
 
 ## Detailed version:
 
+Stage 1 video walkthroughs:
+
+<table>
+  <tr>
+    <td width="50%">
+      <a href="https://www.youtube.com/watch?v=AldbfGGDvjE">
+        <img src="https://img.youtube.com/vi/AldbfGGDvjE/maxresdefault.jpg" alt="Global presentation - governed AKS delivery foundation" width="100%">
+      </a>
+      <br>
+      <strong>Global presentation - governed AKS delivery foundation</strong>
+    </td>
+    <td width="50%">
+      <a href="https://www.youtube.com/watch?v=uNUSJL7OH0I">
+        <img src="https://img.youtube.com/vi/uNUSJL7OH0I/maxresdefault.jpg" alt="Demo - bootstrap, runtime proof, Grafana, and teardown" width="100%">
+      </a>
+      <br>
+      <strong>Demo - bootstrap, runtime proof, Grafana, and teardown</strong>
+    </td>
+  </tr>
+</table>
+
 For a shorter stakeholder-facing version of this project, see
 [executive-summary.md](./executive-summary.md).
 
@@ -165,7 +206,7 @@ For the fuller technology progression and stage-by-stage stack rationale, see
 | --- | --- | --- |
 | Cloud foundation | Azure AKS, Kubernetes, Azure OIDC / federated CI authentication | Governed cloud delivery foundation |
 | Infrastructure | Terraform, Azure Storage remote backend for Terraform state | Repeatable infrastructure bootstrap |
-| Delivery | GitHub Actions, GitHub, GHCR | Controlled CI/CD path |
+| Delivery | GitHub Actions, GitHub, GHCR, GitHub Releases | Controlled CI/CD path, package publishing, and versioned release evidence |
 | Packaging | Docker, Helm, Kustomize | Application packaging, image publishing, deployment, and Kubernetes-native dashboard resource generation |
 | Application runtime | Java Spring Boot | Internal microservice runtime |
 | Data | PostgreSQL (Azure and Local) | Stateful service credibility |
@@ -179,7 +220,9 @@ An infrastructure team bootstraps the foundation, a platform team provisions a g
   <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/kubernetes.svg" alt="Kubernetes" width="18" />
   <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/terraform.svg" alt="Terraform" width="18" />
   <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github-actions.svg" alt="GitHub Actions" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github.svg" alt="GHCR / GitHub" width="18" />
+  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github.svg" alt="GitHub" width="18" />
+  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github.svg" alt="GHCR" width="18" />
+  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github-releases.svg" alt="GitHub Releases" width="18" />
   <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/docker.svg" alt="Docker" width="18" />
   <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/helm.svg" alt="Helm" width="18" />
   <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/spring-boot.svg" alt="Spring Boot" width="18" />
@@ -193,16 +236,17 @@ An infrastructure team bootstraps the foundation, a platform team provisions a g
 | --- | --- | --- |
 | Inheritance | All Stage 1 technologies | Keep the governed delivery base |
 | Governance | OpenShift, ArgoCD, HashiCorp Vault, Ansible | Stronger platform controls, GitOps discipline, and shared-platform standards |
-| Security | OpenShift, Kubernetes, HashiCorp Vault | Stronger AppSec controls and secret-aware hardening |
+| Security and dependency governance | OpenShift, Kubernetes, HashiCorp Vault, Dependabot | Stronger AppSec controls, secret-aware hardening, and automated dependency update visibility |
 | Deferred next-step mesh | OpenShift Service Mesh (Istio-based) | Enterprise traffic governance and mTLS when the platform grows beyond Stage 2 core scope |
 | Observability | Elasticsearch, Kibana | Deeper observability with logs and security posture |
 | Operations | Linux / Red Hat or Ubuntu | More enterprise-oriented platform operations |
 
 Outcome:
-The platform evolves from controlled delivery to controlled and secured delivery, with Security and IAM becoming an explicit part of the operating model.
+The platform evolves from controlled delivery to controlled and secured delivery, with Security, IAM, and dependency governance becoming explicit parts of the operating model.
 
 <p align="left">
   <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/openshift.svg" alt="OpenShift" width="18" />
+  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/dependabot.svg" alt="Dependabot" width="18" />
   <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/git-orange.svg" alt="ArgoCD" width="18" />
   <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/vault.svg" alt="Vault" width="18" />
   <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/ansible.svg" alt="Ansible" width="18" />
@@ -268,6 +312,17 @@ Observed Stage 1 cost signals from the Azure view:
 The default AKS node size remains `Standard_D2als_v6` for a stable Stage 1
 baseline. `Standard_B2als_v2` is documented as the lower-cost fallback when it
 is available in the subscription and region.
+
+Current Azure Retail Prices API values for Canada Central Linux node compute:
+
+| AKS node VM size | Hourly estimate | Monthly estimate at 730h | Cost note |
+| --- | ---: | ---: | --- |
+| `Standard_B2als_v2` | about `$0.0418/hour` | about `$30.51/month` | lower-cost fallback |
+| `Standard_D2als_v6` | about `$0.0896/hour` | about `$65.41/month` | default Stage 1 baseline |
+
+Using `Standard_B2als_v2` instead of `Standard_D2als_v6` can reduce AKS node
+compute by about **53%**, or about **$34.89/month per node**, before disks,
+networking, PostgreSQL, and other Azure resources are counted.
 
 For the node-size decision, see
 [ADR-009 - Default to Standard_D2als_v6 While Documenting Standard_B2als_v2 as the Lower-Cost Fallback](./adrs/ADR-009-default-to-standard-d2als-v6-while-documenting-standard-b2als-v2-as-the-lower-cost-fallback.md).

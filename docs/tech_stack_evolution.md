@@ -10,6 +10,7 @@ Prove that an infrastructure team can bootstrap the foundation, a platform team 
 * Terraform
 * Azure Storage remote backend for Terraform state
 * GitHub Actions
+* GitHub Releases
 * Docker
 * Helm
 * Kustomize
@@ -50,6 +51,7 @@ Evolve the initial delivery foundation into a governed shared platform for multi
 * Kubernetes
 * Helm
 * GitHub Actions
+* Dependabot
 * ArgoCD
 * Terraform
 * HashiCorp Vault
@@ -74,6 +76,7 @@ Evolve the initial delivery foundation into a governed shared platform for multi
 * multi-environment promotion
 * tenant / namespace isolation
 * secrets centralization
+* dependency update governance
 * GitOps-style reconciliation
 * policy-aware platform operations
 * observability for a shared platform

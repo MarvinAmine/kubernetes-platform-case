@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">GHCR icon</title>
+  <desc id="desc">A package container icon used to represent GitHub Container Registry artifacts.</desc>
+  <path d="M32 6 54 18.5v25L32 56 10 43.5v-25L32 6Z" fill="#24292f"/>
+  <path d="M32 6v25.5m22-13L32 31.5 10 18.5M32 56V31.5" fill="none" stroke="#f6f8fa" stroke-width="3.2" stroke-linejoin="round"/>
+  <path d="M22 24.5 32 30l10-5.5" fill="none" stroke="#2f81f7" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="23" y="36" width="18" height="8" rx="4" fill="#2f81f7"/>
+</svg>

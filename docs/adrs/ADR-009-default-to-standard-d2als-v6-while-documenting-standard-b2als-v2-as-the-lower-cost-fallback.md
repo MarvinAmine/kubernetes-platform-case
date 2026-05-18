@@ -24,6 +24,17 @@ Both provide:
 
 However, they represent different trade-offs.
 
+Current Azure Retail Prices API values for Canada Central Linux node compute are:
+
+| VM size | Hourly estimate | Monthly estimate at 730h |
+| --- | ---: | ---: |
+| `Standard_B2als_v2` | about `$0.0418/hour` | about `$30.51/month` |
+| `Standard_D2als_v6` | about `$0.0896/hour` | about `$65.41/month` |
+
+That makes `Standard_B2als_v2` about **53% cheaper** for AKS node compute,
+or about **$34.89/month saved per node**, before disks, networking,
+PostgreSQL, and other Azure resources are counted.
+
 Microsoft documents the `Basv2` family as a **low cost CPU burstable** series and a **cost effective** option for general purpose workloads.  
 Source: https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/basv2-series
 

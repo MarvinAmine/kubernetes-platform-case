@@ -381,6 +381,7 @@
       display: block;
       width: 100%;
       height: auto;
+      cursor: zoom-in;
     }
 
     .video-embed {
@@ -835,6 +836,12 @@
       text-transform: uppercase;
     }
 
+    .terminal-source-links {
+      padding: 14px 18px 0;
+      margin: 0;
+      background: #131816;
+    }
+
     .terminal-body {
       position: relative;
       flex: 1;
@@ -1045,6 +1052,45 @@
       font-size: 13px;
       font-weight: 700;
       letter-spacing: 0.01em;
+    }
+
+    .iac-step[data-iac-tab] {
+      border: 1px solid rgba(14,107,87,0.18);
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      color: var(--green-deep);
+      background: rgba(255,255,255,0.78);
+      transition: transform 180ms ease, background 180ms ease, color 180ms ease, border-color 180ms ease;
+    }
+
+    .iac-step[data-iac-tab]::after {
+      content: "View code";
+      margin-left: 8px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(14,107,87,0.08);
+      color: rgba(14,107,87,0.74);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .iac-step[data-iac-tab]:hover {
+      transform: translateY(-1px);
+      border-color: rgba(14,107,87,0.34);
+    }
+
+    .iac-step.is-active {
+      color: #f8fffb;
+      background: linear-gradient(135deg, rgba(14,107,87,0.92), rgba(39,130,164,0.86));
+      box-shadow: 0 12px 24px rgba(14,107,87,0.14);
+      border-color: transparent;
+    }
+
+    .iac-step.is-active::after {
+      background: rgba(255,255,255,0.16);
+      color: rgba(248,255,251,0.82);
     }
 
     .iac-proof pre {
@@ -1444,6 +1490,13 @@
         linear-gradient(135deg, rgba(169,75,40,0.92), rgba(194,135,44,0.9) 48%, rgba(14,107,87,0.82));
     }
 
+    .kpi-chip.quaternary {
+      min-width: 220px;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(255,255,255,0.24), transparent 34%),
+        linear-gradient(135deg, rgba(37,42,50,0.92), rgba(73,91,124,0.9) 48%, rgba(14,107,87,0.82));
+    }
+
     .kpi-chip .kpi-value {
       display: block;
       font-size: clamp(28px, 3.1vw, 44px);
@@ -1503,6 +1556,169 @@
       line-height: 1.6;
     }
 
+    .outcome-proof-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .proof-card {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,248,240,0.82));
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .proof-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-bottom: 1px solid var(--line);
+      cursor: zoom-in;
+    }
+
+    .proof-card-body {
+      padding: 18px;
+    }
+
+    .proof-card-body .tag {
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    .proof-card-body h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      letter-spacing: -0.04em;
+    }
+
+    .proof-card-body p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.58;
+      font-size: 14px;
+    }
+
+    .iac-panel {
+      display: none;
+    }
+
+    .iac-panel.is-active {
+      display: block;
+    }
+
+    .source-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 12px 0 0;
+    }
+
+    .source-link-small {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      width: fit-content;
+      padding: 8px 11px;
+      border: 1px solid rgba(126, 232, 183, 0.22);
+      border-radius: 999px;
+      color: #dff8ec;
+      background: rgba(126, 232, 183, 0.08);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .source-link-small::after {
+      content: "↗";
+      color: #7ee8b7;
+      font-size: 12px;
+    }
+
+    .source-link-small:hover {
+      transform: translateY(-1px);
+      border-color: rgba(126, 232, 183, 0.5);
+      background: rgba(126, 232, 183, 0.14);
+    }
+
+    .proof-note .source-links {
+      margin: 14px 0 16px;
+    }
+
+    .proof-note .source-link-small {
+      color: #063f33;
+      background: linear-gradient(180deg, rgba(126, 232, 183, 0.38), rgba(14, 107, 87, 0.13));
+      border-color: rgba(14, 107, 87, 0.34);
+      box-shadow: 0 10px 22px rgba(14, 107, 87, 0.12);
+    }
+
+    .proof-note .source-link-small::after {
+      color: #0e6b57;
+    }
+
+    .proof-note .source-link-small:hover {
+      color: #031f1a;
+      background: linear-gradient(180deg, rgba(126, 232, 183, 0.55), rgba(14, 107, 87, 0.18));
+      border-color: rgba(14, 107, 87, 0.58);
+    }
+
+    .image-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background: rgba(11, 15, 14, 0.86);
+      backdrop-filter: blur(10px);
+    }
+
+    .image-lightbox.is-open {
+      display: flex;
+    }
+
+    .image-lightbox img {
+      max-width: min(96vw, 1440px);
+      max-height: 88vh;
+      object-fit: contain;
+      border-radius: 18px;
+      box-shadow: 0 34px 90px rgba(0,0,0,0.42);
+      background: #ffffff;
+    }
+
+    .image-lightbox-caption {
+      position: absolute;
+      left: 28px;
+      right: 76px;
+      bottom: 20px;
+      color: rgba(248,255,251,0.82);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .image-lightbox-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      color: #f8fffb;
+      cursor: pointer;
+      font-size: 26px;
+      line-height: 1;
+    }
+
     .reveal-item {
       opacity: 0;
       transform: translateY(18px);
@@ -1520,6 +1736,7 @@
       .contrast-row,
       .scenario-list,
       .close-grid,
+      .outcome-proof-grid,
       .image-grid {
         grid-template-columns: 1fr;
       }
@@ -1640,6 +1857,13 @@
               <div class="terminal-dots"><span></span><span></span><span></span></div>
               <div class="terminal-title">Stage 1 runbook / live terminal loop</div>
             </div>
+            <div class="source-links terminal-source-links">
+              <a class="source-link-small" href="https://github.com/MarvinAmine/kubernetes-platform-case/blob/stage1-v1.0.0/bootstrap_infrastructure_and_provision_platform.sh" target="_blank" rel="noopener">bootstrap script</a>
+              <a class="source-link-small" href="https://github.com/MarvinAmine/kubernetes-platform-case/blob/stage1-v1.0.0/destroy_infrastructure_and_platform.sh" target="_blank" rel="noopener">teardown script</a>
+              <a class="source-link-small" href="https://github.com/MarvinAmine/kubernetes-platform-case/blob/stage1-v1.0.0/.env.example" target="_blank" rel="noopener">.env.example</a>
+              <a class="source-link-small" href="https://github.com/MarvinAmine/kubernetes-platform-case/blob/stage1-v1.0.0/application/payment-exception-review-service/helm/templates/service.yaml" target="_blank" rel="noopener">service.yaml</a>
+              <a class="source-link-small" href="https://github.com/MarvinAmine/kubernetes-platform-case/blob/stage1-v1.0.0/platform/kubernetes-resources/observability/grafana/kustomization.yaml" target="_blank" rel="noopener">dashboard ConfigMaps</a>
+            </div>
             <div class="terminal-body">
               <pre id="runbook-terminal"></pre><span class="terminal-cursor" id="runbook-cursor" aria-hidden="true"></span>
             </div>
@@ -1657,26 +1881,26 @@
         <div class="section-head reveal-item">
           <h2>Business context</h2>
           <p>
-            Framed with STAR: a regulated payment flow creates the operational situation, the internal service has a precise responsibility, and Stage 1 proves the first credible delivery result.
+            A regulated payment workflow creates the problem. The service provides visibility. Stage 1 proves the delivery model.
           </p>
         </div>
         <div class="panel reveal-item">
           <div class="grid-2 context-grid">
             <article class="card">
               <h3>Exceptions happen</h3>
-              <p>In a regulated payment environment, not every transaction can stay on the fully automated path. Some payments fall into exception handling because of thresholds, missing metadata, suspicious duplicates, or blocked destinations.</p>
+              <p>Not every transaction stays on the automated path. Some payments require exception handling because of thresholds, missing metadata, suspicious duplicates, or blocked destinations.</p>
             </article>
             <article class="card">
               <h3>Status must be visible</h3>
-              <p>The platform needs a governed internal backend that exposes the lifecycle of those exceptions so operators and internal consumers can see whether a case is pending review, under investigation, approved, or rejected.</p>
+              <p>Operators and internal consumers need to know whether a case is pending review, under investigation, approved, or rejected.</p>
             </article>
             <article class="card">
               <h3>Delivery must be governed</h3>
-              <p>Stage 1 implements that service as a Spring Boot API delivered through an Azure and AKS path with explicit ownership boundaries across Infrastructure, Platform, and Application, plus shared observability and documented troubleshooting.</p>
+              <p>The service is delivered as a Spring Boot API on Azure AKS with clear Infrastructure, Platform, and Application ownership, shared observability, and documented troubleshooting.</p>
             </article>
             <article class="card">
               <h3>The result is credible</h3>
-              <p>The result is not just a running app. It is a credible enterprise baseline: controlled delivery, team accountability, visible runtime signals, and operational evidence strong enough to support an interview-level discussion.</p>
+              <p>The result is an observable operating baseline: controlled delivery, team accountability, runtime signals, and evidence strong enough for a technical discussion.</p>
             </article>
           </div>
           <div class="media-frame">
@@ -1738,6 +1962,43 @@ flowchart TB
               Business and operating context in one view: controlled delivery path, internal access path,
               Azure dev environment, AKS platform, PostgreSQL, Terraform state, and shared observability.
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="why-this-project">
+        <div class="section-head reveal-item">
+          <h2>Why this project exists</h2>
+          <p>
+            This project connects a real market signal to a concrete build: governed AKS delivery, documented end to end.
+          </p>
+        </div>
+        <div class="panel reveal-item">
+          <div class="grid-2 context-grid">
+            <article class="card">
+              <h3>Market signal</h3>
+              <p>
+                Recruiter conversations and Montreal job analysis pointed to the same pattern: regulated teams increasingly expect Azure, Kubernetes, CI/CD, observability, and platform ownership from day one.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Stack mobility matters</h3>
+              <p>
+                A narrow production stack can be valuable, but it can also limit future options when hiring demand shifts. Kubernetes and governed delivery patterns create a more portable base.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Complementary proof</h3>
+              <p>
+                Theory gives the map. Practice proves the route. Stage 1 connects both by turning Kubernetes concepts into a governed AKS delivery foundation with CI/CD, observability, FinOps, and operational evidence.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Built at human scale</h3>
+              <p>
+                Stage 1 is not presented as a perfect enterprise platform. It is a documented, one-person, 125h34 delivery process with evidence strong enough for a hiring-manager discussion.
+              </p>
+            </article>
           </div>
         </div>
       </section>
@@ -1838,8 +2099,9 @@ flowchart TB
               <div class="zoom-lens" aria-hidden="true"></div>
             </div>
             <div class="media-caption">
-              Lifecycle dependency map: the delivery path is sequenced intentionally so infrastructure,
-              platform, observability, and application changes reconcile in the right order.
+              Infrastructure as Code lifecycle map: Terraform, Kubernetes resources, Helm releases,
+              and dashboard ConfigMaps are sequenced intentionally so infrastructure, platform,
+              observability, and application changes reconcile in the right order.
             </div>
           </div>
         </div>
@@ -1898,6 +2160,9 @@ flowchart TB
               <p>
                 This run path is the operational contract of the Stage 1 service. It gives the Application team a business-facing API, gives the Platform team health and scrape endpoints, and gives shared observability a reliable signal source.
               </p>
+              <div class="source-links">
+                <a class="source-link-small" href="https://github.com/MarvinAmine/kubernetes-platform-case/blob/stage1-v1.0.0/application/docs/openapi.yaml" target="_blank" rel="noopener">application/docs/openapi.yaml</a>
+              </div>
               <div class="proof-badges">
                 <span><img src="./assets/presentation-icons/spring-boot.svg" alt="">Business path</span>
                 <span><img src="./assets/presentation-icons/prometheus.svg" alt="">Metrics path</span>
@@ -1946,6 +2211,7 @@ flowchart TB
               <ul>
                 <li><code>Standard_D2als_v6</code> stays the default Stage 1 baseline.</li>
                 <li><code>Standard_B2als_v2</code> is documented as the lower-cost fallback when quota and region availability allow it, specifically to make the project more accessible on tighter personal budgets.</li>
+                <li>In Canada Central Linux pricing, <code>Standard_B2als_v2</code> is about <strong>$30.51/month</strong> per node versus about <strong>$65.41/month</strong> for <code>Standard_D2als_v6</code>, a roughly <strong>53% node-compute reduction</strong>.</li>
                 <li>The cost screenshots show the practical target state: about <strong>CA$3.59 forecast for the month</strong> when the estate is kept minimal and destroyed after use instead of left running continuously.</li>
                 <li>Quota-awareness and subscription-budget realism are part of the delivery story, even when the repo keeps a stronger default baseline.</li>
               </ul>
@@ -2031,6 +2297,7 @@ flowchart TB
                     <span><img src="./assets/presentation-icons/terraform.svg" alt="">Terraform</span>
                     <span><img src="./assets/presentation-icons/github-actions.svg" alt="">GitHub Actions</span>
                     <span><img src="./assets/presentation-icons/github.svg" alt="">GitHub</span>
+                    <span><img src="./assets/presentation-icons/github-releases.svg" alt="">GitHub Releases</span>
                     <span><img src="./assets/presentation-icons/docker.svg" alt="">Docker</span>
                     <span><img src="./assets/presentation-icons/github.svg" alt="">GHCR</span>
                     <span><img src="./assets/presentation-icons/helm.svg" alt="">Helm</span>
@@ -2051,7 +2318,7 @@ flowchart TB
                 <article class="evo-card stage2" id="stage-2-card">
                   <span class="stage-tag">Stage 2</span>
                   <h3>Governed shared platform</h3>
-                  <p>More tenants, stronger controls, centralized secrets, GitOps-style reconciliation, and broader operational governance.</p>
+                  <p>More tenants, stronger controls, centralized secrets, governed dependency updates, GitOps-style reconciliation, and broader operational governance.</p>
                   <div class="evo-emphasis">
                     <div class="evo-env-card">
                       <span class="label">Formalized environments</span>
@@ -2066,7 +2333,7 @@ flowchart TB
                   </div>
                   <div class="evo-pills">
                     <span><img src="./assets/presentation-icons/openshift.svg" alt="">OpenShift</span>
-                    <span><img src="./assets/presentation-icons/github.svg" alt="">GitHub</span>
+                    <span><img src="./assets/presentation-icons/dependabot.svg" alt="">Dependabot</span>
                     <span><img src="./assets/presentation-icons/git-orange.svg" alt="">ArgoCD</span>
                     <span><img src="./assets/presentation-icons/vault.svg" alt="">Vault</span>
                     <span><img src="./assets/presentation-icons/elasticsearch.svg" alt="">ElasticSearch</span>
@@ -2216,31 +2483,140 @@ flowchart TB
             </div>
           </div>
           <div class="iac-proof">
-            <h3><span class="title-with-icon"><img src="./assets/presentation-icons/helm.svg" alt="">Dashboards are also delivered as code</span></h3>
+            <h3><span class="title-with-icon"><img src="./assets/presentation-icons/terraform.svg" alt="">IaC all the way to observability</span></h3>
             <p>
-              The screenshots are not manual Grafana clicks. The dashboards live as versioned JSON in the repo,
-              Kustomize turns them into Kubernetes ConfigMaps, and the Grafana Helm values mount them into the shared stack.
+              The platform is not assembled manually from the console. Terraform creates the cloud and Kubernetes foundation,
+              Helm reconciles the shared stack, and the dashboards live as versioned JSON in the repo.
+              Kustomize turns them into Kubernetes ConfigMaps, and Grafana mounts them through Helm values.
             </p>
             <div class="iac-flow">
-              <span class="iac-step">JSON dashboards in Git</span>
-              <span class="iac-step">Kustomize ConfigMaps</span>
+              <button class="iac-step is-active" type="button" data-iac-tab="terraform">Terraform cloud foundation</button>
+              <button class="iac-step" type="button" data-iac-tab="helm">Helm platform stack</button>
+              <button class="iac-step" type="button" data-iac-tab="dashboard-json">JSON dashboards in Git</button>
+              <button class="iac-step" type="button" data-iac-tab="kustomize">Kustomize ConfigMaps</button>
               <span class="iac-step">Helm mounts into Grafana</span>
-              <span class="iac-step">Provisioned on install</span>
+              <button class="iac-step" type="button" data-iac-tab="install">Provisioned on install</button>
             </div>
-            <pre><code><span class="code-path">platform/kubernetes-resources/observability/grafana/dashboards/</span>
-  - <span class="code-value">kubernetes-networking-namespace-pods-curated.json</span>
-  - <span class="code-value">payment-exception-review-platform-runtime.json</span>
-  - <span class="code-value">prometheus-overview-curated.json</span>
+            <div class="iac-panel is-active" data-iac-panel="terraform">
+              <pre><code><span class="code-path">infrastructure/azure/terraform/aks.tf</span>
+<span class="code-key">resource</span> <span class="code-value">"azurerm_kubernetes_cluster"</span> <span class="code-value">"aks"</span> {
+  <span class="code-key">name</span>                = <span class="code-value">var.aks_cluster_name</span>
+  <span class="code-key">location</span>            = <span class="code-value">azurerm_resource_group.aks.location</span>
+  <span class="code-key">resource_group_name</span> = <span class="code-value">azurerm_resource_group.aks.name</span>
+  <span class="code-key">dns_prefix</span>          = <span class="code-value">var.dns_prefix</span>
 
-<span class="code-path">platform/kubernetes-resources/observability/grafana/kustomization.yaml</span>
-  <span class="code-key">configMapGenerator</span>:
-    - <span class="code-key">name</span>: <span class="code-value">payment-exception-review-platform-runtime-dashboard</span>
-    - <span class="code-key">name</span>: <span class="code-value">kubernetes-networking-namespace-pods-curated</span>
-    - <span class="code-key">name</span>: <span class="code-value">prometheus-overview-curated</span>
+  <span class="code-key">default_node_pool</span> {
+    <span class="code-key">name</span>       = <span class="code-value">"default"</span>
+    <span class="code-key">node_count</span> = <span class="code-value">var.node_count</span>
+    <span class="code-key">vm_size</span>    = <span class="code-value">var.vm_size</span>
+  }
+}
 
-<span class="code-comment">install flow</span>:
-  <span class="code-cmd">kubectl apply -k platform/kubernetes-resources/observability/grafana</span>
-  <span class="code-cmd">helm upgrade --install kube-prometheus-stack ...</span></code></pre>
+<span class="code-path">infrastructure/azure/terraform/postgresql.tf</span>
+<span class="code-key">resource</span> <span class="code-value">"azurerm_postgresql_flexible_server"</span> <span class="code-value">"app"</span> {
+  <span class="code-key">name</span>                = <span class="code-value">var.postgres_server_name</span>
+  <span class="code-key">resource_group_name</span> = <span class="code-value">azurerm_resource_group.aks.name</span>
+  <span class="code-key">sku_name</span>            = <span class="code-value">var.postgres_sku_name</span>
+}</code></pre>
+              <div class="source-links">
+                <a class="source-link-small" href="https://github.com/MarvinAmine/kubernetes-platform-case/blob/stage1-v1.0.0/infrastructure/azure/terraform/aks.tf" target="_blank" rel="noopener">infrastructure/azure/terraform/aks.tf</a>
+                <a class="source-link-small" href="https://github.com/MarvinAmine/kubernetes-platform-case/blob/stage1-v1.0.0/infrastructure/azure/terraform/postgresql.tf" target="_blank" rel="noopener">infrastructure/azure/terraform/postgresql.tf</a>
+              </div>
+            </div>
+            <div class="iac-panel" data-iac-panel="dashboard-json">
+              <pre><code><span class="code-path">platform/kubernetes-resources/observability/grafana/dashboards/payment-exception-review-platform-runtime.json</span>
+{
+  <span class="code-key">"title"</span>: <span class="code-value">"Payment Exception Review - Platform Runtime"</span>,
+  <span class="code-key">"uid"</span>: <span class="code-value">"payment-exception-review-platform-runtime"</span>,
+  <span class="code-key">"timezone"</span>: <span class="code-value">"utc"</span>,
+  <span class="code-key">"panels"</span>: [
+    {
+      <span class="code-key">"title"</span>: <span class="code-value">"Dev namespace"</span>,
+      <span class="code-key">"type"</span>: <span class="code-value">"stat"</span>,
+      <span class="code-key">"datasource"</span>: {
+        <span class="code-key">"type"</span>: <span class="code-value">"prometheus"</span>,
+        <span class="code-key">"uid"</span>: <span class="code-value">"prometheus"</span>
+      },
+      <span class="code-key">"targets"</span>: [
+        {
+          <span class="code-key">"editorMode"</span>: <span class="code-value">"code"</span>,
+          <span class="code-key">"expr"</span>: <span class="code-value">"up{namespace=\"payment-exception-review-local\"}"</span>,
+          <span class="code-key">"refId"</span>: <span class="code-value">"A"</span>
+        }
+      ]
+    }
+  ]
+}</code></pre>
+              <div class="source-links">
+                <a class="source-link-small" href="https://github.com/MarvinAmine/kubernetes-platform-case/blob/stage1-v1.0.0/platform/kubernetes-resources/observability/grafana/dashboards/payment-exception-review-platform-runtime.json" target="_blank" rel="noopener">platform/kubernetes-resources/observability/grafana/dashboards/payment-exception-review-platform-runtime.json</a>
+              </div>
+            </div>
+            <div class="iac-panel" data-iac-panel="kustomize">
+              <pre><code><span class="code-path">platform/kubernetes-resources/observability/grafana/kustomization.yaml</span>
+<span class="code-key">apiVersion</span>: <span class="code-value">kustomize.config.k8s.io/v1beta1</span>
+<span class="code-key">kind</span>: <span class="code-value">Kustomization</span>
+<span class="code-key">namespace</span>: <span class="code-value">monitoring</span>
+
+<span class="code-key">configMapGenerator</span>:
+  - <span class="code-key">name</span>: <span class="code-value">payment-exception-review-platform-runtime-dashboard</span>
+    <span class="code-key">files</span>:
+      - <span class="code-value">payment-exception-review-platform-runtime.json=dashboards/payment-exception-review-platform-runtime.json</span>
+
+  - <span class="code-key">name</span>: <span class="code-value">kubernetes-networking-namespace-pods-curated</span>
+    <span class="code-key">files</span>:
+      - <span class="code-value">kubernetes-networking-namespace-pods-curated.json=dashboards/kubernetes-networking-namespace-pods-curated.json</span>
+
+<span class="code-key">generatorOptions</span>:
+  <span class="code-key">disableNameSuffixHash</span>: <span class="code-value">true</span></code></pre>
+              <div class="source-links">
+                <a class="source-link-small" href="https://github.com/MarvinAmine/kubernetes-platform-case/blob/stage1-v1.0.0/platform/kubernetes-resources/observability/grafana/kustomization.yaml" target="_blank" rel="noopener">platform/kubernetes-resources/observability/grafana/kustomization.yaml</a>
+              </div>
+            </div>
+            <div class="iac-panel" data-iac-panel="helm">
+              <pre><code><span class="code-path">platform/kubernetes-resources/observability/grafana/kube-prometheus-stack-grafana-values.yaml</span>
+<span class="code-key">grafana</span>:
+  <span class="code-key">dashboardProviders</span>:
+    <span class="code-key">dashboardproviders.yaml</span>:
+      <span class="code-key">apiVersion</span>: <span class="code-value">1</span>
+      <span class="code-key">providers</span>:
+        - <span class="code-key">name</span>: <span class="code-value">payment-exception-review</span>
+          <span class="code-key">folder</span>: <span class="code-value">Payment Exception Review</span>
+          <span class="code-key">type</span>: <span class="code-value">file</span>
+          <span class="code-key">options</span>:
+            <span class="code-key">path</span>: <span class="code-value">/var/lib/grafana/dashboards/payment-exception-review</span>
+
+  <span class="code-key">extraConfigmapMounts</span>:
+    - <span class="code-key">name</span>: <span class="code-value">payment-exception-review-platform-runtime</span>
+      <span class="code-key">configMap</span>: <span class="code-value">payment-exception-review-platform-runtime-dashboard</span>
+      <span class="code-key">mountPath</span>: <span class="code-value">/var/lib/grafana/dashboards/payment-exception-review/payment-exception-review-platform-runtime.json</span></code></pre>
+              <div class="source-links">
+                <a class="source-link-small" href="https://github.com/MarvinAmine/kubernetes-platform-case/blob/stage1-v1.0.0/platform/kubernetes-resources/observability/grafana/kube-prometheus-stack-grafana-values.yaml" target="_blank" rel="noopener">platform/kubernetes-resources/observability/grafana/kube-prometheus-stack-grafana-values.yaml</a>
+              </div>
+            </div>
+            <div class="iac-panel" data-iac-panel="install">
+              <pre><code><span class="code-path">platform/kubernetes-resources/observability/scripts/cluster/install_shared_observability_stack.sh</span>
+<span class="code-comment"># Custom dashboard ConfigMaps must exist before Grafana starts.</span>
+<span class="code-cmd">"$SYNC_RELIABILITY_DASHBOARDS_SCRIPT"</span>
+<span class="code-cmd">kubectl apply -k "$DASHBOARD_KUSTOMIZE_DIR"</span>
+
+<span class="code-key">HELM_VALUES_ARGS</span>=(
+  -f <span class="code-value">"$VALUES_FILE_PROMETHEUS"</span>
+  -f <span class="code-value">"$VALUES_FILE_GRAFANA"</span>
+  -f <span class="code-value">"$VALUES_FILE_ALERTMANAGER"</span>
+  -f <span class="code-value">"$TEMP_VALUES"</span>
+)
+
+<span class="code-cmd">helm upgrade --install "$RELEASE_NAME" \</span>
+  <span class="code-value">prometheus-community/kube-prometheus-stack</span> \
+  --namespace <span class="code-value">"$MONITORING_NAMESPACE"</span> \
+  --create-namespace \
+  <span class="code-value">"${HELM_VALUES_ARGS[@]}"</span> \
+  --wait \
+  --timeout <span class="code-value">"$OBSERVABILITY_HELM_TIMEOUT"</span></code></pre>
+              <div class="source-links">
+                <a class="source-link-small" href="https://github.com/MarvinAmine/kubernetes-platform-case/blob/stage1-v1.0.0/platform/kubernetes-resources/observability/scripts/cluster/install_shared_observability_stack.sh" target="_blank" rel="noopener">platform/kubernetes-resources/observability/scripts/cluster/install_shared_observability_stack.sh</a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -2352,24 +2728,33 @@ chown: /var/lib/grafana/csv: Permission denied</code></pre>
                     <span class="kpi-label">Main entrypoint</span>
                   </div>
                 </div>
+                <div class="kpi-chip quaternary">
+                  <div>
+                    <span class="kpi-value">13 min</span>
+                    <span class="kpi-label">Teardown</span>
+                  </div>
+                </div>
               </div>
               <div class="pill-row">
-                <span class="pill">3 teams</span>
-                <span class="pill">1 internal service</span>
-                <span class="pill">AKS + PostgreSQL</span>
-                <span class="pill">Shared observability</span>
+                <span class="pill">3-team ownership model</span>
+                <span class="pill">11 GitHub Actions workflows</span>
+                <span class="pill">AKS + managed PostgreSQL</span>
+                <span class="pill">Dashboards as code</span>
+                <span class="pill">7 troubleshooting scenarios</span>
+                <span class="pill">125h34 recorded build effort</span>
               </div>
               <p class="muted-note">
-                The core result is operational simplicity with enterprise structure: bootstrap the foundation, validate the runtime, deploy the app through GitHub Actions, and tear the environment down when it is not needed.
+                The core result is operational simplicity with enterprise structure: more than 125 hours of recorded Stage 1 build work compressed into a replayable path that bootstraps the Terraform backend, AKS foundation, Kubernetes runtime, and shared observability baseline; validates the service path; then tears the cloud runtime down when it is not needed.
               </p>
             </div>
             <div class="card">
               <h3>Executive takeaways</h3>
               <ul style="margin:0; padding-left:18px; color:var(--muted); line-height:1.7;">
-                <li>Cloud foundation, Kubernetes boundary, observability, and application delivery are all codified.</li>
-                <li>The Azure runtime is cheap enough to demo, and explicit enough to optimize.</li>
-                <li>The local path absorbs most iteration work so AKS is used only when managed-cloud proof matters.</li>
-                <li>Troubleshooting, dashboards, and destroy paths are part of the asset, not hidden cleanup work.</li>
+                <li><strong>Time:</strong> full bootstrap is replayable in about 20 minutes instead of spread across manual team handoffs.</li>
+                <li><strong>Effort:</strong> the Stage 1 platform represents <strong>125h34</strong> of recorded project work translated into a repeatable delivery foundation.</li>
+                <li><strong>Cost:</strong> the demo footprint is forecast below CA$4/month when the runtime is destroyed after use.</li>
+                <li><strong>Governance:</strong> Infrastructure, Platform, and Application responsibilities are separated in code and workflows.</li>
+                <li><strong>Evidence:</strong> release, package, dashboards, runbooks, and teardown path are all captured as project assets.</li>
               </ul>
               <a class="repo-link" href="https://github.com/MarvinAmine/kubernetes-platform-case" target="_blank" rel="noopener">
                 <img src="./assets/presentation-icons/github.svg" alt="">
@@ -2377,9 +2762,31 @@ chown: /var/lib/grafana/csv: Permission denied</code></pre>
               </a>
             </div>
           </div>
+          <div class="outcome-proof-grid">
+            <article class="proof-card">
+              <img src="./assets/stage1_github_release.png" alt="GitHub release proof for Stage 1 v1.0.0">
+              <div class="proof-card-body">
+                <span class="tag">Release proof</span>
+                <h3>Stage 1 is frozen as a versioned release</h3>
+                <p>
+                  The release points to <strong>stage1-v1.0.0</strong> and commit <strong>5d88fbb</strong>, so the proof is stable even after Stage 2 evolves the repository.
+                </p>
+              </div>
+            </article>
+            <article class="proof-card">
+              <img src="./assets/github_container_repository_40_downloads.png" alt="GHCR package proof for the Spring Boot service">
+              <div class="proof-card-body">
+                <span class="tag">Package proof</span>
+                <h3>The Spring Boot service is published to GHCR</h3>
+                <p>
+                  The container package is public, versioned by image tags, and shows <strong>40 downloads</strong>, proving the CI path produced a reusable artifact.
+                </p>
+              </div>
+            </article>
+          </div>
           <div class="video-embed" aria-label="Stage 1 video walkthrough">
             <iframe
-              src="https://www.youtube.com/embed/Ktm2KMxnBwE"
+              src="https://www.youtube.com/embed/uNUSJL7OH0I"
               title="Stage 1 video walkthrough"
               loading="lazy"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -2390,6 +2797,12 @@ chown: /var/lib/grafana/csv: Permission denied</code></pre>
       </section>
     </div>
   </main>
+
+  <div class="image-lightbox" id="image-lightbox" aria-hidden="true" role="dialog" aria-label="Full-screen image preview">
+    <button class="image-lightbox-close" type="button" aria-label="Close image preview">&times;</button>
+    <img src="" alt="">
+    <div class="image-lightbox-caption"></div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leader-line-new@1.1.9/leader-line.min.js"></script>
@@ -2433,6 +2846,55 @@ chown: /var/lib/grafana/csv: Permission denied</code></pre>
     }, { threshold: 0.18 });
 
     document.querySelectorAll(".reveal-item").forEach((el) => observer.observe(el));
+
+    document.querySelectorAll("[data-iac-tab]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const target = button.dataset.iacTab;
+        document.querySelectorAll("[data-iac-tab]").forEach((tab) => {
+          tab.classList.toggle("is-active", tab === button);
+        });
+        document.querySelectorAll(".iac-panel").forEach((panel) => {
+          panel.classList.toggle("is-active", panel.dataset.iacPanel === target);
+        });
+      });
+    });
+
+    const lightbox = document.getElementById("image-lightbox");
+    const lightboxImage = lightbox?.querySelector("img");
+    const lightboxCaption = lightbox?.querySelector(".image-lightbox-caption");
+    const lightboxClose = lightbox?.querySelector(".image-lightbox-close");
+
+    const closeLightbox = () => {
+      if (!lightbox || !lightboxImage || !lightboxCaption) return;
+      lightbox.classList.remove("is-open");
+      lightbox.setAttribute("aria-hidden", "true");
+      lightboxImage.src = "";
+      lightboxImage.alt = "";
+      lightboxCaption.textContent = "";
+    };
+
+    document.querySelectorAll(".media-frame img, .proof-card img").forEach((image) => {
+      image.addEventListener("click", () => {
+        if (!lightbox || !lightboxImage || !lightboxCaption) return;
+        const caption = image.closest(".media-frame")?.querySelector(".media-caption")?.textContent?.trim()
+          || image.closest(".proof-card")?.querySelector("h3")?.textContent?.trim()
+          || image.alt
+          || "";
+        lightboxImage.src = image.currentSrc || image.src;
+        lightboxImage.alt = image.alt || "Full-screen image preview";
+        lightboxCaption.textContent = caption;
+        lightbox.classList.add("is-open");
+        lightbox.setAttribute("aria-hidden", "false");
+      });
+    });
+
+    lightboxClose?.addEventListener("click", closeLightbox);
+    lightbox?.addEventListener("click", (event) => {
+      if (event.target === lightbox) closeLightbox();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeLightbox();
+    });
 
     anime({
       targets: ".hero-card",

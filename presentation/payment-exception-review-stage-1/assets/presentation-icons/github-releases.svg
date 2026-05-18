@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">GitHub Releases icon</title>
+  <desc id="desc">A release tag icon used to represent immutable GitHub release artifacts.</desc>
+  <path d="M9 30.5 30.5 9H52v21.5L30.5 52a7 7 0 0 1-9.9 0L9 40.4a7 7 0 0 1 0-9.9Z" fill="#24292f"/>
+  <circle cx="43" cy="21" r="5" fill="#f6f8fa"/>
+  <path d="M21 33h17M21 40h11" fill="none" stroke="#f6f8fa" stroke-width="4" stroke-linecap="round"/>
+  <path d="M43 21h.1" fill="none" stroke="#24292f" stroke-width="2" stroke-linecap="round"/>
+</svg>

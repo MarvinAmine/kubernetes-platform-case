@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stage 1 Video Thumbnail</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@500;700;800&family=IBM+Plex+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #10211b;
+      --muted: #5e746b;
+      --green: #7ee8b7;
+      --green-deep: #0e6b57;
+      --amber: #ffd166;
+      --orange: #ff8d4d;
+      --blue: #60a5fa;
+      --bg: #f8fcf7;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 16% 20%, rgba(126, 232, 183, 0.36), transparent 28%),
+        radial-gradient(circle at 76% 22%, rgba(96, 165, 250, 0.28), transparent 30%),
+        radial-gradient(circle at 74% 82%, rgba(255, 141, 77, 0.22), transparent 30%),
+        #eef7ef;
+      font-family: "Space Grotesk", sans-serif;
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    .thumbnail {
+      position: relative;
+      width: 1280px;
+      height: 720px;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        linear-gradient(115deg, rgba(255, 255, 250, 0.98) 0%, rgba(236, 251, 242, 0.96) 48%, rgba(230, 241, 255, 0.98) 100%),
+        var(--bg);
+      box-shadow: 0 40px 120px rgba(18, 63, 48, 0.22);
+    }
+
+    .thumbnail::before {
+      content: "";
+      position: absolute;
+      inset: -90px;
+      z-index: -3;
+      background:
+        radial-gradient(circle at 15% 16%, rgba(126, 232, 183, 0.48), transparent 20%),
+        radial-gradient(circle at 52% 6%, rgba(255, 209, 102, 0.32), transparent 20%),
+        radial-gradient(circle at 86% 30%, rgba(96, 165, 250, 0.32), transparent 24%),
+        radial-gradient(circle at 64% 94%, rgba(255, 141, 77, 0.28), transparent 24%);
+      filter: blur(8px);
+    }
+
+    .thumbnail::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background-image:
+        linear-gradient(90deg, rgba(10, 75, 58, 0.06) 1px, transparent 1px),
+        linear-gradient(rgba(10, 75, 58, 0.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(90deg, rgba(0,0,0,0.8), rgba(0,0,0,0.28), rgba(0,0,0,0.78));
+    }
+
+    .scan {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(180deg, transparent, rgba(14, 107, 87, 0.08), transparent);
+      transform: translateY(-100%);
+      animation: scan 5s linear infinite;
+    }
+
+    @keyframes scan {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(4px);
+      opacity: 0.88;
+    }
+
+    .orb.one {
+      width: 460px;
+      height: 460px;
+      right: -120px;
+      top: -150px;
+      background: radial-gradient(circle, rgba(96, 165, 250, 0.3), transparent 64%);
+    }
+
+    .orb.two {
+      width: 520px;
+      height: 520px;
+      left: -190px;
+      bottom: -240px;
+      background: radial-gradient(circle, rgba(126, 232, 183, 0.4), transparent 68%);
+    }
+
+    .topline {
+      position: absolute;
+      top: 34px;
+      left: 46px;
+      right: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 5;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 16px;
+      border: 1px solid rgba(14, 107, 87, 0.18);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.78);
+      color: #0b493c;
+      font: 800 15px/1 "IBM Plex Mono", monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.9) inset, 0 14px 30px rgba(14, 107, 87, 0.12);
+    }
+
+    .badge img {
+      width: 22px;
+      height: 22px;
+    }
+
+    .title-block {
+      position: absolute;
+      left: 52px;
+      top: 105px;
+      width: 690px;
+      z-index: 4;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 12px;
+      margin-bottom: 18px;
+      border-radius: 999px;
+      color: #06130e;
+      background: linear-gradient(90deg, var(--green), var(--amber));
+      font: 900 16px/1 "IBM Plex Mono", monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      box-shadow: 0 18px 38px rgba(126, 232, 183, 0.25);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 92px;
+      line-height: 0.9;
+      letter-spacing: -0.075em;
+      text-transform: uppercase;
+      text-wrap: balance;
+      color: #10211b;
+      filter: drop-shadow(0 18px 40px rgba(14, 107, 87, 0.14));
+    }
+
+    .gradient-text {
+      display: block;
+      color: transparent;
+      background: linear-gradient(90deg, #0d271f 0%, #0e6b57 46%, #d97633 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .subline {
+      margin: 24px 0 0;
+      max-width: 630px;
+      color: #2f463c;
+      font-size: 27px;
+      line-height: 1.12;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+    }
+
+    .subline strong {
+      color: #b45a20;
+    }
+
+    .kpi-stack {
+      position: absolute;
+      left: 52px;
+      bottom: 50px;
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      gap: 14px;
+      z-index: 6;
+    }
+
+    .kpi {
+      min-width: 170px;
+      padding: 16px 18px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(14, 107, 87, 0.13);
+      box-shadow: 0 18px 40px rgba(14, 107, 87, 0.14), inset 0 1px 0 rgba(255,255,255,0.9);
+      backdrop-filter: blur(14px);
+    }
+
+    .kpi:nth-child(1) {
+      background: linear-gradient(180deg, rgba(126, 232, 183, 0.58), rgba(255, 255, 255, 0.86));
+    }
+
+    .kpi:nth-child(2) {
+      background: linear-gradient(180deg, rgba(255, 209, 102, 0.52), rgba(255, 255, 255, 0.86));
+    }
+
+    .kpi:nth-child(3) {
+      background: linear-gradient(180deg, rgba(96, 165, 250, 0.38), rgba(255, 255, 255, 0.86));
+    }
+
+    .kpi-value {
+      display: block;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 35px;
+      line-height: 0.96;
+      letter-spacing: -0.055em;
+      color: #10211b;
+    }
+
+    .kpi-label {
+      display: block;
+      margin-top: 7px;
+      color: #446259;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .visual-stack {
+      position: absolute;
+      right: 42px;
+      top: 105px;
+      width: 500px;
+      height: 520px;
+      z-index: 3;
+    }
+
+    .proof-card {
+      position: absolute;
+      overflow: hidden;
+      border-radius: 26px;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(14, 107, 87, 0.16);
+      box-shadow: 0 30px 80px rgba(14, 107, 87, 0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .proof-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      opacity: 0.98;
+      filter: saturate(1.08) contrast(1.02);
+      background: #ffffff;
+    }
+
+    .proof-card.main {
+      right: 0;
+      top: 52px;
+      width: 470px;
+      height: 255px;
+      transform: rotate(2.5deg);
+    }
+
+    .proof-card.side {
+      left: 0;
+      bottom: 98px;
+      width: 380px;
+      height: 205px;
+      transform: rotate(-4deg);
+    }
+
+    .proof-card.mini {
+      right: 4px;
+      bottom: 22px;
+      width: 330px;
+      height: 175px;
+      transform: rotate(3.5deg);
+    }
+
+    .stamp {
+      position: absolute;
+      right: 290px;
+      top: 0;
+      width: 164px;
+      height: 164px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.28), transparent 24%),
+        linear-gradient(135deg, #7ee8b7, #ffd166);
+      color: #06130e;
+      transform: rotate(-12deg);
+      box-shadow: 0 28px 60px rgba(126, 232, 183, 0.36);
+      font-family: "Archivo Black", sans-serif;
+      text-align: center;
+      text-transform: uppercase;
+      font-size: 29px;
+      line-height: 0.9;
+      letter-spacing: -0.05em;
+    }
+
+    .stamp span {
+      display: block;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+    }
+
+    .tech-strip {
+      position: absolute;
+      right: 42px;
+      bottom: 34px;
+      display: flex;
+      gap: 12px;
+      z-index: 7;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(14,107,87,0.13);
+      box-shadow: 0 18px 42px rgba(14,107,87,0.18);
+    }
+
+    .tech-strip img {
+      width: 33px;
+      height: 33px;
+      padding: 5px;
+      border-radius: 50%;
+      background: rgba(14,107,87,0.06);
+    }
+
+    .floating-icon {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      padding: 8px;
+      border-radius: 17px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(14,107,87,0.12);
+      opacity: 0.48;
+      z-index: 1;
+    }
+
+    .floating-icon:nth-of-type(1) { left: 820px; top: 48px; }
+    .floating-icon:nth-of-type(2) { left: 750px; top: 610px; }
+    .floating-icon:nth-of-type(3) { left: 36px; top: 420px; }
+    .floating-icon:nth-of-type(4) { left: 1110px; top: 330px; }
+
+    .hint {
+      position: fixed;
+      left: 18px;
+      bottom: 14px;
+      color: rgba(16,33,27,0.46);
+      font: 700 12px/1 "IBM Plex Mono", monospace;
+      letter-spacing: 0.02em;
+    }
+  </style>
+</head>
+<body>
+  <main class="thumbnail" aria-label="Stage 1 YouTube thumbnail">
+    <div class="scan"></div>
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+
+    <img class="floating-icon" src="./assets/presentation-icons/kubernetes.svg" alt="">
+    <img class="floating-icon" src="./assets/presentation-icons/terraform.svg" alt="">
+    <img class="floating-icon" src="./assets/presentation-icons/github-actions.svg" alt="">
+    <img class="floating-icon" src="./assets/presentation-icons/grafana.svg" alt="">
+
+    <div class="topline">
+      <div class="badge"><img src="./assets/presentation-icons/azure.svg" alt="">Azure AKS Platform Engineering</div>
+      <div class="badge"><img src="./assets/presentation-icons/github-releases.svg" alt="">Stage 1 v1.0.0</div>
+    </div>
+
+    <section class="title-block">
+      <div class="eyebrow">125h34 documented build</div>
+      <h1>
+        <span>AKS Platform</span>
+        <span class="gradient-text">in 20 min</span>
+      </h1>
+      <p class="subline">
+        Terraform + Kubernetes + GitHub Actions + Helm + Grafana, compressed into one <strong>governed delivery foundation</strong>.
+      </p>
+    </section>
+
+    <section class="kpi-stack" aria-label="key outcomes">
+      <div class="kpi">
+        <span class="kpi-value">20 min</span>
+        <span class="kpi-label">bootstrap</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-value">&lt; CA$4</span>
+        <span class="kpi-label">per month</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-value">1 script</span>
+        <span class="kpi-label">main path</span>
+      </div>
+    </section>
+
+    <section class="visual-stack" aria-label="proof visuals">
+      <div class="stamp"><br><span>delivery proof</span></div>
+      <div class="proof-card main">
+        <img src="./assets/platform_provision_path.png" alt="Platform provision delivery path">
+      </div>
+      <div class="proof-card side">
+        <img src="./assets/infrastructure_bootstrap_path.png" alt="Infrastructure bootstrap delivery path">
+      </div>
+      <div class="proof-card mini">
+        <img src="./assets/app_delivery_path.png" alt="Application delivery path">
+      </div>
+    </section>
+
+    <div class="tech-strip" aria-label="technology stack">
+      <img src="./assets/presentation-icons/azure.svg" alt="Azure">
+      <img src="./assets/presentation-icons/kubernetes.svg" alt="Kubernetes">
+      <img src="./assets/presentation-icons/terraform.svg" alt="Terraform">
+      <img src="./assets/presentation-icons/github-actions.svg" alt="GitHub Actions">
+      <img src="./assets/presentation-icons/docker.svg" alt="Docker">
+      <img src="./assets/presentation-icons/helm.svg" alt="Helm">
+      <img src="./assets/presentation-icons/spring-boot.svg" alt="Spring Boot">
+      <img src="./assets/presentation-icons/postgresql.svg" alt="PostgreSQL">
+      <img src="./assets/presentation-icons/prometheus.svg" alt="Prometheus">
+      <img src="./assets/presentation-icons/grafana.svg" alt="Grafana">
+    </div>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+  <script>
+    anime({
+      targets: ".floating-icon",
+      translateY: () => anime.random(-18, 18),
+      translateX: () => anime.random(-16, 16),
+      rotate: () => anime.random(-9, 9),
+      direction: "alternate",
+      easing: "easeInOutSine",
+      duration: () => anime.random(3200, 5200),
+      loop: true,
+      delay: anime.stagger(180)
+    });
+
+    anime({
+      targets: ".proof-card",
+      translateY: [18, 0],
+      opacity: [0, 1],
+      delay: anime.stagger(120, { start: 260 }),
+      duration: 900,
+      easing: "easeOutExpo"
+    });
+
+    anime({
+      targets: ".kpi",
+      scale: [0.9, 1],
+      opacity: [0, 1],
+      delay: anime.stagger(110, { start: 360 }),
+      duration: 700,
+      easing: "easeOutBack"
+    });
+  </script>
+</body>
+</html>
