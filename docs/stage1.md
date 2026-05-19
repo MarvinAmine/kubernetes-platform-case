@@ -496,7 +496,7 @@ Avoid fake complexity. Keep it narrow, but make it realistic.
 Design Stage 1 so it can later absorb:
 - ArgoCD
 - Vault
-- Okta or Entra ID
+- Okta, Microsoft Entra ID, Active Directory / AD DS, and hybrid identity
 - ELK/Kibana
 - OpenShift
 - OpenShift Service Mesh (Istio-based)

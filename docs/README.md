@@ -236,7 +236,8 @@ An infrastructure team bootstraps the foundation, a platform team provisions a g
 | --- | --- | --- |
 | Inheritance | All Stage 1 technologies | Keep the governed delivery base |
 | Governance | OpenShift, ArgoCD, HashiCorp Vault, Ansible | Stronger platform controls, GitOps discipline, and shared-platform standards |
-| Security and dependency governance | OpenShift, Kubernetes, HashiCorp Vault, Dependabot | Stronger AppSec controls, secret-aware hardening, and automated dependency update visibility |
+| Security and dependency governance | OpenShift, Kubernetes, HashiCorp Vault, Dependabot, Checkmarx, Snyk, Trivy | Stronger AppSec controls, secret-aware hardening, dependency governance, and container security checks |
+| SSDLC validation gates | Checkov, GitHub Secret Scanning, OWASP ZAP baseline, Kyverno | IaC scanning, secret scanning, DAST baseline validation, and Kubernetes policy-as-code guardrails |
 | Deferred next-step mesh | OpenShift Service Mesh (Istio-based) | Enterprise traffic governance and mTLS when the platform grows beyond Stage 2 core scope |
 | Observability | Elasticsearch, Kibana | Deeper observability with logs and security posture |
 | Operations | Linux / Red Hat or Ubuntu | More enterprise-oriented platform operations |
@@ -263,9 +264,10 @@ The platform evolves from controlled delivery to controlled and secured delivery
 | Service mesh | OpenShift Service Mesh (Istio-based) | Enterprise east-west traffic governance, mTLS, and mesh-level policy |
 | Terraform orchestration | Terragrunt | Reduce repeated Terraform structure and coordinate more complex multi-environment stacks |
 | Observability | DataDog, Thanos, Prometheus, Grafana | Advanced observability for SRE / Production Engineering visibility |
-| Identity | Okta | Stronger enterprise identity and access alignment |
+| Identity | Okta, Microsoft Entra ID, Active Directory / AD DS, hybrid identity synchronization, OAuth2/OIDC, MFA, RBAC | Stronger enterprise identity, access, and hybrid identity alignment |
+| Enterprise security integration | CrowdStrike Falcon, Palo Alto Prisma Access, Microsoft Purview DLP, Wiz, Splunk, ServiceNow Security Operations | Broader endpoint, SASE / ZTNA, DLP, cloud security posture, SIEM/SOC, and security workflow integration |
 | Promotion model | local, dev, prod | Multi-environment promotion across hybrid platform boundaries |
-| Operations | AWS EKS, Azure AKS, Okta, Ansible, GitHub Actions | Enterprise-grade operations narrative |
+| Operations | AWS EKS, Azure AKS, Ansible, GitHub Actions | Enterprise-grade operations narrative |
 
 Outcome:
 The platform becomes a broader enterprise platform case aligned with highly regulated environments.

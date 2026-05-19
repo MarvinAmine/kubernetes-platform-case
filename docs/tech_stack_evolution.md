@@ -52,6 +52,13 @@ Evolve the initial delivery foundation into a governed shared platform for multi
 * Helm
 * GitHub Actions
 * Dependabot
+* Checkmarx
+* Snyk
+* Trivy
+* Checkov
+* GitHub Secret Scanning
+* OWASP ZAP baseline
+* Kyverno
 * ArgoCD
 * Terraform
 * HashiCorp Vault
@@ -77,6 +84,11 @@ Evolve the initial delivery foundation into a governed shared platform for multi
 * tenant / namespace isolation
 * secrets centralization
 * dependency update governance
+* SSDLC security gates
+* SAST / SCA / container scanning
+* IaC scanning and secret scanning
+* DAST baseline validation against non-production routes
+* Kubernetes policy-as-code guardrails
 * GitOps-style reconciliation
 * policy-aware platform operations
 * observability for a shared platform
@@ -106,6 +118,16 @@ Show that the platform can evolve into an enterprise-ready model with stronger i
 * Terragrunt
 * HashiCorp Vault
 * Okta
+* Microsoft Entra ID
+* Active Directory / AD DS
+* Hybrid identity synchronization
+* OAuth2 / OIDC / MFA / RBAC
+* CrowdStrike Falcon
+* Palo Alto Prisma Access
+* Microsoft Purview DLP
+* Wiz
+* Splunk
+* ServiceNow Security Operations
 * Docker
 * Java Spring Boot
 * PostgreSQL
@@ -126,7 +148,11 @@ Show that the platform can evolve into an enterprise-ready model with stronger i
 **What this stage is really about:**
 
 * hybrid Azure + AWS credibility
-* enterprise identity and access model
+* enterprise identity, access, and hybrid identity model
+* enterprise security integration model
+* cloud, container, and Kubernetes security posture direction
+* SIEM / SOC integration direction
+* SASE / ZTNA / DLP integration awareness
 * stronger observability layering
 * platform standardization across environments
 * reducing repeated Terraform stack wiring as the platform grows

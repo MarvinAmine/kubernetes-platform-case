@@ -31,7 +31,7 @@ Each stage adds capabilities only when they materially support the next maturity
 - the project stays finishable
 - the story remains coherent for recruiters and hiring managers
 - each stage has a defendable purpose
-- future additions like Vault, ArgoCD, Okta, and hybrid cloud fit into a clear maturity model
+- future additions like Vault, ArgoCD, Okta, Microsoft Entra ID, Active Directory / AD DS, hybrid identity, and hybrid cloud fit into a clear maturity model
 
 ### Negative
 

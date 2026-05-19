@@ -18,6 +18,7 @@ Stage 3 extends that model by introducing:
 - stronger enterprise identity and access patterns
 - broader observability strategy across environments
 - service-mesh traffic governance through **OpenShift Service Mesh (Istio-based)**
+- broader enterprise security integration beyond delivery-path controls
 - stronger portability and standardization considerations
 - a more mature enterprise supportability model
 - full **local / dev / prod** operating model formalization
@@ -31,7 +32,8 @@ This stage is where the broader architecture concerns become explicit, such as:
 - multi-cluster operating patterns across different hosting models
 - enterprise service-mesh patterns with OpenShift Service Mesh (Istio-based)
 - stronger portability and standardization between environments
-- broader enterprise identity integration across environments
+- broader enterprise identity integration across cloud and on-prem environments
+- enterprise security integration patterns across IAM, endpoint, network, SOC, and cloud security posture layers
 - cross-environment observability strategy and wider enterprise visibility
 - long-term metrics retention and global query patterns such as Thanos when
   justified
@@ -59,7 +61,13 @@ At this stage, the platform is no longer presented as a single-cluster implement
 - **GitHub Actions** continues to build and package artifacts in a controlled CI path
 - **ArgoCD** continues to support GitOps-style reconciliation and controlled application delivery
 - **Vault** strengthens centralized secrets governance across broader platform scope
-- **Okta** introduces stronger enterprise identity and access alignment
+- **Okta**, **Microsoft Entra ID**, and **Active Directory / AD DS** anchor enterprise identity, SSO, OAuth2/OIDC federation, MFA, RBAC, and hybrid identity alignment
+- **CrowdStrike Falcon** represents endpoint and workload security integration owned by security operations
+- **Palo Alto Prisma Access** represents SASE / SSE / ZTNA direction for enterprise access governance
+- **Microsoft Purview DLP** represents data loss prevention controls at enterprise scale
+- **Wiz** represents cloud, container, and Kubernetes security posture management
+- **Splunk** represents SIEM integration for broader detection, response, and audit visibility
+- **ServiceNow Security Operations** represents enterprise vulnerability, incident, and risk workflow integration when security findings need operational ownership
 - **Helm** continues to package deployable Kubernetes resources in a reusable and controlled way
 - **Ansible** supports platform standardization and repeatable operational configuration tasks
 - **Prometheus and Grafana** continue to provide Kubernetes-native metrics visibility
@@ -87,7 +95,8 @@ This stage is built to reflect that reality.
 
 - ability to evolve a governed Kubernetes platform into an enterprise-ready hybrid operating model
 - practical understanding of platform design across **Azure**, **AWS**, and **on-prem**
-- stronger maturity in **identity, access, and secrets governance**
+- stronger maturity in **identity, access, hybrid identity, and secrets governance**
+- stronger ability to reason about how platform delivery controls integrate with enterprise security operations, endpoint protection, SASE / ZTNA, DLP, SIEM, and cloud security posture tooling
 - stronger observability judgment across self-managed and enterprise-scale monitoring approaches
 - better judgment about when to keep observability shared at the platform level
   and when regulation actually justifies separate monitoring estates
@@ -107,6 +116,15 @@ This stage signals hands-on exposure and architectural thinking around:
 - Terraform
 - HashiCorp Vault
 - Okta
+- Microsoft Entra ID
+- Active Directory / AD DS
+- hybrid identity synchronization
+- CrowdStrike Falcon
+- Palo Alto Prisma Access
+- Microsoft Purview DLP
+- Wiz
+- Splunk
+- ServiceNow Security Operations
 - Docker
 - Java Spring Boot
 - PostgreSQL
@@ -133,6 +151,7 @@ This stage is also meant to demonstrate:
 - platform supportability mindset
 - resilience and operational consistency thinking
 - identity and access governance awareness
+- enterprise security integration awareness across AppSec, cloud security posture, endpoint, network access, DLP, and SOC layers
 - communication across platform, security, infrastructure, and application concerns
 
 ### Main business value of this stage
@@ -145,6 +164,7 @@ This stage is meant to show a platform that can:
 - reduce operational fragmentation between hosting models
 - improve consistency of governance and support practices
 - strengthen access and secrets control
+- integrate platform delivery evidence with broader enterprise security visibility and response processes
 - improve enterprise-wide observability and incident investigation
 - support long-term platform evolution in regulated organizations
 

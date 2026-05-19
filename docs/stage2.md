@@ -43,6 +43,13 @@ This is the point where the platform starts to look less like a single applicati
 - **ArgoCD** introduces a stronger GitOps-style deployment and reconciliation model
 - **Vault** strengthens secrets centralization and reduces secret exposure inside delivery pipelines
 - **Dependabot** adds dependency update visibility across Maven, GitHub Actions, Docker, and Terraform provider surfaces
+- **Checkmarx** introduces enterprise SAST checks as part of the controlled pull request path
+- **Snyk** strengthens SCA and dependency vulnerability governance
+- **Trivy** adds container image scanning before promotion
+- **Checkov** adds IaC scanning for Terraform and Kubernetes configuration risk
+- **GitHub Secret Scanning** adds repository and pipeline secret exposure detection
+- **OWASP ZAP baseline** adds DAST validation against non-production application routes
+- **Kyverno** adds policy-as-code guardrails for Kubernetes admission and platform standards
 - **Helm** continues to package Kubernetes application resources in a reusable and controlled way
 - **Ansible** supports repeatable platform standardization and operational tasks
 - **Prometheus, Grafana, Elasticsearch, and Kibana** improve platform-wide observability for monitoring, investigation, and operational diagnosis
@@ -56,6 +63,8 @@ Highly regulated organizations usually need more than successful deployments. Th
 - stronger secret management
 - auditable and repeatable delivery behavior
 - automated dependency update signals that still require CI, review, and promotion controls before adoption
+- SSDLC security gates for code, dependencies, containers, infrastructure-as-code, secrets, and runtime baseline scans
+- policy-as-code controls that make platform guardrails explicit and repeatable
 - shared platform standards
 - operational visibility across multiple workloads
 - reduced misconfiguration risk in production
@@ -108,6 +117,8 @@ Those concerns are treated as Stage 3 architecture features.
 - practical understanding of **multi-tenant / multi-team isolation**
 - ability to combine **CI** and **GitOps-style CD** in a more controlled operating model
 - ability to treat dependency updates as governed change requests rather than ad hoc local upgrades
+- ability to add SSDLC security gates without turning the stage into a full enterprise AppSec program
+- ability to separate delivery-path security controls from broader SOC, endpoint, SASE, and enterprise security platform ownership
 - stronger judgment around secrets handling, platform guardrails, and operational supportability
 - stronger enterprise Kubernetes credibility through OpenShift-oriented platform thinking
 
@@ -120,6 +131,13 @@ This stage signals hands-on exposure and architectural thinking around:
 - Terraform
 - GitHub Actions
 - Dependabot
+- Checkmarx
+- Snyk
+- Trivy
+- Checkov
+- GitHub Secret Scanning
+- OWASP ZAP baseline
+- Kyverno
 - ArgoCD
 - Vault
 - Helm
