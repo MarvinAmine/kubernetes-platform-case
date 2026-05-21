@@ -240,10 +240,10 @@
 
     .visual-stack {
       position: absolute;
-      right: 42px;
-      top: 105px;
-      width: 510px;
-      height: 515px;
+      right: 28px;
+      top: 96px;
+      width: 440px;
+      height: 510px;
       z-index: 4;
     }
 
@@ -266,38 +266,39 @@
     }
 
     .path-card.platform {
-      right: 0;
-      top: 40px;
-      width: 476px;
-      height: 252px;
-      transform: rotate(2.5deg);
-      z-index: 3;
+      right: 12px;
+      top: 28px;
+      width: 252px;
+      height: 292px;
+      transform: rotate(3deg);
+      z-index: 4;
     }
 
     .path-card.infra {
-      left: 0;
-      bottom: 95px;
-      width: 380px;
-      height: 200px;
+      left: 58px;
+      bottom: 58px;
+      width: 270px;
+      height: 288px;
       transform: rotate(-4deg);
-      z-index: 3;
+      z-index: 9;
     }
 
     .path-card.app {
-      right: 8px;
-      bottom: 18px;
-      width: 335px;
-      height: 176px;
-      transform: rotate(3.5deg);
-      z-index: 4;
+      position: absolute;
+      left: -117px;
+      top: 24px;
+      width: 240px;
+      height: 282px;
+      transform: translateX(-50%) rotate(1.5deg);
+      z-index: 7;
     }
 
     .stamp {
       position: absolute;
-      right: 295px;
-      top: 0;
-      width: 170px;
-      height: 170px;
+      right: 0;
+      top: 367px;
+      width: 187px;
+      height: 187px;
       display: grid;
       place-items: center;
       border-radius: 50%;
@@ -388,7 +389,7 @@
     </div>
 
     <section class="hero">
-      <div class="eyebrow">125h34 de construction documentée</div>
+      <div class="eyebrow">Plus de 125h de construction documentée</div>
       <h1>
         Derrière votre
         <span class="accent">app bancaire</span>
@@ -421,7 +422,7 @@
       <div class="path-card infra">
         <img src="./assets/infrastructure_bootstrap_path.png" alt="Chemin Infrastructure">
       </div>
-      <div class="path-card app">
+      <div class="path-card app" aria-label="Chemin Application">
         <img src="./assets/app_delivery_path.png" alt="Chemin Application">
       </div>
     </section>
@@ -437,6 +438,7 @@
       <img src="./assets/presentation-icons/prometheus.svg" alt="Prometheus">
       <img src="./assets/presentation-icons/grafana.svg" alt="Grafana">
     </div>
+
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
