@@ -2,11 +2,28 @@
 
 [MAIN DOC: Stage 1 of 3 - Governed AKS delivery foundation for an internal payment review service ->](./README.md)
 
+[IMPLEMENTATION PLAN: Stage 2 progress tracker ->](./stage2-implementation-plan.md)
+
 Stage 2 evolves the Stage 1 delivery foundation into a governed shared platform model designed for enterprise Kubernetes operations in highly regulated environments.
 
 The main objective is no longer only to prove that one internal service can be deployed safely. It is to demonstrate how a platform can support multiple teams, multiple environments, stronger change controls, centralized secrets handling, and safer promotion practices while keeping delivery repeatable and operationally supportable.
 
 This stage introduces enterprise Kubernetes operational features through OpenShift, while keeping the delivery path aligned with platform engineering responsibilities commonly expected in regulated organizations. The focus is on governance, isolation, promotion discipline, and controlled operations rather than only raw deployment capability.
+
+Stage 2 proof: one governed service becomes a reusable shared platform with
+controlled promotion, centralized secrets, policy guardrails, security gates,
+and operational visibility for multiple teams.
+
+### Main focus areas
+
+- **Platform governance:** OpenShift, stronger project boundaries, RBAC conventions, and shared standards
+- **GitOps delivery:** ArgoCD reconciliation instead of direct deployment-only paths
+- **Secrets governance:** Vault integration, reduced secret exposure, and stronger runtime secret patterns
+- **Security gates:** SAST, SCA, container, IaC, secret, DAST, and policy-as-code checks
+- **Dependency governance:** controlled update visibility through reviewed pull requests
+- **Operations:** shared observability, log investigation, and platform supportability
+- **Environment promotion:** controlled **local -> dev -> staging -> prod** movement with approval, staging E2E evidence, and rollback discipline
+- **Multi-team readiness:** explicit Infrastructure, Platform, Security/IAM, Application, and SRE / Production Engineering boundaries
 
 For the tradeoff behind using OpenShift here, see
 [openshift-tradeoffs.md](./openshift-tradeoffs.md).
@@ -16,7 +33,7 @@ For the tradeoff behind using OpenShift here, see
 Stage 1 proved a governed delivery base for a single stateful internal service.  
 Stage 2 extends that base into a shared platform model by introducing:
 
-- stronger environment separation between **dev** and **prod**
+- stronger environment separation across **dev**, **staging**, and **prod**
 - multi-tenant / multi-team isolation through platform boundaries
 - GitOps-style reconciliation for safer and more controlled deployments
 - centralized secrets handling
@@ -39,6 +56,7 @@ This is the point where the platform starts to look less like a single applicati
 
 - **OpenShift** is used to represent enterprise Kubernetes operational features for governed shared platforms
 - **Terraform** continues to manage repeatable infrastructure and platform configuration
+- **Terragrunt** is introduced to reduce repeated Terraform backend, state-key, and environment wiring across non-prod and prod estates
 - **GitHub Actions** continues to build, package, and publish application artifacts
 - **ArgoCD** introduces a stronger GitOps-style deployment and reconciliation model
 - **Vault** strengthens secrets centralization and reduces secret exposure inside delivery pipelines
@@ -53,6 +71,7 @@ This is the point where the platform starts to look less like a single applicati
 - **Helm** continues to package Kubernetes application resources in a reusable and controlled way
 - **Ansible** supports repeatable platform standardization and operational tasks
 - **Prometheus, Grafana, Elasticsearch, and Kibana** improve platform-wide observability for monitoring, investigation, and operational diagnosis
+- **Promotion controls** formalize PR gates, staging validation, production approval, rollback readiness, and release communication before production exposure
 
 ### Why this stage matters in regulated environments
 
@@ -65,6 +84,8 @@ Highly regulated organizations usually need more than successful deployments. Th
 - automated dependency update signals that still require CI, review, and promotion controls before adoption
 - SSDLC security gates for code, dependencies, containers, infrastructure-as-code, secrets, and runtime baseline scans
 - policy-as-code controls that make platform guardrails explicit and repeatable
+- promotion evidence across **dev**, **staging**, and **production**
+- human approval points for critical promotions without bypassing automated controls
 - shared platform standards
 - operational visibility across multiple workloads
 - reduced misconfiguration risk in production
@@ -83,6 +104,7 @@ such as:
 - policy-aware shared-platform operations
 - stronger GitOps alignment for governed promotions
 - platform guardrails that improve supportability in regulated environments
+- release channels that make QA, PO, application, platform, and operations decisions traceable
 
 This is also the stage where the earlier Stage 1 internal access direction can
 become more concrete through work such as:
@@ -113,11 +135,13 @@ Those concerns are treated as Stage 3 architecture features.
 ### What this stage proves
 
 - ability to evolve a Kubernetes delivery foundation into a governed shared platform
-- practical understanding of **dev / prod separation**
+- practical understanding of **dev / staging / prod separation**
 - practical understanding of **multi-tenant / multi-team isolation**
 - ability to combine **CI** and **GitOps-style CD** in a more controlled operating model
+- ability to design governed promotion from pull request to production
 - ability to treat dependency updates as governed change requests rather than ad hoc local upgrades
 - ability to add SSDLC security gates without turning the stage into a full enterprise AppSec program
+- ability to combine automated gates with staging validation, production approval, and rollback discipline
 - ability to separate delivery-path security controls from broader SOC, endpoint, SASE, and enterprise security platform ownership
 - stronger judgment around secrets handling, platform guardrails, and operational supportability
 - stronger enterprise Kubernetes credibility through OpenShift-oriented platform thinking
@@ -129,6 +153,7 @@ This stage signals hands-on exposure and architectural thinking around:
 - OpenShift
 - Kubernetes
 - Terraform
+- Terragrunt
 - GitHub Actions
 - Dependabot
 - Checkmarx
@@ -140,6 +165,8 @@ This stage signals hands-on exposure and architectural thinking around:
 - Kyverno
 - ArgoCD
 - Vault
+- QA / PO approval gates
+- staging validation, production approval, and rollback runbooks
 - Helm
 - Docker
 - PostgreSQL
@@ -176,6 +203,7 @@ This stage is meant to show a platform that can:
 - reduce secret handling risk
 - reduce dependency drift across application, CI/CD, container, and infrastructure layers
 - improve promotion safety between environments
+- reduce production release ambiguity through explicit approval, communication, and rollback paths
 - improve shared-platform observability
 - increase confidence in operating internal services under stricter governance constraints
 

@@ -15,6 +15,9 @@ Expected structure in S3:
 
 - `payment-exception-review-stage-1/index.html`
 - `payment-exception-review-stage-1/assets/...`
-- `payment-exception-review-stage-1/troubleshooting/...`
+- `payment-exception-review-stage-1/stage1/index.html`
+- `payment-exception-review-stage-1/stage1/troubleshooting/...`
+- `payment-exception-review-stage-1/stage2/index.html`
 
-This folder is self-contained for static website hosting.
+This folder is self-contained for static website hosting, with shared assets and
+separate Stage 1 and Stage 2 presentation entrypoints.

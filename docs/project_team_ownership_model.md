@@ -190,8 +190,11 @@ Make these teams more explicit:
 - Platform team
 - Application team
 - Security and IAM team
+- SRE / Production Engineering
 
-This matches the stage where governance, secrets, identity, and stronger controls become part of the platform story.
+This matches the stage where governance, secrets, identity, controlled
+promotion, staging E2E evidence, and rollback readiness become part of the
+platform story.
 
 ### Stage 3
 
@@ -239,8 +242,8 @@ They answer two different questions:
 To stay credible without overcomplicating the repo:
 
 - **Stage 1 should explicitly model Infrastructure, Platform, and Application**
-- **Stage 2 should bring Security/IAM into the operating model**
-- **Stage 3 should make SRE/Production Engineering visible**
+- **Stage 2 should bring Security/IAM and SRE/Production Engineering into the operating model**
+- **Stage 3 should extend SRE/Production Engineering toward broader enterprise readiness**
 
 That progression is believable for a regulated Montreal organization and avoids pretending that every specialized enterprise team is already fully active in Stage 1.
 

@@ -22,6 +22,7 @@ Stage 3 extends that model by introducing:
 - stronger portability and standardization considerations
 - a more mature enterprise supportability model
 - full **local / dev / prod** operating model formalization
+- compliance-aware architecture foundations without turning Stage 3 into a formal compliance program
 
 ### Specific multi-cloud and cross-environment features emphasized in Stage 3
 
@@ -37,9 +38,27 @@ This stage is where the broader architecture concerns become explicit, such as:
 - cross-environment observability strategy and wider enterprise visibility
 - long-term metrics retention and global query patterns such as Thanos when
   justified
+- certification-environment direction, audit-friendly evidence, and control-mapping foundations for later compliance work
 
 These are intentionally broader than the Stage 2 OpenShift-focused platform
 governance features.
+
+### Compliance maturity boundary
+
+Stage 3 makes the platform **compliance-aware**, not compliance-certified.
+
+This stage can introduce:
+
+- a future **certification** environment direction
+- deployment evidence and approval history
+- audit-friendly release traceability
+- segregation-of-duties thinking
+- SIEM / SOC / ITSM integration direction
+- control-mapping notes for ISO, NIST, SOC 2, PCI DSS, and ISO/IEC 20000
+
+Formal compliance implementation is intentionally deferred to a later stage.
+That later scope would cover control owners, evidence lifecycle, risk register,
+audit-ready reporting, formal ITSM processes, and framework-specific mappings.
 
 ### Operating model in this stage
 
@@ -101,6 +120,7 @@ This stage is built to reflect that reality.
 - better judgment about when to keep observability shared at the platform level
   and when regulation actually justifies separate monitoring estates
 - stronger ability to reason about portability, standardization, and provider-specific trade-offs
+- ability to separate compliance-aware architecture from a full compliance program
 - stronger enterprise architecture credibility for regulated organizations
 
 ### Main technical signals for hiring managers
@@ -152,6 +172,7 @@ This stage is also meant to demonstrate:
 - resilience and operational consistency thinking
 - identity and access governance awareness
 - enterprise security integration awareness across AppSec, cloud security posture, endpoint, network access, DLP, and SOC layers
+- compliance-scope judgment without overstating certification readiness
 - communication across platform, security, infrastructure, and application concerns
 
 ### Main business value of this stage

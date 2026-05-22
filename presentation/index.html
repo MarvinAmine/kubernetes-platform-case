@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Exception Review Presentation Hub</title>
+  <meta name="description" content="Presentation hub for the Payment Exception Review platform case: Stage 1 governed AKS delivery foundation and Stage 2 governed shared-platform planning.">
+  <meta name="author" content="Marvin Meite">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://marvinmeite.cloud/payment-exception-review-stage-1/">
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Marvin Meite">
+  <meta property="og:title" content="Payment Exception Review Presentation Hub">
+  <meta property="og:description" content="Two-stage presentation hub: Stage 1 delivery proof and Stage 2 AI-assisted shared-platform planning.">
+  <meta property="og:url" content="https://marvinmeite.cloud/payment-exception-review-stage-1/">
+  <meta property="og:image" content="https://marvinmeite.cloud/payment-exception-review-stage-1/assets/presentation_thumbnail.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Payment Exception Review Presentation Hub">
+  <meta name="twitter:description" content="Stage 1 delivery proof and Stage 2 planning strategy for a governed platform case.">
+  <meta name="twitter:image" content="https://marvinmeite.cloud/payment-exception-review-stage-1/assets/presentation_thumbnail.png">
+  <script src="https://t.contentsquare.net/uxa/63a805dc90009.js"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PHPQWGRP9V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-PHPQWGRP9V');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5efe6;
+      --ink: #111827;
+      --muted: #5b6470;
+      --line: rgba(17, 24, 39, 0.1);
+      --card: rgba(255, 255, 255, 0.76);
+      --card-strong: rgba(255, 255, 255, 0.92);
+      --green: #0f766e;
+      --clay: #9a3412;
+      --gold: #b7791f;
+      --shadow: 0 28px 80px rgba(15, 23, 42, 0.12);
+      --radius: 28px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Space Grotesk", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.14), transparent 24%),
+        radial-gradient(circle at top right, rgba(154, 52, 18, 0.1), transparent 28%),
+        linear-gradient(180deg, #fbf7f1 0%, #f1e7da 55%, #eadfce 100%);
+    }
+
+    a { color: inherit; }
+
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 28px 22px 90px;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(15, 118, 110, 0.1);
+      color: var(--green);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 18px 0 16px;
+      font-size: clamp(50px, 8vw, 86px);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      max-width: 8ch;
+    }
+
+    .lead {
+      max-width: 46ch;
+      color: var(--muted);
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.6;
+    }
+
+    .rail {
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      padding: 24px;
+      border-radius: var(--radius);
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.72);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--green), var(--gold), var(--clay));
+      opacity: 0.92;
+    }
+
+    .pill {
+      display: inline-flex;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(17, 24, 39, 0.06);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 30px;
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+    }
+
+    .card p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 170px;
+      padding: 13px 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 30px rgba(15, 23, 42, 0.1);
+    }
+
+    .button.primary {
+      background: #111827;
+      color: white;
+    }
+
+    .button.secondary {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--line);
+      color: #111827;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .meta-block {
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(17, 24, 39, 0.04);
+      border: 1px solid rgba(17, 24, 39, 0.06);
+    }
+
+    .meta-block span {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .meta-block strong {
+      font-size: 22px;
+      letter-spacing: -0.04em;
+    }
+
+    .stage-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .stage-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 18px;
+      border-radius: 22px;
+      background: var(--card-strong);
+      border: 1px solid rgba(17, 24, 39, 0.08);
+    }
+
+    .stage-index {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      background: rgba(15, 118, 110, 0.1);
+      color: var(--green);
+    }
+
+    .stage-row small {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .stage-link {
+      color: var(--clay);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding-top: 32px;
+      }
+
+      h1 {
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .meta {
+        grid-template-columns: 1fr;
+      }
+
+      .stage-row {
+        grid-template-columns: 1fr;
+        justify-items: start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Presentation Hub</div>
+        <h1>One case, two stages.</h1>
+        <p class="lead">
+          Stage 1 proves the governed AKS delivery foundation. Stage 2 starts the next layer:
+          shared-platform governance, AI-assisted planning, and execution sequencing before tool sprawl.
+        </p>
+        <div class="meta">
+          <div class="meta-block">
+            <span>Stage 1</span>
+            <strong>Delivered</strong>
+          </div>
+          <div class="meta-block">
+            <span>Stage 2</span>
+            <strong>Planning</strong>
+          </div>
+          <div class="meta-block">
+            <span>Shared assets</span>
+            <strong>Centralized</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="rail">
+        <article class="card">
+          <div class="pill">Stage 1</div>
+          <h2>Governed AKS delivery foundation</h2>
+          <p>
+            Delivery proof for Terraform, AKS, Helm, GitHub Actions, Spring Boot, PostgreSQL,
+            Prometheus, Grafana, release evidence, and troubleshooting scenarios.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="./stage1/index.html">Open Stage 1 deck</a>
+            <a class="button secondary" href="./stage1/troubleshooting/index.html">Open troubleshooting</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="pill">Stage 2</div>
+          <h2>AI-assisted shared-platform planning</h2>
+          <p>
+            Start from planning discipline: environment model, workflow evolution, promotion controls,
+            and tool sequencing before OpenShift, ArgoCD, Vault, and policy guardrails are implemented.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="./stage2/index.html">Open Stage 2 deck</a>
+          </div>
+        </article>
+
+        <div class="stage-list">
+          <div class="stage-row">
+            <div class="stage-index">1</div>
+            <div>
+              <strong>Keep Stage 1 replayable</strong>
+              <small>Versioned proof remains intact while `main` evolves.</small>
+            </div>
+            <a class="stage-link" href="./stage1/index.html">View</a>
+          </div>
+          <div class="stage-row">
+            <div class="stage-index">2</div>
+            <div>
+              <strong>Plan before tooling</strong>
+              <small>Stage 2 starts with governance, environment modeling, and workflow boundaries.</small>
+            </div>
+            <a class="stage-link" href="./stage2/index.html">View</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

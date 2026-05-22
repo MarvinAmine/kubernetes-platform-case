@@ -193,6 +193,9 @@ GitHub Actions workflow landscape:
 For root-level platform-case decisions, see
 [Architecture Decision Records](./adrs/README.md).
 
+For staged governance directives, see
+[Governance Documentation](./governance/README.md).
+
 For the versioned Stage 1 snapshot, Git tag convention, GitHub Release process,
 and hosted presentation link, see [release-management.md](./release-management.md).
 
@@ -235,15 +238,16 @@ An infrastructure team bootstraps the foundation, a platform team provisions a g
 | Additive scope | Technologies | Purpose |
 | --- | --- | --- |
 | Inheritance | All Stage 1 technologies | Keep the governed delivery base |
-| Governance | OpenShift, ArgoCD, HashiCorp Vault, Ansible | Stronger platform controls, GitOps discipline, and shared-platform standards |
+| Governance | OpenShift, ArgoCD, Terragrunt, HashiCorp Vault, Ansible | Stronger platform controls, GitOps discipline, multi-environment Terraform wiring, and shared-platform standards |
 | Security and dependency governance | OpenShift, Kubernetes, HashiCorp Vault, Dependabot, Checkmarx, Snyk, Trivy | Stronger AppSec controls, secret-aware hardening, dependency governance, and container security checks |
 | SSDLC validation gates | Checkov, GitHub Secret Scanning, OWASP ZAP baseline, Kyverno | IaC scanning, secret scanning, DAST baseline validation, and Kubernetes policy-as-code guardrails |
+| Promotion controls | PR gates, staging E2E, production approval, rollback runbooks, release communication | Controlled movement from dev to staging and production |
 | Deferred next-step mesh | OpenShift Service Mesh (Istio-based) | Enterprise traffic governance and mTLS when the platform grows beyond Stage 2 core scope |
 | Observability | Elasticsearch, Kibana | Deeper observability with logs and security posture |
 | Operations | Linux / Red Hat or Ubuntu | More enterprise-oriented platform operations |
 
 Outcome:
-The platform evolves from controlled delivery to controlled and secured delivery, with Security, IAM, and dependency governance becoming explicit parts of the operating model.
+One governed service becomes a reusable shared platform with controlled promotion, approval gates, rollback discipline, centralized secrets, policy guardrails, security gates, and operational visibility for multiple teams.
 
 <p align="left">
   <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/openshift.svg" alt="OpenShift" width="18" />
@@ -266,11 +270,12 @@ The platform evolves from controlled delivery to controlled and secured delivery
 | Observability | DataDog, Thanos, Prometheus, Grafana | Advanced observability for SRE / Production Engineering visibility |
 | Identity | Okta, Microsoft Entra ID, Active Directory / AD DS, hybrid identity synchronization, OAuth2/OIDC, MFA, RBAC | Stronger enterprise identity, access, and hybrid identity alignment |
 | Enterprise security integration | CrowdStrike Falcon, Palo Alto Prisma Access, Microsoft Purview DLP, Wiz, Splunk, ServiceNow Security Operations | Broader endpoint, SASE / ZTNA, DLP, cloud security posture, SIEM/SOC, and security workflow integration |
-| Promotion model | local, dev, prod | Multi-environment promotion across hybrid platform boundaries |
+| Promotion model | local, dev, staging, certification, prod | Multi-environment promotion across hybrid platform boundaries |
+| Compliance direction | ISO, NIST, SOC 2, PCI DSS, ISO/IEC 20000 control-mapping notes | Compliance-aware architecture foundation, not a formal compliance program |
 | Operations | AWS EKS, Azure AKS, Ansible, GitHub Actions | Enterprise-grade operations narrative |
 
 Outcome:
-The platform becomes a broader enterprise platform case aligned with highly regulated environments.
+The platform becomes a broader enterprise platform case aligned with highly regulated environments. Stage 3 prepares compliance evidence and control-mapping direction; formal compliance implementation belongs to a later stage.
 
 <p align="left">
   <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/aws.svg" alt="AWS" width="18" />
@@ -340,6 +345,20 @@ https://marvinmeite.cloud/payment-exception-review-stage-1/
 ![Azure infrastructure monthly FinOps forecast](../assets/azure_infra_finops_4_dollards_per_month.png)
 
 ## 0. HOW TO USE IT?
+
+### Replay Stage 1
+
+`main` continues to evolve toward later stages. To replay Stage 1 exactly as
+released, use the Stage 1 Git tag:
+
+```bash
+git clone https://github.com/MarvinAmine/kubernetes-platform-case.git
+cd kubernetes-platform-case
+git checkout stage1-v1.0.0
+```
+
+For the release model, patch tags, and future stage tags, see
+[release-management.md](./release-management.md).
 
 ### 0.1 Setup the environment file
 

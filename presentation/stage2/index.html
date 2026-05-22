@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stage 2 - AI-Assisted Shared Platform Planning</title>
+  <meta name="description" content="Stage 2 presentation for governed shared-platform planning: AI-assisted execution strategy, environment model, workflow evolution, and platform roadmap.">
+  <meta name="author" content="Marvin Meite">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://marvinmeite.cloud/payment-exception-review-stage-1/stage2/">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Marvin Meite">
+  <meta property="og:title" content="Stage 2 - AI-Assisted Shared Platform Planning">
+  <meta property="og:description" content="Stage 2 planning deck: AI collaboration strategy, environment boundaries, workflow evolution, and governed shared-platform execution order.">
+  <meta property="og:url" content="https://marvinmeite.cloud/payment-exception-review-stage-1/stage2/">
+  <meta property="og:image" content="https://marvinmeite.cloud/payment-exception-review-stage-1/assets/presentation_thumbnail.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Stage 2 - AI-Assisted Shared Platform Planning">
+  <meta name="twitter:description" content="AI-assisted planning before tooling: Stage 2 shared-platform roadmap.">
+  <meta name="twitter:image" content="https://marvinmeite.cloud/payment-exception-review-stage-1/assets/presentation_thumbnail.png">
+  <script src="https://t.contentsquare.net/uxa/63a805dc90009.js"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PHPQWGRP9V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-PHPQWGRP9V');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7efe4;
+      --ink: #111827;
+      --muted: #5f6875;
+      --line: rgba(17, 24, 39, 0.09);
+      --card: rgba(255, 255, 255, 0.78);
+      --card-strong: rgba(255, 255, 255, 0.92);
+      --green: #0f766e;
+      --green-soft: rgba(15, 118, 110, 0.12);
+      --blue: #1d4ed8;
+      --blue-soft: rgba(29, 78, 216, 0.12);
+      --clay: #9a3412;
+      --clay-soft: rgba(154, 52, 18, 0.1);
+      --gold: #b7791f;
+      --shadow: 0 28px 80px rgba(15, 23, 42, 0.1);
+      --radius-xl: 30px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --max: 1220px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Space Grotesk", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.16), transparent 23%),
+        radial-gradient(circle at top right, rgba(29, 78, 216, 0.11), transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(183, 121, 31, 0.08), transparent 34%),
+        linear-gradient(180deg, #fffaf4 0%, #f4eadc 52%, #eadfce 100%);
+      min-height: 100vh;
+    }
+
+    a { color: inherit; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 250, 244, 0.74);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+    }
+
+    .topbar-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .brand {
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .nav a {
+      text-decoration: none;
+      font-size: 13px;
+      color: var(--muted);
+      padding: 10px 14px;
+      border-radius: 999px;
+      transition: transform 180ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    .nav a:hover {
+      transform: translateY(-1px);
+      background: rgba(15, 118, 110, 0.08);
+      color: var(--green);
+    }
+
+    main {
+      padding: 28px 22px 90px;
+    }
+
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+
+    .hero {
+      min-height: calc(100vh - 88px);
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 26px;
+      align-items: center;
+      padding: 26px 0 12px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 18px 0 16px;
+      font-size: clamp(50px, 8vw, 92px);
+      line-height: 0.93;
+      letter-spacing: -0.06em;
+      max-width: 8.5ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 48ch;
+      color: var(--muted);
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.6;
+    }
+
+    .hero-panel {
+      position: relative;
+      padding: 28px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.76));
+      border: 1px solid rgba(255,255,255,0.72);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--green), var(--blue), var(--clay));
+    }
+
+    .stack {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .stack-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(17, 24, 39, 0.04);
+      border: 1px solid rgba(17, 24, 39, 0.05);
+    }
+
+    .stack-index {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .stack-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 16px;
+    }
+
+    .stack-item span {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .section {
+      margin-top: 28px;
+      padding: 30px;
+      border-radius: var(--radius-xl);
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.68);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .section h2 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 48px);
+      letter-spacing: -0.05em;
+      line-height: 0.98;
+    }
+
+    .section-head p {
+      margin: 0;
+      max-width: 45ch;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .principles,
+    .domains,
+    .constraints {
+      display: grid;
+      gap: 16px;
+    }
+
+    .principles {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .principle,
+    .domain,
+    .constraint {
+      padding: 22px;
+      border-radius: var(--radius-lg);
+      background: var(--card-strong);
+      border: 1px solid var(--line);
+    }
+
+    .principle .kicker,
+    .domain .kicker,
+    .constraint .kicker {
+      display: inline-flex;
+      margin-bottom: 10px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      background: rgba(17,24,39,0.06);
+      color: var(--muted);
+    }
+
+    .principle h3,
+    .domain h3,
+    .constraint h3 {
+      margin: 0 0 10px;
+      font-size: 24px;
+      letter-spacing: -0.04em;
+    }
+
+    .principle p,
+    .domain p,
+    .constraint p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .tracker {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 22px;
+      background: var(--card-strong);
+      border: 1px solid var(--line);
+    }
+
+    .tracker th,
+    .tracker td {
+      padding: 16px 18px;
+      text-align: left;
+      border-bottom: 1px solid rgba(17,24,39,0.06);
+    }
+
+    .tracker th {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      background: rgba(17,24,39,0.04);
+    }
+
+    .tracker tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .status {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .status.progress { background: var(--blue-soft); color: var(--blue); }
+    .status.pending { background: var(--clay-soft); color: var(--clay); }
+
+    .constraints {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .domains {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .domain ul {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .footer-note {
+      margin-top: 28px;
+      padding: 22px 24px;
+      border-radius: var(--radius-lg);
+      background: #111827;
+      color: rgba(255,255,255,0.86);
+    }
+
+    .footer-note strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 18px;
+      color: white;
+      letter-spacing: -0.03em;
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      h1 {
+        max-width: none;
+      }
+
+      .section-head {
+        display: block;
+      }
+
+      .section-head p {
+        margin-top: 12px;
+      }
+
+      .principles,
+      .domains,
+      .constraints {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .topbar-inner {
+        display: block;
+      }
+
+      .nav {
+        margin-top: 12px;
+      }
+
+      .section,
+      .hero-panel {
+        padding: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">Stage 2 / AI-Assisted Planning</div>
+      <nav class="nav">
+        <a href="../index.html">Hub</a>
+        <a href="../stage1/index.html">Stage 1</a>
+        <a href="#strategy">AI strategy</a>
+        <a href="#tracker">Execution plan</a>
+        <a href="#domains">Domain changes</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Before OpenShift, ArgoCD, Vault, and policy gates</div>
+          <h1>Plan first. Tool later.</h1>
+          <p>
+            Stage 2 starts with a planning discipline, not a tooling rush. The operating model,
+            environments, workflow boundaries, and promotion rules are locked before the shared platform grows.
+          </p>
+        </div>
+
+        <aside class="hero-panel">
+          <div class="eyebrow">AI working contract</div>
+          <div class="stack">
+            <div class="stack-item">
+              <div class="stack-index">1</div>
+              <div>
+                <strong>Constrain the problem first</strong>
+                <span>Use governance, stage boundaries, and folder ownership before selecting tools.</span>
+              </div>
+            </div>
+            <div class="stack-item">
+              <div class="stack-index">2</div>
+              <div>
+                <strong>Sequence the work explicitly</strong>
+                <span>Environment model and workflow design come before multi-environment implementation.</span>
+              </div>
+            </div>
+            <div class="stack-item">
+              <div class="stack-index">3</div>
+              <div>
+                <strong>Preserve what already works</strong>
+                <span>Stage 1 stays replayable through tags and releases while `main` evolves toward Stage 2.</span>
+              </div>
+            </div>
+            <div class="stack-item">
+              <div class="stack-index">4</div>
+              <div>
+                <strong>Touch one boundary at a time</strong>
+                <span>Docs, governance, infrastructure, platform, application, reliability, workflows.</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section id="strategy" class="section">
+        <div class="section-head">
+          <h2>How AI is used here</h2>
+          <p>
+            The role of AI is not to improvise architecture. It is to accelerate a constrained sequence,
+            document tradeoffs, and keep the repo evolution readable for newcomers.
+          </p>
+        </div>
+        <div class="principles">
+          <article class="principle">
+            <div class="kicker">Strategy</div>
+            <h3>Document before implementing</h3>
+            <p>Architecture choices, team ownership, and promotion rules are written first so later code changes follow a visible contract.</p>
+          </article>
+          <article class="principle">
+            <div class="kicker">Scope</div>
+            <h3>Keep Stage 2 narrow</h3>
+            <p>Stage 2 proves a governed shared platform. Certification environments, progressive traffic, and formal compliance stay deferred.</p>
+          </article>
+          <article class="principle">
+            <div class="kicker">Control</div>
+            <h3>Avoid tool-first drift</h3>
+            <p>OpenShift, ArgoCD, Vault, and security gates only land after the environment and workflow model are stable enough to host them.</p>
+          </article>
+          <article class="principle">
+            <div class="kicker">Readability</div>
+            <h3>Preserve newcomer comprehension</h3>
+            <p>Stage 1 remains replayable, `main` stays current, and each documentation layer says exactly what changed and why.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="tracker" class="section">
+        <div class="section-head">
+          <h2>Execution tracker</h2>
+          <p>
+            The work is intentionally ordered. Each step reduces ambiguity for the next one instead of piling tools onto an unstable model.
+          </p>
+        </div>
+        <table class="tracker">
+          <thead>
+            <tr>
+              <th>Step</th>
+              <th>Scope</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Create the Stage 2 implementation plan</td>
+              <td><span class="status progress">In progress</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Define the environment model</td>
+              <td><span class="status pending">Pending</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Refactor configuration for multi-environment support</td>
+              <td><span class="status pending">Pending</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Add the promotion workflow design</td>
+              <td><span class="status pending">Pending</span></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Add Stage 2 tools after the model is stable</td>
+              <td><span class="status pending">Pending</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Constraints already locked</h2>
+          <p>
+            These are not optional design ideas anymore. They are the constraints the implementation must consume.
+          </p>
+        </div>
+        <div class="constraints">
+          <article class="constraint">
+            <div class="kicker">Environment model</div>
+            <h3>Local -> dev -> staging -> prod</h3>
+            <p>Certification is reserved for Stage 3. Stage 2 focuses on controlled promotion and shared-platform governance.</p>
+          </article>
+          <article class="constraint">
+            <div class="kicker">Cluster model</div>
+            <h3>Two-cluster boundary</h3>
+            <p>One non-prod cluster for dev and staging, one isolated prod cluster for production.</p>
+          </article>
+          <article class="constraint">
+            <div class="kicker">Workflow rule</div>
+            <h3>Stage 1 stays versioned</h3>
+            <p>Stage 1 remains replayable through the release tag. `main` evolves to Stage 2 instead of running two active workflow generations.</p>
+          </article>
+          <article class="constraint">
+            <div class="kicker">Promotion rule</div>
+            <h3>Same image across environments</h3>
+            <p>Build once, publish once, promote the same immutable tag or digest through dev, staging, and prod.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="domains" class="section">
+        <div class="section-head">
+          <h2>What changes by domain</h2>
+          <p>
+            Stage 2 is not one giant refactor. Each area changes for a specific reason tied to the shared-platform model.
+          </p>
+        </div>
+        <div class="domains">
+          <article class="domain">
+            <div class="kicker">Infrastructure</div>
+            <h3>Multi-environment foundation</h3>
+            <p>Introduce environment-aware inputs, Terragrunt wiring, state separation, naming, tags, and non-prod vs prod cluster boundaries.</p>
+            <ul>
+              <li>`dev`, `staging`, `prod` inputs</li>
+              <li>Terragrunt for repeated environment wiring</li>
+              <li>two-cluster Azure foundation</li>
+            </ul>
+          </article>
+          <article class="domain">
+            <div class="kicker">Platform</div>
+            <h3>Shared runtime controls</h3>
+            <p>Evolve Kubernetes resources toward stronger namespace, policy, observability, GitOps, and secrets governance.</p>
+            <ul>
+              <li>environment-aware namespaces and RBAC</li>
+              <li>Kyverno and GitOps direction</li>
+              <li>shared observability hardening</li>
+            </ul>
+          </article>
+          <article class="domain">
+            <div class="kicker">Application</div>
+            <h3>Promotion-safe packaging</h3>
+            <p>Keep one image, add environment-aware values, and make deployment behavior promotion-safe across dev, staging, and prod.</p>
+            <ul>
+              <li>Helm values per environment</li>
+              <li>immutable image promotion</li>
+              <li>stable runtime contracts</li>
+            </ul>
+          </article>
+          <article class="domain">
+            <div class="kicker">Reliability</div>
+            <h3>Validation and rollback evidence</h3>
+            <p>Stage 2 makes staging validation and rollback readiness explicit instead of assuming they exist implicitly.</p>
+            <ul>
+              <li>Postman + Newman staging E2E</li>
+              <li>rollback runbooks</li>
+              <li>service-level interpretation</li>
+            </ul>
+          </article>
+          <article class="domain">
+            <div class="kicker">Workflows</div>
+            <h3>Boundaries before automation sprawl</h3>
+            <p>GitHub Actions stay flat in `.github/workflows/`, but ownership and promotion logic become environment-aware.</p>
+            <ul>
+              <li>team-prefixed workflow families</li>
+              <li>prod approval in GitHub Environments</li>
+              <li>staging evidence before prod</li>
+            </ul>
+          </article>
+          <article class="domain">
+            <div class="kicker">Docs and governance</div>
+            <h3>Readable evolution path</h3>
+            <p>Docs make the progression legible: Stage 1 proof, Stage 2 constraints, and later Stage 3 expansion.</p>
+            <ul>
+              <li>governance before tooling</li>
+              <li>implementation plan before code churn</li>
+              <li>clear stage boundaries</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <div class="footer-note">
+        <strong>Stage 2 thesis</strong>
+        The point is not to stack enterprise tools. The point is to prove the planning discipline that makes those tools defensible once they arrive.
+      </div>
+    </div>
+  </main>
+</body>
+</html>

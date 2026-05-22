@@ -61,6 +61,7 @@ Evolve the initial delivery foundation into a governed shared platform for multi
 * Kyverno
 * ArgoCD
 * Terraform
+* Terragrunt
 * HashiCorp Vault
 * Docker
 * Java Spring Boot
@@ -81,6 +82,7 @@ Evolve the initial delivery foundation into a governed shared platform for multi
 * stronger governance
 * multi-team platform thinking
 * multi-environment promotion
+* PR gates, staging E2E validation, production approval, and rollback discipline
 * tenant / namespace isolation
 * secrets centralization
 * dependency update governance
@@ -134,7 +136,7 @@ Show that the platform can evolve into an enterprise-ready model with stronger i
 * DataDog
 * ElasticSearch
 * Kibana
-* Tanos
+* Thanos
 * Prometheus
 * Grafana
 * Ansible
@@ -155,14 +157,16 @@ Show that the platform can evolve into an enterprise-ready model with stronger i
 * SASE / ZTNA / DLP integration awareness
 * stronger observability layering
 * platform standardization across environments
-* reducing repeated Terraform stack wiring as the platform grows
+* extending Terragrunt from Stage 2 Azure estates toward broader hybrid stack wiring
 * resilient delivery model
 * enterprise operating model maturity
 * large-scale governance and supportability
+* compliance-aware architecture foundation
+* future certification-environment and control-mapping direction
 
 **Best place to emphasize:**
 
-* full **local / dev / prod** operating model
+* full **local / dev / staging / certification / prod** operating model
 * hybrid-cloud expansion
 * enterprise-wide monitoring and access patterns
 
@@ -179,6 +183,9 @@ Govern a shared platform across teams and environments.
 **Stage 3:**
 Extend the platform into an enterprise-ready hybrid operating model.
 
+**Future Stage 4+:**
+Formalize compliance and enterprise risk operations.
+
 ---
 
 ## Very important distinction
@@ -188,6 +195,7 @@ To make it powerful for hiring managers, the stages should feel like this:
 * **Stage 1 = delivery credibility**
 * **Stage 2 = governance and platform credibility**
 * **Stage 3 = enterprise architecture credibility**
+* **Stage 4+ = compliance and enterprise risk credibility**
 
 ---
 
@@ -206,7 +214,7 @@ To make it powerful for hiring managers, the stages should feel like this:
 
 **Stage 3**
 
-* local / dev / prod fully formalized
+* local / dev / staging / certification / prod fully formalized
 * hybrid Azure + AWS + on-prem
 
 ---

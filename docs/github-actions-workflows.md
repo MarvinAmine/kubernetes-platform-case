@@ -1,7 +1,14 @@
 # GitHub Actions Workflows
 
-This document is the authoritative runbook for the GitHub Actions workflows
-used in this repository.
+This document is the Stage 1 runbook for the GitHub Actions workflows used in
+this repository.
+
+Stage 1 workflow behavior is preserved by the `stage1-v1.0.0` Git tag and
+GitHub Release. `main` can evolve toward Stage 2 workflow boundaries without
+keeping duplicate active Stage 1 and Stage 2 workflow generations.
+
+For the Stage 2 workflow direction, see
+[stage2-implementation-plan.md](./stage2-implementation-plan.md#github-actions-workflow-architecture).
 
 It answers three questions:
 
@@ -42,7 +49,7 @@ Why this is separate:
 - Terraform needs the backend before the normal Azure and Kubernetes Terraform
   workflows can initialize state
 - this repository intentionally follows the decision recorded in
-  [ADR-006](./adrs/ADR-006-do-not-create-a-standard-github-actions-workflow-for-the-remote-terraform-backend.md)
+  [ADR-006](./adrs/ADR-006-do-not-create-a-github-actions-workflow-for-the-remote-terraform-backend.md)
 
 ## Required repository configuration
 
