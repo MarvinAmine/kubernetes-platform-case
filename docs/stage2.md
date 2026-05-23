@@ -4,6 +4,10 @@
 
 [IMPLEMENTATION PLAN: Stage 2 progress tracker ->](./stage2-implementation-plan.md)
 
+[SRE LEVERAGE DIRECTION ->](./sre-portfolio-leverage.md)
+
+[AI COLLABORATION MODEL ->](./ai-collaboration-model.md)
+
 Stage 2 evolves the Stage 1 delivery foundation into a governed shared platform model designed for enterprise Kubernetes operations in highly regulated environments.
 
 The main objective is no longer only to prove that one internal service can be deployed safely. It is to demonstrate how a platform can support multiple teams, multiple environments, stronger change controls, centralized secrets handling, and safer promotion practices while keeping delivery repeatable and operationally supportable.

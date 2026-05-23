@@ -43,6 +43,20 @@ feel realistic for regulated environments.
 - realistic rollout and configuration failures can be diagnosed with probes,
   logs, metrics, and runbooks
 
+## How AI Is Used
+
+The project uses AI as an accelerator for planning, draft generation, and
+tradeoff analysis, but not as a replacement for ownership.
+
+Strong answer:
+
+- AI helps explore options faster
+- important code and design decisions are still reviewed deliberately
+- critical implementation paths are often rewritten or retyped manually to
+  improve retention and authorship
+- the target is not just output speed, but being able to explain and defend
+  the final design without depending on AI in the room
+
 ## Core Design Choices
 
 ### Three-team operating model
@@ -215,6 +229,8 @@ Strong answer:
 
 - [README.md](./README.md)
 - [stage1.md](./stage1.md)
+- [ai-collaboration-model.md](./ai-collaboration-model.md)
+- [sre-portfolio-leverage.md](./sre-portfolio-leverage.md)
 - [executive-summary.md](./executive-summary.md)
 - [github-actions-workflows.md](./github-actions-workflows.md)
 - [local-platform-and-app-validation.md](./local-platform-and-app-validation.md)

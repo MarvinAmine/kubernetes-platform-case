@@ -3,23 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stage 2 - AI-Assisted Shared Platform Planning</title>
-  <meta name="description" content="Stage 2 presentation for governed shared-platform planning: AI-assisted execution strategy, environment model, workflow evolution, and platform roadmap.">
+  <title>Stage 2 - Shared Platform Planning</title>
+  <meta name="description" content="Stage 2 presentation for governed shared-platform planning: environment model, workflow evolution, and platform roadmap.">
   <meta name="author" content="Marvin Meite">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://marvinmeite.cloud/payment-exception-review-stage-1/stage2/">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Marvin Meite">
-  <meta property="og:title" content="Stage 2 - AI-Assisted Shared Platform Planning">
-  <meta property="og:description" content="Stage 2 planning deck: AI collaboration strategy, environment boundaries, workflow evolution, and governed shared-platform execution order.">
+  <meta property="og:title" content="Stage 2 - Shared Platform Planning">
+  <meta property="og:description" content="Stage 2 planning deck: environment boundaries, workflow evolution, governed shared-platform execution, and AI-assisted authorship discipline.">
   <meta property="og:url" content="https://marvinmeite.cloud/payment-exception-review-stage-1/stage2/">
   <meta property="og:image" content="https://marvinmeite.cloud/payment-exception-review-stage-1/assets/presentation_thumbnail.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Stage 2 - AI-Assisted Shared Platform Planning">
-  <meta name="twitter:description" content="AI-assisted planning before tooling: Stage 2 shared-platform roadmap.">
+  <meta name="twitter:title" content="Stage 2 - Shared Platform Planning">
+  <meta name="twitter:description" content="Governed shared-platform roadmap before tooling expansion.">
   <meta name="twitter:image" content="https://marvinmeite.cloud/payment-exception-review-stage-1/assets/presentation_thumbnail.png">
   <script src="https://t.contentsquare.net/uxa/63a805dc90009.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PHPQWGRP9V"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -32,23 +35,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f7efe4;
-      --ink: #111827;
-      --muted: #5f6875;
-      --line: rgba(17, 24, 39, 0.09);
-      --card: rgba(255, 255, 255, 0.78);
-      --card-strong: rgba(255, 255, 255, 0.92);
-      --green: #0f766e;
-      --green-soft: rgba(15, 118, 110, 0.12);
+      --bg: #f6f7f9;
+      --paper: #ffffff;
+      --ink: #151922;
+      --muted: #626b78;
+      --line: #d8dde5;
+      --line-soft: #e8ebf0;
+      --accent: #0f766e;
+      --accent-soft: #e7f3f1;
       --blue: #1d4ed8;
-      --blue-soft: rgba(29, 78, 216, 0.12);
+      --blue-soft: #e8eefc;
       --clay: #9a3412;
-      --clay-soft: rgba(154, 52, 18, 0.1);
-      --gold: #b7791f;
-      --shadow: 0 28px 80px rgba(15, 23, 42, 0.1);
-      --radius-xl: 30px;
-      --radius-lg: 24px;
-      --radius-md: 18px;
+      --clay-soft: #f7ebe6;
+      --shadow: 0 10px 28px rgba(20, 30, 45, 0.07);
+      --radius: 10px;
       --max: 1220px;
     }
 
@@ -58,23 +58,84 @@
       margin: 0;
       color: var(--ink);
       font-family: "Space Grotesk", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(15, 118, 110, 0.16), transparent 23%),
-        radial-gradient(circle at top right, rgba(29, 78, 216, 0.11), transparent 24%),
-        radial-gradient(circle at 50% 100%, rgba(183, 121, 31, 0.08), transparent 34%),
-        linear-gradient(180deg, #fffaf4 0%, #f4eadc 52%, #eadfce 100%);
+      background: var(--bg);
       min-height: 100vh;
     }
 
     a { color: inherit; }
 
+    @keyframes activePulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(29, 78, 216, 0.18); }
+      50% { box-shadow: 0 0 0 6px rgba(29, 78, 216, 0); }
+    }
+
+    @keyframes scanLine {
+      0% { transform: translateX(-110%); opacity: 0; }
+      15% { opacity: 0.6; }
+      100% { transform: translateX(110%); opacity: 0; }
+    }
+
+    @keyframes planningFloat {
+      0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0.34; }
+      50% { transform: translate3d(0, -14px, 0) rotate(1.5deg); opacity: 0.52; }
+    }
+
+    .background-system {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.72), rgba(246,247,249,0.94)),
+        radial-gradient(circle at 16% 18%, rgba(15, 118, 110, 0.12), transparent 26%),
+        radial-gradient(circle at 84% 12%, rgba(29, 78, 216, 0.1), transparent 24%),
+        radial-gradient(circle at 55% 86%, rgba(154, 52, 18, 0.07), transparent 30%);
+    }
+
+    .background-system::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 18% 28%, rgba(15, 118, 110, 0.08) 0 2px, transparent 3px),
+        radial-gradient(circle at 72% 22%, rgba(29, 78, 216, 0.07) 0 2px, transparent 3px),
+        radial-gradient(circle at 52% 72%, rgba(154, 52, 18, 0.055) 0 2px, transparent 3px);
+    }
+
+    .planning-bg-icon {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      color: rgba(15, 118, 110, 0.24);
+      background: rgba(255, 255, 255, 0.46);
+      border: 1px solid rgba(216, 221, 229, 0.68);
+      animation: planningFloat 8s ease-in-out infinite;
+    }
+
+    .planning-bg-icon svg {
+      width: 30px;
+      height: 30px;
+      stroke-width: 1.8;
+    }
+
+    .planning-bg-icon:nth-child(1) { top: 16%; left: 7%; animation-delay: 0s; }
+    .planning-bg-icon:nth-child(2) { top: 12%; right: 13%; color: rgba(29, 78, 216, 0.22); animation-delay: -1.6s; }
+    .planning-bg-icon:nth-child(3) { top: 47%; left: 3%; color: rgba(154, 52, 18, 0.2); animation-delay: -3.1s; }
+    .planning-bg-icon:nth-child(4) { top: 58%; right: 5%; animation-delay: -4.4s; }
+    .planning-bg-icon:nth-child(5) { bottom: 10%; left: 18%; color: rgba(29, 78, 216, 0.19); animation-delay: -2.2s; }
+    .planning-bg-icon:nth-child(6) { bottom: 16%; right: 22%; color: rgba(154, 52, 18, 0.18); animation-delay: -5.4s; }
+
     .topbar {
       position: sticky;
       top: 0;
       z-index: 20;
-      background: rgba(255, 250, 244, 0.74);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
     }
 
     .topbar-inner {
@@ -92,7 +153,7 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       font-weight: 700;
-      color: var(--green);
+      color: var(--accent);
     }
 
     .nav {
@@ -105,19 +166,18 @@
       text-decoration: none;
       font-size: 13px;
       color: var(--muted);
-      padding: 10px 14px;
-      border-radius: 999px;
-      transition: transform 180ms ease, background 180ms ease, color 180ms ease;
+      padding: 8px 0;
+      border-bottom: 2px solid transparent;
+      transition: border-color 160ms ease, color 160ms ease;
     }
 
     .nav a:hover {
-      transform: translateY(-1px);
-      background: rgba(15, 118, 110, 0.08);
-      color: var(--green);
+      border-color: var(--accent);
+      color: var(--ink);
     }
 
     main {
-      padding: 28px 22px 90px;
+      padding: 30px 22px 80px;
     }
 
     .wrap {
@@ -126,50 +186,126 @@
     }
 
     .hero {
-      min-height: calc(100vh - 88px);
+      min-height: 560px;
       display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
-      gap: 26px;
-      align-items: center;
-      padding: 26px 0 12px;
+      grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr);
+      gap: 22px;
+      align-items: stretch;
+      padding: 22px 0 10px;
     }
 
     .eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      padding: 9px 14px;
-      border-radius: 999px;
-      background: var(--green-soft);
-      color: var(--green);
+      padding: 0;
+      background: transparent;
+      color: var(--accent);
       font-size: 12px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
     h1 {
-      margin: 18px 0 16px;
-      font-size: clamp(50px, 8vw, 92px);
-      line-height: 0.93;
-      letter-spacing: -0.06em;
-      max-width: 8.5ch;
+      margin: 16px 0 18px;
+      font-size: clamp(42px, 6vw, 74px);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+      max-width: 10ch;
+    }
+
+    .mark {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .contract-timeline .mark {
+      color: inherit;
+      font-weight: inherit;
     }
 
     .hero p {
       margin: 0;
       max-width: 48ch;
       color: var(--muted);
-      font-size: clamp(18px, 2vw, 22px);
-      line-height: 1.6;
+      font-size: clamp(17px, 1.7vw, 20px);
+      line-height: 1.55;
+    }
+
+    .tool-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+      max-width: 640px;
+    }
+
+    .tool-stage {
+      flex-basis: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .tool-stage::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: var(--line);
+    }
+
+    .tool {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgba(20, 30, 45, 0.04);
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .tool:hover {
+      transform: translateY(-2px);
+      border-color: #b8c3d2;
+      box-shadow: 0 10px 22px rgba(20, 30, 45, 0.08);
+    }
+
+    .tool img,
+    .domain-icon img,
+    .constraint-icon img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      flex: 0 0 auto;
+    }
+
+    .tool svg {
+      width: 22px;
+      height: 22px;
+      color: var(--accent);
+      stroke-width: 2;
     }
 
     .hero-panel {
       position: relative;
-      padding: 28px;
-      border-radius: var(--radius-xl);
-      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.76));
-      border: 1px solid rgba(255,255,255,0.72);
+      padding: 26px;
+      border-radius: var(--radius);
+      background: var(--paper);
+      border: 1px solid var(--line);
       box-shadow: var(--shadow);
       overflow: hidden;
     }
@@ -179,58 +315,131 @@
       position: absolute;
       inset: 0 auto auto 0;
       width: 100%;
-      height: 4px;
-      background: linear-gradient(90deg, var(--green), var(--blue), var(--clay));
+      height: 3px;
+      background: var(--accent);
     }
 
-    .stack {
-      display: grid;
-      gap: 14px;
-      margin-top: 20px;
+    .contract-timeline {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 22px;
+      padding: 0 6px;
     }
 
-    .stack-item {
+    .contract-timeline::before {
+      content: "";
+      position: absolute;
+      top: 18px;
+      bottom: 18px;
+      left: 50%;
+      width: 2px;
+      background: linear-gradient(180deg, var(--accent), var(--blue), var(--line));
+      transform: translateX(-50%);
+      z-index: 0;
+    }
+
+    .timeline-item {
+      position: relative;
       display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 14px;
+      grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
+      gap: 10px;
       align-items: start;
-      padding: 16px;
-      border-radius: 20px;
-      background: rgba(17, 24, 39, 0.04);
-      border: 1px solid rgba(17, 24, 39, 0.05);
+      padding: 0;
+      background: transparent;
+      overflow: hidden;
+      z-index: 1;
     }
 
-    .stack-index {
-      width: 36px;
-      height: 36px;
+    .timeline-item:nth-child(odd) .timeline-copy {
+      grid-column: 1;
+      grid-row: 1;
+      text-align: right;
+    }
+
+    .timeline-item:nth-child(odd) .timeline-icon {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .timeline-item:nth-child(even) .timeline-icon {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .timeline-item:nth-child(even) .timeline-copy {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      width: 50%;
+      background: linear-gradient(90deg, transparent, rgba(15, 118, 110, 0.06), transparent);
+      transform: translateX(-110%);
+      pointer-events: none;
+    }
+
+    .timeline-item:hover::before {
+      animation: scanLine 900ms ease-out;
+    }
+
+    .timeline-icon {
+      width: 44px;
+      height: 44px;
       border-radius: 12px;
       display: grid;
       place-items: center;
-      font-weight: 700;
-      background: var(--blue-soft);
-      color: var(--blue);
+      background: #fff;
+      border: 2px solid var(--accent-soft);
+      box-shadow: 0 0 0 4px #fff, 0 8px 20px rgba(20, 30, 45, 0.08);
+      z-index: 2;
     }
 
-    .stack-item strong {
+    .timeline-icon svg {
+      width: 24px;
+      height: 24px;
+      color: var(--accent);
+      stroke-width: 2;
+    }
+
+    .timeline-copy {
+      min-height: 74px;
+      padding: 0 0 18px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .timeline-item:last-child .timeline-copy {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .timeline-item strong {
       display: block;
       margin-bottom: 4px;
       font-size: 16px;
     }
 
-    .stack-item span {
+    .timeline-item span {
       color: var(--muted);
       line-height: 1.55;
       font-size: 14px;
     }
 
     .section {
-      margin-top: 28px;
-      padding: 30px;
-      border-radius: var(--radius-xl);
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,0.68);
+      position: relative;
+      margin-top: 22px;
+      padding: 28px;
+      border-radius: var(--radius);
+      background: var(--paper);
+      border: 1px solid var(--line);
       box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
     }
 
     .section-head {
@@ -243,9 +452,9 @@
 
     .section h2 {
       margin: 0;
-      font-size: clamp(30px, 5vw, 48px);
-      letter-spacing: -0.05em;
-      line-height: 0.98;
+      font-size: clamp(26px, 4vw, 40px);
+      letter-spacing: -0.035em;
+      line-height: 1.02;
     }
 
     .section-head p {
@@ -257,22 +466,247 @@
 
     .principles,
     .domains,
-    .constraints {
+    .constraints,
+    .path-tiles {
       display: grid;
-      gap: 16px;
+      gap: 14px;
     }
 
     .principles {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .method-flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .ai-loop {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+      padding: 20px;
+      border-radius: var(--radius);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(15, 118, 110, 0.22), transparent 30%),
+        radial-gradient(circle at 88% 18%, rgba(29, 78, 216, 0.16), transparent 32%),
+        linear-gradient(135deg, rgba(15, 118, 110, 0.1), rgba(29, 78, 216, 0.07)),
+        #ffffff;
+      border: 1px solid rgba(15, 118, 110, 0.24);
+      box-shadow: 0 18px 46px rgba(20, 30, 45, 0.11);
+      overflow: hidden;
+    }
+
+    .ai-loop::before {
+      content: "";
+      position: absolute;
+      top: 94px;
+      right: 42px;
+      left: 42px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--blue), var(--accent));
+      opacity: 0.26;
+    }
+
+    .ai-loop::after {
+      content: "DevOps augmented with AI";
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #0f766e;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .ai-mermaid-panel {
+      grid-column: 1 / -1;
+      position: relative;
+      padding: 18px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(15, 118, 110, 0.18);
+      box-shadow: 0 12px 30px rgba(20, 30, 45, 0.07);
+      z-index: 1;
+      overflow-x: auto;
+    }
+
+    .ai-mermaid-panel .mermaid {
+      min-width: 720px;
+      font-family: "Space Grotesk", sans-serif;
+      display: flex;
+      justify-content: center;
+    }
+
+    .ai-mermaid-panel svg {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+    }
+
+    .ai-loop-head {
+      position: relative;
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding: 6px 178px 10px 0;
+      z-index: 1;
+    }
+
+    .ai-loop-head strong {
+      font-size: clamp(24px, 3.4vw, 38px);
+      letter-spacing: -0.035em;
+    }
+
+    .ai-loop-head span {
+      max-width: 46ch;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .method-step {
+      position: relative;
+      min-height: 170px;
+      padding: 18px 14px 16px;
+      border-radius: var(--radius);
+      background: #fff;
+      border: 1px solid var(--line);
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .method-step::after {
+      content: "";
+      position: absolute;
+      top: 32px;
+      right: -10px;
+      width: 18px;
+      height: 2px;
+      background: var(--line);
+    }
+
+    .method-step:last-child::after {
+      display: none;
+    }
+
+    .method-icon {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid #c8e5df;
+    }
+
+    .method-icon svg {
+      width: 23px;
+      height: 23px;
+      stroke-width: 2;
+    }
+
+    .method-step strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+      letter-spacing: -0.015em;
+    }
+
+    .method-step span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .method-step .mark {
+      display: inline;
+      white-space: normal;
+    }
+
+    .path-tiles {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .path-tile {
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: #fff;
+      border: 1px solid var(--line);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .path-tile img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .path-tile:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px rgba(20, 30, 45, 0.1);
+    }
+
+    .path-label {
+      display: block;
+      padding: 10px 14px 0;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .path-tile strong {
+      display: block;
+      padding: 12px 14px 4px;
+      font-size: 15px;
+    }
+
+    .path-tile span {
+      display: block;
+      padding: 0 14px 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
     .principle,
     .domain,
     .constraint {
       padding: 22px;
-      border-radius: var(--radius-lg);
-      background: var(--card-strong);
+      border-radius: var(--radius);
+      background: #fff;
       border: 1px solid var(--line);
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .principle:hover,
+    .domain:hover,
+    .constraint:hover,
+    .method-step:hover {
+      transform: translateY(-2px);
+      border-color: #b8c3d2;
+      box-shadow: 0 12px 26px rgba(20, 30, 45, 0.08);
+    }
+
+    .domain {
+      display: flex;
+      flex-direction: column;
     }
 
     .principle .kicker,
@@ -280,22 +714,96 @@
     .constraint .kicker {
       display: inline-flex;
       margin-bottom: 10px;
-      padding: 7px 11px;
-      border-radius: 999px;
+      padding: 0 0 6px;
+      border-radius: 0;
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.09em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      background: rgba(17,24,39,0.06);
       color: var(--muted);
+      border-bottom: 2px solid var(--line);
     }
 
     .principle h3,
     .domain h3,
     .constraint h3 {
       margin: 0 0 10px;
-      font-size: 24px;
-      letter-spacing: -0.04em;
+      font-size: 22px;
+      letter-spacing: -0.025em;
+    }
+
+    .domain-head,
+    .constraint-head {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .domain-icon,
+    .constraint-icon {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: #f7f9fb;
+      border: 1px solid var(--line-soft);
+      flex: 0 0 auto;
+    }
+
+    .domain-icon svg,
+    .constraint-icon svg {
+      width: 22px;
+      height: 22px;
+      color: var(--accent);
+      stroke-width: 2;
+    }
+
+    .icon-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--line-soft);
+      opacity: 0.82;
+    }
+
+    .icon-row::before {
+      content: "Supporting tools";
+      flex-basis: 100%;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .icon-row span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid var(--line-soft);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      transition: transform 160ms ease, background 160ms ease;
+    }
+
+    .icon-row span:hover {
+      transform: translateY(-1px);
+      background: #fff;
+    }
+
+    .icon-row img,
+    .icon-row svg {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
     }
 
     .principle p,
@@ -310,8 +818,8 @@
       width: 100%;
       border-collapse: collapse;
       overflow: hidden;
-      border-radius: 22px;
-      background: var(--card-strong);
+      border-radius: var(--radius);
+      background: #fff;
       border: 1px solid var(--line);
     }
 
@@ -337,7 +845,7 @@
     .status {
       display: inline-flex;
       padding: 8px 12px;
-      border-radius: 999px;
+      border-radius: 8px;
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.06em;
@@ -346,6 +854,8 @@
 
     .status.progress { background: var(--blue-soft); color: var(--blue); }
     .status.pending { background: var(--clay-soft); color: var(--clay); }
+    .status.done { background: var(--accent-soft); color: var(--accent); }
+    .status.progress { animation: activePulse 2.4s ease-in-out infinite; }
 
     .constraints {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -365,8 +875,8 @@
     .footer-note {
       margin-top: 28px;
       padding: 22px 24px;
-      border-radius: var(--radius-lg);
-      background: #111827;
+      border-radius: var(--radius);
+      background: #151922;
       color: rgba(255,255,255,0.86);
     }
 
@@ -397,9 +907,78 @@
       }
 
       .principles,
+      .method-flow,
+      .ai-loop,
       .domains,
-      .constraints {
+      .constraints,
+      .path-tiles {
         grid-template-columns: 1fr;
+      }
+
+      .ai-loop-head {
+        display: block;
+        padding-right: 0;
+      }
+
+      .ai-loop-head span {
+        display: block;
+        margin-top: 8px;
+      }
+
+      .ai-loop::before {
+        top: 142px;
+        right: auto;
+        bottom: 30px;
+        left: 36px;
+        width: 2px;
+        height: auto;
+        background: linear-gradient(180deg, var(--accent), var(--blue), var(--accent));
+      }
+
+      .ai-loop::after {
+        position: static;
+        order: -1;
+        grid-column: 1 / -1;
+        width: fit-content;
+        margin-bottom: -2px;
+      }
+
+      .ai-mermaid-panel .mermaid {
+        min-width: 720px;
+      }
+
+      .method-step::after {
+        top: auto;
+        right: auto;
+        bottom: -8px;
+        left: 32px;
+        width: 2px;
+        height: 14px;
+      }
+
+      .contract-timeline {
+        padding-left: 18px;
+      }
+
+      .contract-timeline::before {
+        left: 35px;
+        transform: none;
+      }
+
+      .timeline-item {
+        grid-template-columns: auto 1fr;
+        gap: 14px;
+      }
+
+      .timeline-item:nth-child(odd) .timeline-copy,
+      .timeline-item:nth-child(even) .timeline-copy {
+        grid-column: 2;
+        text-align: left;
+      }
+
+      .timeline-item:nth-child(odd) .timeline-icon,
+      .timeline-item:nth-child(even) .timeline-icon {
+        grid-column: 1;
       }
     }
 
@@ -417,16 +996,41 @@
         padding: 22px;
       }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 1ms !important;
+      }
+
+      .background-system::before,
+      .planning-bg-icon {
+        animation: none !important;
+      }
+    }
   </style>
 </head>
 <body>
+  <div class="background-system" aria-hidden="true">
+    <span class="planning-bg-icon"><i data-lucide="clipboard-list"></i></span>
+    <span class="planning-bg-icon"><i data-lucide="git-branch"></i></span>
+    <span class="planning-bg-icon"><i data-lucide="calendar-check"></i></span>
+    <span class="planning-bg-icon"><i data-lucide="route"></i></span>
+    <span class="planning-bg-icon"><i data-lucide="list-checks"></i></span>
+    <span class="planning-bg-icon"><i data-lucide="milestone"></i></span>
+  </div>
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="brand">Stage 2 / AI-Assisted Planning</div>
+      <div class="brand">Stage 2 / Shared Platform Planning</div>
       <nav class="nav">
         <a href="../index.html">Hub</a>
         <a href="../stage1/index.html">Stage 1</a>
-        <a href="#strategy">AI strategy</a>
+        <a href="#strategy">Working method</a>
         <a href="#tracker">Execution plan</a>
         <a href="#domains">Domain changes</a>
       </nav>
@@ -437,78 +1041,171 @@
     <div class="wrap">
       <section class="hero">
         <div>
-          <div class="eyebrow">Before OpenShift, ArgoCD, Vault, and policy gates</div>
-          <h1>Plan first. Tool later.</h1>
-          <p>
-            Stage 2 starts with a planning discipline, not a tooling rush. The operating model,
-            environments, workflow boundaries, and promotion rules are locked before the shared platform grows.
-          </p>
+          <div class="eyebrow">Stage 2 planning baseline</div>
+          <h1><span class="mark">Governance</span> before tooling.</h1>
+          <div class="tool-strip" aria-label="Stage 2 technology anchors">
+            <span class="tool-stage">Planning first</span>
+            <span class="tool"><i data-lucide="clipboard-list"></i>Governance</span>
+            <span class="tool"><i data-lucide="layers"></i>Environment model</span>
+            <span class="tool"><i data-lucide="git-branch"></i>Workflow boundaries</span>
+            <span class="tool"><i data-lucide="route"></i>Promotion path</span>
+            <span class="tool-stage">Tooling after the model</span>
+            <span class="tool"><img src="../assets/presentation-icons/openshift.svg" alt="">OpenShift</span>
+            <span class="tool"><img src="../assets/presentation-icons/github-actions.svg" alt="">GitHub Actions</span>
+            <span class="tool"><img src="../assets/presentation-icons/vault.svg" alt="">Vault</span>
+            <span class="tool"><img src="../assets/presentation-icons/terraform.svg" alt="">Terraform</span>
+            <span class="tool"><img src="../assets/presentation-icons/kubernetes.svg" alt="">Kubernetes</span>
+            <span class="tool"><img src="../assets/presentation-icons/prometheus.svg" alt="">Prometheus</span>
+            <span class="tool"><img src="../assets/presentation-icons/grafana.svg" alt="">Grafana</span>
+          </div>
         </div>
 
         <aside class="hero-panel">
-          <div class="eyebrow">AI working contract</div>
-          <div class="stack">
-            <div class="stack-item">
-              <div class="stack-index">1</div>
-              <div>
+          <div class="eyebrow">Working contract</div>
+          <div class="contract-timeline">
+            <div class="timeline-item">
+              <div class="timeline-icon" aria-hidden="true">
+                <i data-lucide="filter"></i>
+              </div>
+              <div class="timeline-copy">
                 <strong>Constrain the problem first</strong>
-                <span>Use governance, stage boundaries, and folder ownership before selecting tools.</span>
+                <span>Use <span class="mark">governance</span>, <span class="mark">stage boundaries</span>, and <span class="mark">folder ownership</span> before selecting tools.</span>
               </div>
             </div>
-            <div class="stack-item">
-              <div class="stack-index">2</div>
-              <div>
+            <div class="timeline-item">
+              <div class="timeline-icon" aria-hidden="true">
+                <i data-lucide="list-checks"></i>
+              </div>
+              <div class="timeline-copy">
                 <strong>Sequence the work explicitly</strong>
-                <span>Environment model and workflow design come before multi-environment implementation.</span>
+                <span><span class="mark">Environment model</span> and <span class="mark">workflow design</span> come before multi-environment implementation.</span>
               </div>
             </div>
-            <div class="stack-item">
-              <div class="stack-index">3</div>
-              <div>
+            <div class="timeline-item">
+              <div class="timeline-icon"><img src="../assets/presentation-icons/github-releases.svg" alt=""></div>
+              <div class="timeline-copy">
                 <strong>Preserve what already works</strong>
-                <span>Stage 1 stays replayable through tags and releases while `main` evolves toward Stage 2.</span>
+                <span><span class="mark">Stage 1 stays replayable</span> through tags and releases while `main` evolves toward Stage 2.</span>
               </div>
             </div>
-            <div class="stack-item">
-              <div class="stack-index">4</div>
-              <div>
+            <div class="timeline-item">
+              <div class="timeline-icon" aria-hidden="true">
+                <i data-lucide="blocks"></i>
+              </div>
+              <div class="timeline-copy">
                 <strong>Touch one boundary at a time</strong>
-                <span>Docs, governance, infrastructure, platform, application, reliability, workflows.</span>
+                <span>Docs, governance, infrastructure, platform, application, reliability, and workflows move as <span class="mark">separate boundaries</span>.</span>
               </div>
             </div>
           </div>
         </aside>
       </section>
 
-      <section id="strategy" class="section">
+      <section class="section">
         <div class="section-head">
-          <h2>How AI is used here</h2>
+          <h2>Stage 1 paths being evolved</h2>
           <p>
-            The role of AI is not to improvise architecture. It is to accelerate a constrained sequence,
-            document tradeoffs, and keep the repo evolution readable for newcomers.
+            These are Stage 1 baseline diagrams. Stage 2 keeps the same readable ownership paths,
+            then adds <span class="mark">shared-platform guardrails</span>.
           </p>
         </div>
-        <div class="principles">
-          <article class="principle">
-            <div class="kicker">Strategy</div>
-            <h3>Document before implementing</h3>
-            <p>Architecture choices, team ownership, and promotion rules are written first so later code changes follow a visible contract.</p>
+        <div class="path-tiles">
+          <article class="path-tile">
+            <img src="../assets/infrastructure_bootstrap_path.png" alt="Infrastructure bootstrap path">
+            <span class="path-label">Current Stage 1 diagram - Stage 2 version pending</span>
+            <strong>Infrastructure path</strong>
+            <span>Terraform foundation, state separation, cluster boundaries, and environment-aware inputs.</span>
           </article>
-          <article class="principle">
-            <div class="kicker">Scope</div>
-            <h3>Keep Stage 2 narrow</h3>
-            <p>Stage 2 proves a governed shared platform. Certification environments, progressive traffic, and formal compliance stay deferred.</p>
+          <article class="path-tile">
+            <img src="../assets/platform_provision_path.png" alt="Platform provision path">
+            <span class="path-label">Current Stage 1 diagram - Stage 2 version pending</span>
+            <strong>Platform path</strong>
+            <span>Kubernetes boundaries, shared runtime controls, policy direction, GitOps, and secrets governance.</span>
           </article>
-          <article class="principle">
-            <div class="kicker">Control</div>
-            <h3>Avoid tool-first drift</h3>
-            <p>OpenShift, ArgoCD, Vault, and security gates only land after the environment and workflow model are stable enough to host them.</p>
+          <article class="path-tile">
+            <img src="../assets/app_delivery_path.png" alt="Application delivery path">
+            <span class="path-label">Current Stage 1 diagram - Stage 2 version pending</span>
+            <strong>Application path</strong>
+            <span>One image promoted through dev, staging, and prod with clearer validation and rollback evidence.</span>
           </article>
-          <article class="principle">
-            <div class="kicker">Readability</div>
-            <h3>Preserve newcomer comprehension</h3>
-            <p>Stage 1 remains replayable, `main` stays current, and each documentation layer says exactly what changed and why.</p>
+        </div>
+      </section>
+
+      <section id="strategy" class="section">
+        <div class="section-head">
+          <h2>Working method</h2>
+          <p>
+            DevOps augmented with AI: narrow prompts, manual approvals, saved mini-states,
+            and controlled refinement before each next change.
+          </p>
+        </div>
+        <div class="method-flow" aria-label="Stage 2 working method">
+          <article class="method-step">
+            <div class="method-icon" aria-hidden="true">
+              <i data-lucide="file-text"></i>
+            </div>
+            <strong>Document first</strong>
+            <span><span class="mark">Ownership</span>, <span class="mark">environments</span>, and <span class="mark">promotion rules</span> become the contract before code changes.</span>
           </article>
+          <article class="method-step">
+            <div class="method-icon" aria-hidden="true">
+              <i data-lucide="filter"></i>
+            </div>
+            <strong>Constrain scope</strong>
+            <span>Stage 2 stays on <span class="mark">shared-platform governance</span>; certification and progressive traffic wait.</span>
+          </article>
+          <article class="method-step">
+            <div class="method-icon" aria-hidden="true">
+              <i data-lucide="trending-up"></i>
+            </div>
+            <strong>Add tools after the model</strong>
+            <span>Tools land after the <span class="mark">environment model</span> is stable.</span>
+          </article>
+          <article class="method-step">
+            <div class="method-icon" aria-hidden="true">
+              <i data-lucide="refresh-cw"></i>
+            </div>
+            <strong>Keep Stage 1 replayable</strong>
+            <span>The release tag preserves <span class="mark">Stage 1 replayability</span> while `main` evolves toward Stage 2.</span>
+          </article>
+          <article class="method-step">
+            <div class="method-icon" aria-hidden="true">
+              <i data-lucide="badge-check"></i>
+            </div>
+            <strong>Review and rewrite</strong>
+            <span>AI drafts can help, but critical paths are rewritten or retyped for <span class="mark">retention</span>.</span>
+          </article>
+        </div>
+        <div class="ai-loop" aria-label="AI-assisted refinement loop">
+          <div class="ai-loop-head">
+            <strong>Control loop, not autopilot</strong>
+            <span>AI accelerates drafting, but ownership stays with manual review, small checkpoints, and intentional corrections.</span>
+          </div>
+          <div class="ai-mermaid-panel" aria-label="AI-assisted DevOps control flow">
+            <pre class="mermaid">
+flowchart TD
+  Request["Narrow Codex GPT-5.5 request<br/><small>Small controlled change, detailed prompt,<br/>enough context, one modification at a time.</small>"]
+  Review["Manual review<br/><small>Check diff, design intent, naming, ownership, and current stable state.</small>"]
+  Decision{"Aligned with intent?"}
+  Accept["Close enough<br/><small>Accept, then refine manually.</small>"]
+  Reject["Not aligned<br/><small>Reject, clarify, ask again.</small>"]
+  Refine["Refine until correct<br/><small>Rewrite or retype critical paths for ownership and retention.</small>"]
+  Stable["Save stable mini-state in Git<br/><small>Commit or checkpoint the satisfying codebase state before the next narrow change.</small>"]
+
+  Request --> Review --> Decision
+  Decision -- "Close enough" --> Accept --> Refine --> Stable --> Request
+  Decision -- "Not aligned" --> Reject --> Request
+
+  classDef principle fill:#e7f3f1,stroke:#0f766e,color:#151922,stroke-width:2px;
+  classDef work fill:#ffffff,stroke:#c8e5df,color:#151922,stroke-width:1.5px;
+  classDef review fill:#e8eefc,stroke:#1d4ed8,color:#151922,stroke-width:2px;
+  classDef reject fill:#f7ebe6,stroke:#9a3412,color:#151922,stroke-width:2px;
+  class Request principle;
+  class Stable,Accept,Refine work;
+  class Review,Decision review;
+  class Reject reject;
+            </pre>
+          </div>
         </div>
       </section>
 
@@ -516,7 +1213,7 @@
         <div class="section-head">
           <h2>Execution tracker</h2>
           <p>
-            The work is intentionally ordered. Each step reduces ambiguity for the next one instead of piling tools onto an unstable model.
+            The work is intentionally ordered. Each step reduces <span class="mark">ambiguity</span> for the next one instead of piling tools onto an unstable model.
           </p>
         </div>
         <table class="tracker">
@@ -531,17 +1228,17 @@
             <tr>
               <td>1</td>
               <td>Create the Stage 2 implementation plan</td>
-              <td><span class="status progress">In progress</span></td>
+              <td><span class="status done">Completed</span></td>
             </tr>
             <tr>
               <td>2</td>
               <td>Define the environment model</td>
-              <td><span class="status pending">Pending</span></td>
+              <td><span class="status done">Completed</span></td>
             </tr>
             <tr>
               <td>3</td>
               <td>Refactor configuration for multi-environment support</td>
-              <td><span class="status pending">Pending</span></td>
+              <td><span class="status progress">In progress</span></td>
             </tr>
             <tr>
               <td>4</td>
@@ -561,28 +1258,48 @@
         <div class="section-head">
           <h2>Constraints already locked</h2>
           <p>
-            These are not optional design ideas anymore. They are the constraints the implementation must consume.
+            These are not optional design ideas anymore. They are the <span class="mark">constraints</span> the implementation must consume.
           </p>
         </div>
         <div class="constraints">
           <article class="constraint">
-            <div class="kicker">Environment model</div>
-            <h3>Local -> dev -> staging -> prod</h3>
+            <div class="constraint-head">
+              <span class="constraint-icon"><img src="../assets/presentation-icons/kubernetes.svg" alt=""></span>
+              <div>
+                <div class="kicker">Environment model</div>
+                <h3>Local -> dev -> staging -> prod</h3>
+              </div>
+            </div>
             <p>Certification is reserved for Stage 3. Stage 2 focuses on controlled promotion and shared-platform governance.</p>
           </article>
           <article class="constraint">
-            <div class="kicker">Cluster model</div>
-            <h3>Two-cluster boundary</h3>
+            <div class="constraint-head">
+              <span class="constraint-icon"><img src="../assets/presentation-icons/azure.svg" alt=""></span>
+              <div>
+                <div class="kicker">Cluster model</div>
+                <h3>Two-cluster boundary</h3>
+              </div>
+            </div>
             <p>One non-prod cluster for dev and staging, one isolated prod cluster for production.</p>
           </article>
           <article class="constraint">
-            <div class="kicker">Workflow rule</div>
-            <h3>Stage 1 stays versioned</h3>
+            <div class="constraint-head">
+              <span class="constraint-icon"><img src="../assets/presentation-icons/github-releases.svg" alt=""></span>
+              <div>
+                <div class="kicker">Workflow rule</div>
+                <h3>Stage 1 stays versioned</h3>
+              </div>
+            </div>
             <p>Stage 1 remains replayable through the release tag. `main` evolves to Stage 2 instead of running two active workflow generations.</p>
           </article>
           <article class="constraint">
-            <div class="kicker">Promotion rule</div>
-            <h3>Same image across environments</h3>
+            <div class="constraint-head">
+              <span class="constraint-icon"><img src="../assets/presentation-icons/github.svg" alt=""></span>
+              <div>
+                <div class="kicker">Promotion rule</div>
+                <h3>Same image across environments</h3>
+              </div>
+            </div>
             <p>Build once, publish once, promote the same immutable tag or digest through dev, staging, and prod.</p>
           </article>
         </div>
@@ -592,69 +1309,142 @@
         <div class="section-head">
           <h2>What changes by domain</h2>
           <p>
-            Stage 2 is not one giant refactor. Each area changes for a specific reason tied to the shared-platform model.
+            Stage 2 is not one giant refactor. Each area changes for a specific reason tied to the <span class="mark">shared-platform model</span>.
           </p>
         </div>
         <div class="domains">
           <article class="domain">
-            <div class="kicker">Infrastructure</div>
-            <h3>Multi-environment foundation</h3>
-            <p>Introduce environment-aware inputs, Terragrunt wiring, state separation, naming, tags, and non-prod vs prod cluster boundaries.</p>
+            <div class="domain-head">
+              <span class="domain-icon"><i data-lucide="cloud-cog"></i></span>
+              <div>
+                <div class="kicker">Infrastructure</div>
+                <h3>Multi-environment foundation</h3>
+              </div>
+            </div>
+            <p>Introduce environment-aware inputs, Terragrunt wiring, state separation, naming, tags, and <span class="mark">cluster boundaries</span>.</p>
             <ul>
               <li>`dev`, `staging`, `prod` inputs</li>
               <li>Terragrunt for repeated environment wiring</li>
               <li>two-cluster Azure foundation</li>
             </ul>
+            <div class="icon-row" aria-label="Infrastructure technologies">
+              <span><img src="../assets/presentation-icons/azure.svg" alt="">Azure</span>
+              <span><img src="../assets/presentation-icons/terraform.svg" alt="">Terraform</span>
+              <span><img src="../assets/presentation-icons/terraform.svg" alt="">Terragrunt</span>
+              <span><img src="../assets/presentation-icons/kubernetes.svg" alt="">AKS</span>
+              <span><img src="../assets/presentation-icons/postgresql.svg" alt="">PostgreSQL</span>
+            </div>
           </article>
           <article class="domain">
-            <div class="kicker">Platform</div>
-            <h3>Shared runtime controls</h3>
-            <p>Evolve Kubernetes resources toward stronger namespace, policy, observability, GitOps, and secrets governance.</p>
+            <div class="domain-head">
+              <span class="domain-icon"><i data-lucide="shield-check"></i></span>
+              <div>
+                <div class="kicker">Platform</div>
+                <h3>Shared runtime controls</h3>
+              </div>
+            </div>
+            <p>Evolve Kubernetes resources toward stronger namespace, policy, observability, GitOps, and <span class="mark">secrets governance</span>.</p>
             <ul>
               <li>environment-aware namespaces and RBAC</li>
               <li>Kyverno and GitOps direction</li>
               <li>shared observability hardening</li>
             </ul>
+            <div class="icon-row" aria-label="Platform technologies">
+              <span><img src="../assets/presentation-icons/openshift.svg" alt="">OpenShift</span>
+              <span><img src="../assets/presentation-icons/kubernetes.svg" alt="">Kubernetes</span>
+              <span><img src="../assets/presentation-icons/argocd.svg" alt="">Argo CD</span>
+              <span><img src="../assets/presentation-icons/vault.svg" alt="">Vault</span>
+              <span><img src="../assets/presentation-icons/policy.svg" alt="">Kyverno</span>
+            </div>
           </article>
           <article class="domain">
-            <div class="kicker">Application</div>
-            <h3>Promotion-safe packaging</h3>
-            <p>Keep one image, add environment-aware values, and make deployment behavior promotion-safe across dev, staging, and prod.</p>
+            <div class="domain-head">
+              <span class="domain-icon"><i data-lucide="package-check"></i></span>
+              <div>
+                <div class="kicker">Application</div>
+                <h3>Promotion-safe packaging</h3>
+              </div>
+            </div>
+            <p>Keep <span class="mark">one image</span>, add environment-aware values, and make deployment behavior promotion-safe across dev, staging, and prod.</p>
             <ul>
               <li>Helm values per environment</li>
               <li>immutable image promotion</li>
               <li>stable runtime contracts</li>
             </ul>
+            <div class="icon-row" aria-label="Application technologies">
+              <span><img src="../assets/presentation-icons/spring-boot.svg" alt="">Spring Boot</span>
+              <span><img src="../assets/presentation-icons/docker.svg" alt="">Docker</span>
+              <span><img src="../assets/presentation-icons/helm.svg" alt="">Helm</span>
+              <span><img src="../assets/presentation-icons/github.svg" alt="">GHCR</span>
+            </div>
           </article>
           <article class="domain">
-            <div class="kicker">Reliability</div>
-            <h3>Validation and rollback evidence</h3>
-            <p>Stage 2 makes staging validation and rollback readiness explicit instead of assuming they exist implicitly.</p>
+            <div class="domain-head">
+              <span class="domain-icon"><i data-lucide="activity"></i></span>
+              <div>
+                <div class="kicker">Reliability</div>
+                <h3>Validation and rollback evidence</h3>
+              </div>
+            </div>
+            <p>Stage 2 makes <span class="mark">staging validation</span> and rollback readiness explicit instead of assuming they exist implicitly.</p>
             <ul>
               <li>Postman + Newman staging E2E</li>
               <li>rollback runbooks</li>
               <li>service-level interpretation</li>
             </ul>
+            <div class="icon-row" aria-label="Reliability technologies">
+              <span><img src="../assets/presentation-icons/prometheus.svg" alt="">Prometheus</span>
+              <span><img src="../assets/presentation-icons/grafana.svg" alt="">Grafana</span>
+              <span><img src="../assets/presentation-icons/postman.svg" alt="">Postman/Newman</span>
+              <span><img src="../assets/presentation-icons/elasticsearch.svg" alt="">Elastic</span>
+              <span><img src="../assets/presentation-icons/kibana.svg" alt="">Kibana</span>
+            </div>
           </article>
           <article class="domain">
-            <div class="kicker">Workflows</div>
-            <h3>Boundaries before automation sprawl</h3>
-            <p>GitHub Actions stay flat in `.github/workflows/`, but ownership and promotion logic become environment-aware.</p>
+            <div class="domain-head">
+              <span class="domain-icon"><i data-lucide="git-branch"></i></span>
+              <div>
+                <div class="kicker">Workflows</div>
+                <h3>Boundaries before automation sprawl</h3>
+              </div>
+            </div>
+            <p>GitHub Actions stay flat in `.github/workflows/`, but <span class="mark">promotion logic</span> becomes environment-aware.</p>
             <ul>
               <li>team-prefixed workflow families</li>
               <li>prod approval in GitHub Environments</li>
               <li>staging evidence before prod</li>
             </ul>
+            <div class="icon-row" aria-label="Workflow technologies">
+              <span><img src="../assets/presentation-icons/github-actions.svg" alt="">Actions</span>
+              <span><img src="../assets/presentation-icons/github.svg" alt="">GHCR</span>
+              <span><img src="../assets/presentation-icons/dependabot.svg" alt="">Dependabot</span>
+              <span><img src="../assets/presentation-icons/checkmarx.svg" alt="">Checkmarx</span>
+              <span><img src="../assets/presentation-icons/snyk.svg" alt="">Snyk</span>
+              <span><img src="../assets/presentation-icons/trivy.svg" alt="">Trivy</span>
+              <span><img src="../assets/presentation-icons/prisma.svg" alt="">Checkov</span>
+            </div>
           </article>
           <article class="domain">
-            <div class="kicker">Docs and governance</div>
-            <h3>Readable evolution path</h3>
-            <p>Docs make the progression legible: Stage 1 proof, Stage 2 constraints, and later Stage 3 expansion.</p>
+            <div class="domain-head">
+              <span class="domain-icon"><i data-lucide="file-check-2"></i></span>
+              <div>
+                <div class="kicker">Docs and governance</div>
+                <h3>Readable evolution path</h3>
+              </div>
+            </div>
+            <p>Docs make the progression legible: Stage 1 proof, <span class="mark">Stage 2 constraints</span>, and later Stage 3 expansion.</p>
             <ul>
               <li>governance before tooling</li>
               <li>implementation plan before code churn</li>
               <li>clear stage boundaries</li>
             </ul>
+            <div class="icon-row" aria-label="Governance technologies">
+              <span><img src="../assets/presentation-icons/microsoft.svg" alt="">Entra ID</span>
+              <span><img src="../assets/presentation-icons/okta.svg" alt="">Okta</span>
+              <span><img src="../assets/presentation-icons/vault.svg" alt="">Vault</span>
+              <span><img src="../assets/presentation-icons/policy.svg" alt="">Policy</span>
+              <span><img src="../assets/presentation-icons/ansible.svg" alt="">Ansible</span>
+            </div>
           </article>
         </div>
       </section>
@@ -665,5 +1455,108 @@
       </div>
     </div>
   </main>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({
+        startOnLoad: true,
+        securityLevel: "loose",
+        theme: "base",
+        flowchart: {
+          htmlLabels: true,
+          curve: "basis"
+        },
+        themeVariables: {
+          fontFamily: "Space Grotesk, sans-serif",
+          primaryColor: "#ffffff",
+          primaryTextColor: "#151922",
+          primaryBorderColor: "#c8e5df",
+          lineColor: "#0f766e",
+          tertiaryColor: "#e7f3f1"
+        }
+      });
+    }
+
+    lucide.createIcons({
+      attrs: {
+        "stroke-width": 2,
+        "aria-hidden": "true"
+      }
+    });
+
+    if (window.anime && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      anime.set([".hero .eyebrow", ".hero h1", ".hero p", ".tool", ".hero-panel"], {
+        opacity: 0,
+        translateY: 18
+      });
+
+      anime.timeline({ easing: "easeOutCubic", duration: 650 })
+        .add({
+          targets: ".hero .eyebrow",
+          opacity: [0, 1],
+          translateY: [10, 0]
+        })
+        .add({
+          targets: ".hero h1",
+          opacity: [0, 1],
+          translateY: [18, 0],
+          duration: 760
+        }, "-=360")
+        .add({
+          targets: ".hero p",
+          opacity: [0, 1],
+          translateY: [14, 0]
+        }, "-=460")
+        .add({
+          targets: ".tool",
+          opacity: [0, 1],
+          translateY: [12, 0],
+          delay: anime.stagger(45)
+        }, "-=420")
+        .add({
+          targets: ".hero-panel",
+          opacity: [0, 1],
+          translateY: [18, 0]
+        }, "-=520")
+        .add({
+          targets: ".timeline-item",
+          opacity: [0, 1],
+          translateX: [16, 0],
+          delay: anime.stagger(70),
+          duration: 460
+        }, "-=320");
+
+      const revealTargets = document.querySelectorAll(".section, .footer-note");
+      anime.set(revealTargets, { opacity: 0, translateY: 24 });
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          observer.unobserve(entry.target);
+
+          anime({
+            targets: entry.target,
+            opacity: [0, 1],
+            translateY: [24, 0],
+            duration: 620,
+            easing: "easeOutCubic"
+          });
+
+          const children = entry.target.querySelectorAll(".path-tile, .method-step, .ai-mermaid-panel, .constraint, .domain, .tracker tbody tr");
+          if (children.length) {
+            anime({
+              targets: children,
+              opacity: [0, 1],
+              translateY: [14, 0],
+              delay: anime.stagger(55),
+              duration: 480,
+              easing: "easeOutCubic"
+            });
+          }
+        });
+      }, { threshold: 0.16 });
+
+      revealTargets.forEach((target) => observer.observe(target));
+    }
+  </script>
 </body>
 </html>
