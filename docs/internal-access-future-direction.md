@@ -77,12 +77,28 @@ This direction is better aligned with later-stage maturity work such as:
 Those concerns are intentionally treated as later-stage work rather than core
 Stage 1 implementation requirements.
 
+Stage 2 owns the platform-side private access pattern:
+
+```text
+trusted network prerequisite
+  -> private DNS
+  -> internal ingress / gateway
+  -> private AKS application and observability services
+```
+
+Stage 2 should assume the trusted network exists, but it should not claim
+ownership of the enterprise access stack itself. Palo Alto Prisma Access,
+GlobalProtect, full ZTNA / SASE, enterprise VPN ownership, enterprise WAF
+standardization, and broader Okta / Microsoft Entra conditional access belong
+to Stage 3 enterprise access architecture.
+
 ## Simple interpretation
 
 Use this rule:
 
 - Stage 1 diagram = actual implemented access path
-- future internal access note = planned later-stage access direction
+- Stage 2 = private platform access pattern
+- Stage 3 = enterprise access integration pattern
 
 That keeps the Stage 1 architecture honest while preserving the broader
 platform design direction for later steps.

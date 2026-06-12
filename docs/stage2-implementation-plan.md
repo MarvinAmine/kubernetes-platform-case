@@ -9,6 +9,12 @@ The work should progress in this order: operating model first, environments seco
 Governance directives for Stage 2 are captured in
 [docs/governance/stage2-governance-directives.md](./governance/stage2-governance-directives.md).
 
+The Stage 2 architecture set is organized by purpose in
+[docs/architecture/stage2/README.md](./architecture/stage2/README.md).
+
+The OpenShift implementation timing decision is captured in
+[ADR-016 - Use OpenShift-aligned governance in Stage 2 and defer runtime proof to Stage 3](./adrs/ADR-016-use-openshift-aligned-governance-in-stage-2-and-defer-runtime-proof-to-stage-3.md).
+
 ## Progress Tracker
 
 | Step | Scope | Status |
@@ -235,6 +241,27 @@ Prepare only the networking needed for Stage 2:
 
 Do not build complex hub/spoke networking unless Stage 2 explicitly needs it.
 
+Stage 2 owns the platform-side private access pattern:
+
+```text
+trusted network prerequisite
+  -> private DNS
+  -> internal ingress / gateway
+  -> private AKS application and observability services
+```
+
+Stage 2 does not own the full enterprise access stack. The following are
+enterprise network/security concerns and belong to Stage 3 or later:
+
+- Palo Alto Prisma Access / GlobalProtect
+- full ZTNA / SASE implementation
+- enterprise VPN ownership
+- enterprise WAF standardization
+- broader Okta / Microsoft Entra conditional access model
+
+Stage 2 may assume a trusted network or VPN exists, but it should not implement
+or claim ownership of that enterprise access layer.
+
 ### 5. Observability / logging prerequisites
 
 Add only what the platform layer needs for Stage 2 visibility:
@@ -274,6 +301,63 @@ Practical first infrastructure task:
 > Refactor `infrastructure/azure` to support environment-specific variables,
 > tags, naming, Terragrunt environment wrappers, and Terraform state keys for
 > non-prod and prod estates.
+
+## Database Hosting Decision
+
+Stage 2 uses different PostgreSQL hosting models depending on what each
+environment is meant to prove.
+
+| Environment | PostgreSQL model | Purpose |
+| --- | --- | --- |
+| local developer runtime | PostgreSQL pod | Fast local validation without Azure dependency |
+| OpenShift Sandbox | Preferred: external Azure PostgreSQL if networking allows it. Fallback: PostgreSQL pod or mocked DB contract | OpenShift workload compatibility proof |
+| AKS dev | Azure Database for PostgreSQL | Real managed-service contract validation |
+| AKS staging | Azure Database for PostgreSQL | Production-like promotion validation |
+| AKS prod | Azure Database for PostgreSQL | Managed production dependency |
+
+The rule is:
+
+```text
+Local and Sandbox optimize for portability and cost.
+AKS non-prod optimizes for production parity.
+```
+
+AKS `dev` and `staging` should not use PostgreSQL pods as the default database
+model. They should validate the same dependency shape as production:
+
+```text
+Spring Boot workload in AKS
+  -> Kubernetes ConfigMap / Secret contract
+  -> Azure Database for PostgreSQL
+```
+
+OpenShift Sandbox is not `prod`. It is a temporary compatibility lab. The
+preferred stronger proof is external Azure PostgreSQL connectivity when
+networking and firewall rules allow it:
+
+```text
+Spring Boot workload in OpenShift Sandbox
+  -> OpenShift Project
+  -> Route / Service exposure
+  -> pull secret
+  -> ConfigMap / Secret contract
+  -> Azure PostgreSQL public or otherwise reachable endpoint
+```
+
+The main practical blocker is that Azure PostgreSQL may require allow-listing
+Sandbox egress IPs, while the shared Sandbox environment may not provide stable
+or controllable egress IPs.
+
+If external connectivity is blocked, use PostgreSQL in a pod or a mocked DB
+contract as the fallback compatibility proof.
+
+Azure PostgreSQL provisioning, Azure networking, Azure private DNS, Azure OIDC,
+and AKS Terraform remain Azure-specific infrastructure concerns.
+
+Stage 3 should still default to external managed or enterprise DBA-managed
+PostgreSQL for regulated-style OpenShift runtime proof. PostgreSQL operators
+inside OpenShift are a later advanced alternative only if the stage explicitly
+studies stateful database operations.
 
 ## Platform Architecture Choices
 
@@ -451,6 +535,7 @@ Platform-owned observability:
 - Kubernetes networking / node / Prometheus dashboards
 - dashboard provisioning as code
 - scrape conventions and labels
+- Grafana folder permissions and viewer / editor / admin boundaries
 
 Reliability-owned observability:
 
@@ -460,6 +545,120 @@ Reliability-owned observability:
 - incident and rollback runbooks
 
 The split keeps platform health separate from application reliability.
+
+### Shared monitoring protection model
+
+Stage 2 should use one shared non-prod observability stack by default.
+
+The key separation is:
+
+```text
+Application teams are observed by monitoring.
+Application teams do not own monitoring.
+```
+
+Recommended ownership:
+
+| Scope | Owner | Rule |
+| --- | --- | --- |
+| `monitoring` namespace | Platform / SRE | Only platform-owned identities can update or delete observability resources |
+| Prometheus / Grafana installation | Platform / SRE | Installed and reconciled through Helm, Kustomize, and later GitOps |
+| dashboard ConfigMaps | Platform / SRE or Reliability through PR | Source of truth is Git, not manual UI edits |
+| dev application namespace | Application team | Application deployment permissions only |
+| staging application namespace | Application team with promotion gate | Deployment only after staging workflow / approval path |
+
+Protection controls:
+
+- Kubernetes RBAC prevents dev identities from changing `monitoring` or
+  `payment-exception-review-staging`.
+- GitHub Environments separate `dev`, `staging`, and later `prod` deployment
+  permissions.
+- Kyverno can block unauthorized updates or deletes on shared observability
+  resources.
+- ArgoCD can reconcile deleted or drifted dashboard ConfigMaps back from Git.
+- Grafana permissions limit UI actions, but Kubernetes RBAC and GitOps remain
+  the source-of-truth controls.
+
+Grafana folder model:
+
+| Folder | Default access |
+| --- | --- |
+| Shared Platform | Platform / SRE editor, dev and QA viewer |
+| Application - Dev | Platform / SRE editor, dev viewer |
+| Application - Staging | Platform / SRE editor, QA / PO / dev viewer as needed |
+| Production | Platform / SRE editor, restricted viewer access |
+
+Design rule:
+
+```text
+Grafana permissions control UI access.
+Kubernetes RBAC and GitOps control the source of truth.
+```
+
+Architecture diagram rule:
+
+```text
+Do not model Grafana permissions as a Kubernetes runtime component.
+Show Grafana, dashboards, Prometheus, log collectors, Elasticsearch, and Kibana
+only where they participate in real runtime interactions.
+```
+
+The default Stage 2 model should not duplicate Grafana per environment. Use one
+shared non-prod Grafana with dashboards filtered by `environment`, `namespace`,
+and workload labels. Split dashboards or observability stacks only when
+ownership, retention, access control, or alerting behavior must differ.
+
+### OpenShift Sandbox observability check
+
+The OpenShift Sandbox compatibility diagram should only draw observability
+components that are actually installed or allowed in the Sandbox proof.
+
+The fuller Stage 2 observability stack is:
+
+```text
+Prometheus
+Grafana
+Alertmanager
+log collector
+Elasticsearch
+Kibana
+dashboard ConfigMaps
+```
+
+This stack is compatible with OpenShift in principle, but it should not be
+assumed in Developer Sandbox. Check the available APIs, permissions, and quotas
+first:
+
+```bash
+oc api-resources | grep -i monitor
+oc api-resources | grep -i prometheus
+oc api-resources | grep -i grafana
+oc api-resources | grep -i elastic
+oc api-resources | grep -i kibana
+oc auth can-i create servicemonitors
+oc auth can-i create prometheuses
+oc auth can-i create alertmanagers
+oc auth can-i create statefulsets
+oc auth can-i create persistentvolumeclaims
+oc get resourcequotas
+oc describe quota
+oc describe limitrange
+```
+
+Decision rule:
+
+```text
+Sandbox first proves workload compatibility.
+Full observability belongs in Sandbox only if the resources are available and
+the quota can support them.
+```
+
+Implementation order:
+
+1. `Route -> Service -> Pod -> ConfigMap / Secret -> DB`
+2. `/actuator/prometheus` and `ServiceMonitor` if allowed
+3. Prometheus / Grafana / Alertmanager if quotas allow
+4. Elasticsearch / Kibana only if storage and memory quotas make it practical
 
 ### Platform boundaries
 
@@ -1027,6 +1226,15 @@ Reliability owns:
 - log investigation runbooks
 - what to check during failed staging validation
 - what to check during rollback decisions
+
+Runtime log investigation flow:
+
+```text
+workload stdout / application logs
+  -> cluster log collector
+  -> Elasticsearch
+  -> Kibana
+```
 
 Stage 2 should not turn this into full SIEM ownership. SOC / SIEM integration is
 Stage 3 or later.

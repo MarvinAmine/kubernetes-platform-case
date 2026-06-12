@@ -50,6 +50,158 @@ features, for example:
 
 These are platform-governance and enterprise-Kubernetes concerns.
 
+## OpenShift compatibility boundary
+
+Stage 2 does not try to deploy the full AKS foundation on OpenShift.
+
+The compatibility target is narrower and more realistic:
+
+```text
+Can the application and Kubernetes platform manifests be made OpenShift-ready?
+```
+
+This means the portable scope is:
+
+- Spring Boot container image
+- Helm chart structure
+- Kubernetes Deployment and Service
+- ConfigMap and Secret usage
+- ServiceMonitor where the Prometheus Operator contract exists
+- Grafana dashboards as code, with environment-specific adjustments
+- namespace / project naming conventions
+- image pull from GHCR with the right pull secret contract
+
+The non-portable scope is:
+
+- Terraform that provisions AKS
+- Azure PostgreSQL infrastructure
+- Azure networking
+- Azure Storage remote Terraform backend
+- Azure OIDC / Microsoft Entra federation for GitHub Actions
+- AKS-specific cluster access and lifecycle scripts
+
+So the rule is:
+
+```text
+The workload and Kubernetes manifests can be made OpenShift-compatible.
+The Azure / AKS infrastructure layer cannot be deployed on OpenShift as-is.
+```
+
+OpenShift Sandbox is therefore used as a side compatibility lab, not as `dev`,
+`staging`, `certification`, or `prod`.
+
+Sandbox should not be treated as a full replacement for AKS non-prod. AKS `dev`
+and `staging` keep Azure Database for PostgreSQL because they must validate the
+same managed-service dependency shape expected in production.
+
+For Sandbox, the preferred stronger proof is external Azure PostgreSQL
+connectivity when networking and firewall rules allow it:
+
+```text
+OpenShift Sandbox workload
+  -> ConfigMap / Secret contract
+  -> Azure PostgreSQL public or otherwise reachable endpoint
+```
+
+The practical blocker is network control. Azure PostgreSQL may need to
+allow-list OpenShift Sandbox egress IPs, and the shared Sandbox environment may
+not expose stable or controllable egress IPs.
+
+If external connectivity is blocked or too noisy, the fallback proof is a
+substitute database contract:
+
+```text
+OpenShift Sandbox workload
+  -> ConfigMap / Secret contract
+  -> PostgreSQL pod or mocked DB contract
+```
+
+That means Sandbox validates whether the workload can run on OpenShift with the
+right application, secret, service, route, and image-pull contracts. It does not
+prove Azure PostgreSQL provisioning, Azure private DNS, Azure networking, or
+managed backup behavior.
+
+It should validate questions such as:
+
+- does the Helm chart deploy cleanly on OpenShift?
+- does the container run with OpenShift security expectations?
+- does the workload need explicit non-root or securityContext changes?
+- does GHCR image pull behavior require a pull secret adjustment?
+- does the app need an OpenShift Route in addition to Kubernetes Ingress?
+- do ServiceMonitor labels and selectors still match the monitoring contract?
+- can the app start against external Azure PostgreSQL when networking allows it?
+- can the app still start against a PostgreSQL pod or mocked DB contract when
+  external connectivity is blocked?
+
+### Sandbox capability checks
+
+Before drawing or installing the fuller observability stack in Sandbox, confirm
+what is actually available and allowed.
+
+Inspect the project and installed resources:
+
+```bash
+oc project
+oc get projects
+oc get all
+oc get pods
+oc get svc
+oc get routes
+oc get configmaps
+oc get secrets
+```
+
+Inspect whether monitoring APIs exist:
+
+```bash
+oc get servicemonitor
+oc get prometheus
+oc get alertmanager
+oc api-resources | grep -i monitor
+oc api-resources | grep -i prometheus
+oc api-resources | grep -i grafana
+```
+
+Check whether the current Sandbox identity can create the needed resources:
+
+```bash
+oc auth can-i create servicemonitors
+oc auth can-i create prometheuses
+oc auth can-i create alertmanagers
+oc auth can-i create routes
+oc auth can-i create secrets
+oc auth can-i create configmaps
+```
+
+Check whether heavier logging components are realistic:
+
+```bash
+oc api-resources | grep -i elastic
+oc api-resources | grep -i kibana
+oc auth can-i create statefulsets
+oc auth can-i create persistentvolumeclaims
+oc get resourcequotas
+oc describe quota
+oc describe limitrange
+```
+
+Decision rule:
+
+```text
+If the component is installed or allowed in Sandbox, it can appear in the
+Sandbox runtime proof.
+
+If it is not installed or not allowed, keep it in the AKS non-prod architecture
+and document Sandbox as a compatibility proof only.
+```
+
+Recommended sequence:
+
+1. Prove the app compatibility path: `Route -> Service -> Pod -> ConfigMap / Secret -> DB`.
+2. Prove the metrics contract: `/actuator/prometheus` and `ServiceMonitor` if allowed.
+3. Add Prometheus / Grafana / Alertmanager only if Sandbox quotas and permissions allow it.
+4. Avoid Elasticsearch / Kibana in Sandbox unless resource quotas and storage make it practical.
+
 ## What is deferred to Stage 3
 
 The following concerns are intentionally treated as later-stage architecture
@@ -62,6 +214,12 @@ features rather than the main purpose of Stage 2:
 - stronger portability design across providers
 - broader enterprise identity integration across environments
 - enterprise-wide observability federation and long-term cross-environment view
+
+Even in Stage 3, the default regulated-style database posture is external
+managed or enterprise DBA-managed PostgreSQL, not a critical database hosted
+inside OpenShift. PostgreSQL operators such as Crunchy Data, EDB, or
+CloudNativePG remain an advanced alternative only if the stage intentionally
+studies stateful database operations on OpenShift.
 
 These are multi-cloud and broader enterprise-architecture concerns.
 
@@ -120,13 +278,18 @@ Cons:
 The repository uses this progression:
 
 - Stage 1: governed AKS delivery foundation
-- Stage 2: OpenShift-oriented enterprise Kubernetes features for shared-platform
-  governance
-- Stage 3: broader hybrid-cloud, enterprise architecture direction, and
-  OpenShift Service Mesh (Istio-based) when mesh-level controls are needed
+- Stage 2: OpenShift-ready target architecture and shared-platform governance
+  validated through cost-controlled labs
+- Stage 3: real OpenShift runtime proof, broader hybrid-cloud / enterprise
+  architecture direction, and OpenShift Service Mesh (Istio-based) when
+  mesh-level controls are needed
 
 So the rule is:
 
-- OpenShift in Stage 2 is mainly about enterprise Kubernetes operating
-  features
+- OpenShift in Stage 2 is mainly about enterprise Kubernetes operating features
+  and architecture direction, not mandatory permanent runtime implementation
+- real OpenShift runtime proof moves to Stage 3
 - multi-cloud is a later architecture concern, not the primary justification
+
+For the ADR that records the cost-controlled validation strategy, see
+[ADR-016 - Use OpenShift-aligned governance in Stage 2 and defer runtime proof to Stage 3](./adrs/ADR-016-use-openshift-aligned-governance-in-stage-2-and-defer-runtime-proof-to-stage-3.md).

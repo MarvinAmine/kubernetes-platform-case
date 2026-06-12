@@ -1,0 +1,261 @@
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<section class="section" id="environment-architectures">
+  <div class="section-head">
+    <div>
+      <span class="eyebrow">Stage 2 environment architecture</span>
+      <h2>Four environment views, one governed promotion model</h2>
+    </div>
+    <p>
+      Stage 2 uses local, dev, staging, and prod as real environments. Dev and staging share the
+      non-prod AKS platform cluster, while production is isolated in its own AKS cluster.
+    </p>
+  </div>
+
+  <div class="principles">
+    <article class="principle">
+      <span class="kicker">Local</span>
+      <h3>Fast developer validation</h3>
+      <p>
+        Local proves the application, Helm chart, runtime configuration, and basic observability
+        without depending on Azure.
+      </p>
+
+      <div class="ai-mermaid-panel">
+        <pre class="mermaid">
+flowchart TB
+  subgraph LOCAL["Local developer workstation"]
+    DEV["Developer"]
+    REPO["GitHub repository clone"]
+    BUILD["Maven tests<br/>Docker build<br/>Helm template validation"]
+    KIND["Local Kubernetes<br/>kind or Docker Desktop"]
+    NS["Namespace<br/>payment-exception-review-local"]
+    APP["Payment Exception Review API<br/>Helm release:<br/>payment-exception-review-service"]
+    PG["Local PostgreSQL"]
+    OBS["Local Prometheus / Grafana<br/>optional validation"]
+  end
+
+  DEV --> REPO
+  REPO --> BUILD
+  BUILD --> KIND
+  KIND --> NS
+  NS --> APP
+  APP --> PG
+  APP -. "metrics" .-> OBS
+
+  classDef human fill:#fff,stroke:#0f766e,stroke-width:2px;
+  classDef delivery fill:#e8eefc,stroke:#1d4ed8,stroke-width:2px;
+  classDef runtime fill:#e7f3f1,stroke:#0f766e,stroke-width:2px;
+  classDef data fill:#f7ebe6,stroke:#9a3412,stroke-width:2px;
+
+  class DEV human;
+  class REPO,BUILD delivery;
+  class KIND,NS,APP,OBS runtime;
+  class PG data;
+        </pre>
+      </div>
+    </article>
+
+    <article class="principle">
+      <span class="kicker">Dev</span>
+      <h3>First shared-cloud integration</h3>
+      <p>
+        Dev is the first shared Azure target. It validates infrastructure wiring, platform
+        bootstrap, GitHub Actions, OIDC, GHCR image delivery, Helm values, and runtime contracts.
+      </p>
+
+      <div class="ai-mermaid-panel">
+        <pre class="mermaid">
+flowchart TB
+  PR["Pull request / merge"]
+  GHA["GitHub Actions<br/>CI + deploy dev"]
+  OIDC["Microsoft Entra ID / OIDC"]
+  GHCR["GHCR<br/>immutable image tag or digest"]
+  TG["Terragrunt / Terraform<br/>non-prod state key"]
+  STATE["Azure Storage<br/>tfstate/stage2/nonprod/terraform.tfstate"]
+
+  subgraph AZURE_NONPROD["Azure non-prod estate"]
+    RG["Resource group<br/>rg-stage2-nonprod-aks"]
+    AKS["AKS cluster<br/>aks-stage2-nonprod-platform"]
+
+    subgraph DEVNS["Namespace<br/>payment-exception-review-dev"]
+      PLATFORM["Platform baseline<br/>RBAC<br/>service account<br/>ConfigMap<br/>secret contract<br/>Kyverno direction"]
+      APP["Payment Exception Review API<br/>same image digest<br/>values-dev.yaml"]
+      SVC["Internal service / ingress route"]
+    end
+
+    PG["Azure PostgreSQL<br/>dev database or schema"]
+    OBS["Prometheus / Grafana<br/>platform dashboards"]
+    LOGS["Elasticsearch / Kibana<br/>log investigation direction"]
+  end
+
+  PR --> GHA
+  GHA --> OIDC
+  GHA --> GHCR
+  OIDC --> TG
+  TG --> STATE
+  TG --> RG
+  RG --> AKS
+  AKS --> DEVNS
+  GHCR --> APP
+  PLATFORM --> APP
+  APP --> SVC
+  APP --> PG
+  APP -. "metrics" .-> OBS
+  APP -. "logs" .-> LOGS
+
+  classDef source fill:#ffffff,stroke:#626b78,stroke-width:2px;
+  classDef delivery fill:#e8eefc,stroke:#1d4ed8,stroke-width:2px;
+  classDef cloud fill:#eff6fc,stroke:#0078d4,stroke-width:2px;
+  classDef runtime fill:#e7f3f1,stroke:#0f766e,stroke-width:2px;
+  classDef data fill:#f7ebe6,stroke:#9a3412,stroke-width:2px;
+
+  class PR source;
+  class GHA,OIDC,GHCR,TG,STATE delivery;
+  class AZURE_NONPROD,RG,AKS cloud;
+  class DEVNS,PLATFORM,APP,SVC,OBS,LOGS runtime;
+  class PG data;
+        </pre>
+      </div>
+    </article>
+
+    <article class="principle">
+      <span class="kicker">Staging</span>
+      <h3>Promotion validation before production</h3>
+      <p>
+        Staging reuses the same immutable image promoted from dev. Its purpose is operational
+        validation: Postman/Newman E2E, runtime config checks, rollback readiness, and release evidence.
+      </p>
+
+      <div class="ai-mermaid-panel">
+        <pre class="mermaid">
+flowchart TB
+  DIGEST["Approved image digest<br/>from dev"]
+  PROMOTE["GitHub Actions<br/>promote to staging"]
+  GHA_ENV["GitHub Environment<br/>staging"]
+  EVIDENCE["Promotion evidence<br/>commit SHA<br/>image digest<br/>namespace<br/>release"]
+
+  subgraph AZURE_NONPROD["Azure non-prod estate"]
+    AKS["AKS cluster<br/>aks-stage2-nonprod-platform"]
+
+    subgraph STAGINGNS["Namespace<br/>payment-exception-review-staging"]
+      PLATFORM["Platform baseline<br/>RBAC<br/>service account<br/>ConfigMap<br/>secret contract<br/>Kyverno policies"]
+      APP["Payment Exception Review API<br/>same image digest<br/>values-staging.yaml"]
+      ROUTE["Private staging route"]
+    end
+
+    PG["Azure PostgreSQL<br/>staging database or schema"]
+    OBS["Prometheus / Grafana<br/>staging dashboard labels"]
+    KIBANA["Kibana queries<br/>failed validation investigation"]
+  end
+
+  NEWMAN["Reliability gate<br/>Postman + Newman E2E"]
+  ZAP["OWASP ZAP baseline<br/>non-prod DAST direction"]
+  ROLLBACK["Rollback readiness<br/>previous known-good digest"]
+
+  DIGEST --> PROMOTE
+  PROMOTE --> GHA_ENV
+  GHA_ENV --> APP
+  PROMOTE --> EVIDENCE
+  AKS --> STAGINGNS
+  PLATFORM --> APP
+  APP --> ROUTE
+  APP --> PG
+  APP -. "metrics" .-> OBS
+  APP -. "logs" .-> KIBANA
+  ROUTE --> NEWMAN
+  ROUTE --> ZAP
+  NEWMAN --> ROLLBACK
+
+  classDef delivery fill:#e8eefc,stroke:#1d4ed8,stroke-width:2px;
+  classDef cloud fill:#eff6fc,stroke:#0078d4,stroke-width:2px;
+  classDef runtime fill:#e7f3f1,stroke:#0f766e,stroke-width:2px;
+  classDef gate fill:#fff8df,stroke:#ffb900,stroke-width:2px;
+  classDef data fill:#f7ebe6,stroke:#9a3412,stroke-width:2px;
+
+  class DIGEST,PROMOTE,GHA_ENV,EVIDENCE delivery;
+  class AZURE_NONPROD,AKS cloud;
+  class STAGINGNS,PLATFORM,APP,ROUTE,OBS,KIBANA runtime;
+  class NEWMAN,ZAP,ROLLBACK gate;
+  class PG data;
+        </pre>
+      </div>
+    </article>
+
+    <article class="principle">
+      <span class="kicker">Prod</span>
+      <h3>Isolated production target</h3>
+      <p>
+        Production is isolated at the cluster boundary. The same image digest that passed staging is
+        promoted only after explicit approval, with rollback evidence and production smoke checks.
+      </p>
+
+      <div class="ai-mermaid-panel">
+        <pre class="mermaid">
+flowchart TB
+  STAGE_PASS["Staging E2E passed<br/>Newman report<br/>rollback target recorded"]
+  APPROVAL["GitHub Environment approval<br/>prod"]
+  PROMOTE["GitHub Actions<br/>promote to prod"]
+  DIGEST["Same immutable image digest<br/>that passed staging"]
+  TG["Terragrunt / Terraform<br/>prod state key"]
+  STATE["Azure Storage<br/>tfstate/stage2/prod/terraform.tfstate"]
+
+  subgraph AZURE_PROD["Azure production estate"]
+    RG["Resource group<br/>rg-stage2-prod-aks"]
+    AKS["AKS cluster<br/>aks-stage2-prod-platform"]
+
+    subgraph PRODNS["Namespace<br/>payment-exception-review-prod"]
+      PLATFORM["Production platform baseline<br/>RBAC<br/>service account<br/>secret contract<br/>Kyverno guardrails"]
+      APP["Payment Exception Review API<br/>same image digest<br/>values-prod.yaml"]
+      ROUTE["Private production route"]
+    end
+
+    APPGW["Internal App Gateway"]
+    DNS["Private DNS"]
+    PG["Azure PostgreSQL<br/>production database"]
+    VAULT["Vault / Key Vault direction<br/>centralized secrets"]
+    OBS["Prometheus / Grafana<br/>production dashboards"]
+    LOGS["Elasticsearch / Kibana<br/>production investigation direction"]
+  end
+
+  CONSUMER["Internal consumer<br/>support workflow<br/>trusted internal system"]
+  SMOKE["Production smoke check"]
+  ROLLBACK["Rollback runbook<br/>previous known-good digest"]
+
+  STAGE_PASS --> APPROVAL
+  APPROVAL --> PROMOTE
+  DIGEST --> PROMOTE
+  PROMOTE --> TG
+  TG --> STATE
+  TG --> RG
+  RG --> AKS
+  AKS --> PRODNS
+  PLATFORM --> APP
+  VAULT --> APP
+  APP --> PG
+  APP -. "metrics" .-> OBS
+  APP -. "logs" .-> LOGS
+  CONSUMER --> DNS
+  DNS --> APPGW
+  APPGW --> ROUTE
+  ROUTE --> APP
+  ROUTE --> SMOKE
+  SMOKE --> ROLLBACK
+
+  classDef approval fill:#fff8df,stroke:#ffb900,stroke-width:2px;
+  classDef delivery fill:#e8eefc,stroke:#1d4ed8,stroke-width:2px;
+  classDef cloud fill:#eff6fc,stroke:#0078d4,stroke-width:2px;
+  classDef runtime fill:#e7f3f1,stroke:#0f766e,stroke-width:2px;
+  classDef data fill:#f7ebe6,stroke:#9a3412,stroke-width:2px;
+  classDef access fill:#f1f8f1,stroke:#107c10,stroke-width:2px;
+
+  class STAGE_PASS,APPROVAL,SMOKE,ROLLBACK approval;
+  class PROMOTE,DIGEST,TG,STATE delivery;
+  class AZURE_PROD,RG,AKS cloud;
+  class PRODNS,PLATFORM,APP,VAULT,OBS,LOGS runtime;
+  class PG data;
+  class CONSUMER,DNS,APPGW,ROUTE access;
+        </pre>
+      </div>
+    </article>
+  </div>
+</section>

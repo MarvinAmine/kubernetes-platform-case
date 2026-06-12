@@ -87,7 +87,10 @@ Later stages expand this foundation toward:
 
 - stronger platform governance
 - deeper security and secret management
-- stronger internal access patterns
+- stronger internal access patterns in Stage 2 through private DNS, internal
+  ingress/gateway, and private service exposure
+- broader enterprise access integration in Stage 3 through ZTNA, SASE, VPN,
+  WAF, and conditional access patterns
 - GitOps and policy-driven operations
 - hybrid-cloud and OpenShift-oriented platform maturity
 

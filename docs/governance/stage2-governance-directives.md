@@ -78,22 +78,11 @@ The image must not be rebuilt separately for each environment.
 
 ## Service-Level Direction
 
-Stage 2 defines service-level direction for the demo platform.
+Stage 2 defines service-level direction for the demo platform before alerts,
+dashboards, incident reports, and rollback evidence are implemented.
 
-Initial SLO direction:
-
-```text
-Availability: 99.0% during the demo operating window
-API success rate: 99.0% for selected API endpoints
-Latency: p95 under 500ms for simple backend endpoints
-Metrics: /actuator/prometheus remains scrapeable
-```
-
-Initial MTTR target:
-
-```text
-Restore service or rollback within 15 minutes during demo operations.
-```
+The detailed project assumptions are documented in
+[stage2-reliability-targets.md](./stage2-reliability-targets.md).
 
 ## SLA Boundary
 

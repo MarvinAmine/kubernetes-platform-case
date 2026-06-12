@@ -27,6 +27,8 @@ These ADRs capture the structural decisions behind Stage 1 of the repository:
 - [ADR-013 - Use the repository-root `.env` file as the single local configuration source](./ADR-013-use-the-repository-root-env-file-as-the-single-local-configuration-source.md)
 - [ADR-014 - Separate application CI, deploy, and destroy workflows](./ADR-014-separate-application-ci-deploy-and-destroy-workflows.md)
 - [ADR-015 - Use Kustomize for Grafana dashboard ConfigMap generation](./ADR-015-use-kustomize-for-grafana-dashboard-configmap-generation.md)
+- [ADR-016 - Use OpenShift-aligned governance in Stage 2 and defer runtime proof to Stage 3](./ADR-016-use-openshift-aligned-governance-in-stage-2-and-defer-runtime-proof-to-stage-3.md)
+- [ADR-017 - Use managed PostgreSQL for non-prod parity and conditional external DB proof in OpenShift Sandbox](./ADR-017-use-managed-azure-postgresql-for-aks-nonprod-and-substitute-db-for-openshift-sandbox.md)
 
 ## Related ADRs
 

@@ -173,7 +173,7 @@ These are intentionally deferred to later stages:
 - ArgoCD
 - OpenShift
 - OpenShift Service Mesh (Istio-based)
-- Kafka
+- event streaming and enterprise messaging
 - advanced AppSec toolchain
 - multi-cloud failover
 - advanced compliance automation
@@ -501,7 +501,7 @@ Design Stage 1 so it can later absorb:
 - OpenShift
 - OpenShift Service Mesh (Istio-based)
 - hybrid Azure/AWS
-- Kafka
+- event streaming and enterprise messaging
 - stronger policy and governance controls
 
 ## 16. What Stage 1 proves to hiring managers

@@ -8,6 +8,8 @@
 
 [AI COLLABORATION MODEL ->](./ai-collaboration-model.md)
 
+[ARCHITECTURE SET: Stage 2 runtime, admission, promotion, and compatibility views ->](./architecture/stage2/README.md)
+
 Stage 2 evolves the Stage 1 delivery foundation into a governed shared platform model designed for enterprise Kubernetes operations in highly regulated environments.
 
 The main objective is no longer only to prove that one internal service can be deployed safely. It is to demonstrate how a platform can support multiple teams, multiple environments, stronger change controls, centralized secrets handling, and safer promotion practices while keeping delivery repeatable and operationally supportable.
@@ -29,8 +31,38 @@ and operational visibility for multiple teams.
 - **Environment promotion:** controlled **local -> dev -> staging -> prod** movement with approval, staging E2E evidence, and rollback discipline
 - **Multi-team readiness:** explicit Infrastructure, Platform, Security/IAM, Application, and SRE / Production Engineering boundaries
 
+### Controlled internal access boundary
+
+Stage 2 owns the platform-side private access pattern:
+
+```text
+trusted network prerequisite
+  -> private DNS
+  -> internal ingress / gateway
+  -> private AKS services
+```
+
+It does not implement enterprise ZTNA / SASE / VPN. Palo Alto Prisma Access,
+GlobalProtect, enterprise VPN ownership, and broader conditional access belong
+to Stage 3 enterprise access architecture.
+
 For the tradeoff behind using OpenShift here, see
 [openshift-tradeoffs.md](./openshift-tradeoffs.md).
+
+For the implementation timing decision, see
+[ADR-016 - Use OpenShift-aligned governance in Stage 2 and defer runtime proof to Stage 3](./adrs/ADR-016-use-openshift-aligned-governance-in-stage-2-and-defer-runtime-proof-to-stage-3.md).
+
+### Stage 2 architecture set
+
+The architecture is split by purpose so newcomers can follow the evolution
+without mixing runtime traffic, admission controls, and delivery governance:
+
+- runtime component interactions
+- admission governance
+- promotion governance
+- OpenShift Sandbox compatibility
+
+See [architecture/stage2/README.md](./architecture/stage2/README.md).
 
 ### What changes from Stage 1
 
@@ -183,6 +215,30 @@ This stage signals hands-on exposure and architectural thinking around:
 The later mesh choice, when Stage 3 justifies it, is **OpenShift Service Mesh
 (Istio-based)** rather than a standalone upstream mesh.
 
+### Database and OpenShift Sandbox boundary
+
+Stage 2 separates production parity from portability validation.
+
+AKS `dev` and `staging` use **Azure Database for PostgreSQL** so non-prod
+validates the same managed-service contract expected in production.
+
+OpenShift Sandbox is different. It validates the portable workload contract:
+Project, Route / Service exposure, pull secret, ConfigMap / Secret, and
+external Azure PostgreSQL when networking allows it.
+
+If Sandbox networking, firewall rules, DNS, or egress IP limits block external
+Azure PostgreSQL, the fallback is a PostgreSQL pod or mocked DB contract.
+
+AKS Terraform, Azure networking, Azure PostgreSQL provisioning, Azure Storage
+remote state, Azure OIDC, and AKS lifecycle scripts stay Azure-specific.
+
+Even in Stage 3, the default regulated-style OpenShift database posture remains
+external managed or enterprise DBA-managed PostgreSQL. Running PostgreSQL inside
+OpenShift is an advanced stateful-platform alternative, not the default.
+
+For the ADR, see
+[ADR-017 - Use managed PostgreSQL for non-prod parity and conditional external DB proof in OpenShift Sandbox](./adrs/ADR-017-use-managed-azure-postgresql-for-aks-nonprod-and-substitute-db-for-openshift-sandbox.md).
+
 ### Main soft skills demonstrated
 
 This stage is also meant to demonstrate:
@@ -199,6 +255,52 @@ This stage is also meant to demonstrate:
 ### Main business value of this stage
 
 The business value of Stage 2 is not just more tooling. It is the reduction of delivery risk and operational inconsistency when multiple teams share the same enterprise platform.
+
+### Shared monitoring ownership
+
+Stage 2 keeps one shared non-prod observability stack by default.
+
+Application teams are observed by Prometheus and Grafana, but they do not own
+the `monitoring` namespace or dashboard source of truth.
+
+The protection model is:
+
+- Kubernetes RBAC prevents dev identities from changing shared monitoring or
+  staging resources.
+- GitHub Environments separate dev and staging deployment permissions.
+- Grafana permissions limit UI access through folder-level viewer / editor /
+  admin roles.
+- GitOps restores dashboard ConfigMaps, alert rules, and shared observability
+  resources from Git when drift occurs.
+
+Design rule:
+
+```text
+Grafana permissions control UI access.
+Kubernetes RBAC and GitOps control the source of truth.
+```
+
+Diagram rule:
+
+```text
+Grafana permissions are not a Kubernetes runtime component.
+Runtime diagrams should show real component interactions only.
+```
+
+The Stage 2 log investigation path is:
+
+```text
+workload logs -> log collector -> Elasticsearch -> Kibana
+```
+
+OpenShift Sandbox is handled differently. It is a compatibility runtime, not
+the canonical non-prod observability estate.
+
+The fuller stack can be tested in Sandbox only after checking available APIs,
+permissions, and quotas with `oc api-resources`, `oc auth can-i`, and resource
+quota commands. If Sandbox cannot support it, the Sandbox proof stays focused on
+`Route -> Service -> Pod -> ConfigMap / Secret -> DB`, plus `/actuator/prometheus`
+and `ServiceMonitor` when allowed.
 
 This stage is meant to show a platform that can:
 

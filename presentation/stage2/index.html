@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stage 2 - Shared Platform Planning</title>
-  <meta name="description" content="Stage 2 presentation for governed shared-platform planning: environment model, workflow evolution, and platform roadmap.">
+  <meta name="description" content="Stage 2 presentation for governed shared-platform planning: environment model, workflow evolution, OpenShift-aligned governance, and platform roadmap.">
   <meta name="author" content="Marvin Meite">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://marvinmeite.cloud/payment-exception-review-stage-1/stage2/">
@@ -12,12 +12,12 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Marvin Meite">
   <meta property="og:title" content="Stage 2 - Shared Platform Planning">
-  <meta property="og:description" content="Stage 2 planning deck: environment boundaries, workflow evolution, governed shared-platform execution, and AI-assisted authorship discipline.">
+  <meta property="og:description" content="Stage 2 planning deck: environment boundaries, workflow evolution, OpenShift-aligned governance, and AI-assisted authorship discipline.">
   <meta property="og:url" content="https://marvinmeite.cloud/payment-exception-review-stage-1/stage2/">
   <meta property="og:image" content="https://marvinmeite.cloud/payment-exception-review-stage-1/assets/presentation_thumbnail.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Stage 2 - Shared Platform Planning">
-  <meta name="twitter:description" content="Governed shared-platform roadmap before tooling expansion.">
+  <meta name="twitter:description" content="Governed shared-platform roadmap with OpenShift-aligned governance before runtime expansion.">
   <meta name="twitter:image" content="https://marvinmeite.cloud/payment-exception-review-stage-1/assets/presentation_thumbnail.png">
   <script src="https://t.contentsquare.net/uxa/63a805dc90009.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -466,6 +466,7 @@
 
     .principles,
     .domains,
+    .adr-cards,
     .constraints,
     .path-tiles {
       display: grid;
@@ -529,20 +530,21 @@
     .ai-mermaid-panel {
       grid-column: 1 / -1;
       position: relative;
-      padding: 18px;
+      padding: 18px 28px;
       border-radius: var(--radius);
       background: rgba(255,255,255,0.9);
       border: 1px solid rgba(15, 118, 110, 0.18);
       box-shadow: 0 12px 30px rgba(20, 30, 45, 0.07);
       z-index: 1;
-      overflow-x: auto;
+      overflow: visible;
     }
 
     .ai-mermaid-panel .mermaid {
-      min-width: 720px;
+      min-width: 0;
       font-family: "Space Grotesk", sans-serif;
       display: flex;
       justify-content: center;
+      padding: 8px 0;
     }
 
     .ai-mermaid-panel svg {
@@ -550,6 +552,7 @@
       max-width: 100%;
       height: auto;
       margin: 0 auto;
+      overflow: visible;
     }
 
     .ai-loop-head {
@@ -648,6 +651,16 @@
       transition: transform 180ms ease, box-shadow 180ms ease;
     }
 
+    .architecture-panel {
+      grid-template-columns: 1fr;
+    }
+
+    .architecture-panel .path-tile img {
+      width: 100%;
+      min-width: 0;
+      max-width: none;
+    }
+
     .path-tile img {
       display: block;
       width: 100%;
@@ -680,6 +693,50 @@
     .path-tile span {
       display: block;
       padding: 0 14px 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .architecture-set {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .architecture-card {
+      padding: 20px;
+      border-radius: var(--radius);
+      background:
+        linear-gradient(145deg, rgba(250, 252, 255, 0.96), rgba(255, 255, 255, 0.98));
+      border: 1px solid var(--line);
+      min-height: 180px;
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .architecture-card:hover {
+      transform: translateY(-3px);
+      border-color: #b8c3d2;
+      box-shadow: 0 14px 30px rgba(20, 30, 45, 0.1);
+    }
+
+    .architecture-card i,
+    .architecture-card img {
+      width: 28px;
+      height: 28px;
+      margin-bottom: 18px;
+      color: var(--accent);
+    }
+
+    .architecture-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+      color: var(--ink);
+    }
+
+    .architecture-card span {
+      display: block;
       color: var(--muted);
       font-size: 13px;
       line-height: 1.45;
@@ -861,6 +918,124 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .adr-decision {
+      position: relative;
+      padding: 20px;
+      border: 1px solid rgba(15, 118, 110, 0.28);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(15, 118, 110, 0.16), transparent 34%),
+        linear-gradient(135deg, #ffffff, #f8fbfb);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .adr-decision::before {
+      content: "ADR-016";
+      position: absolute;
+      right: 18px;
+      top: 14px;
+      color: rgba(15, 118, 110, 0.13);
+      font-size: clamp(34px, 7vw, 76px);
+      font-weight: 700;
+      letter-spacing: -0.08em;
+      pointer-events: none;
+    }
+
+    .adr-cards {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 18px;
+    }
+
+    .adr-card {
+      position: relative;
+      padding: 18px;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid var(--line-soft);
+      min-height: 168px;
+    }
+
+    .adr-card strong {
+      display: block;
+      margin: 12px 0 8px;
+      font-size: 19px;
+      letter-spacing: -0.03em;
+    }
+
+    .adr-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .compat-table {
+      position: relative;
+      width: 100%;
+      margin-top: 18px;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(15, 118, 110, 0.18);
+      z-index: 1;
+    }
+
+    .compat-table th,
+    .compat-table td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid rgba(17,24,39,0.06);
+      vertical-align: top;
+    }
+
+    .compat-table th {
+      color: var(--muted);
+      background: rgba(15, 118, 110, 0.08);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .compat-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .compat-table td:first-child {
+      width: 26%;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .compat-table td:nth-child(2) {
+      width: 24%;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .compat-table td:last-child {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .adr-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .adr-icon img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+    }
+
     .domains {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
@@ -909,7 +1084,9 @@
       .principles,
       .method-flow,
       .ai-loop,
+      .architecture-set,
       .domains,
+      .adr-cards,
       .constraints,
       .path-tiles {
         grid-template-columns: 1fr;
@@ -944,7 +1121,7 @@
       }
 
       .ai-mermaid-panel .mermaid {
-        min-width: 720px;
+        min-width: 0;
       }
 
       .method-step::after {
@@ -1030,8 +1207,8 @@
       <nav class="nav">
         <a href="../index.html">Hub</a>
         <a href="../stage1/index.html">Stage 1</a>
-        <a href="#strategy">Working method</a>
         <a href="#tracker">Execution plan</a>
+        <a href="#strategy">Working method</a>
         <a href="#domains">Domain changes</a>
       </nav>
     </div>
@@ -1039,7 +1216,8 @@
 
   <main>
     <div class="wrap">
-      <section class="hero">
+
+<section class="hero">
         <div>
           <div class="eyebrow">Stage 2 planning baseline</div>
           <h1><span class="mark">Governance</span> before tooling.</h1>
@@ -1049,9 +1227,11 @@
             <span class="tool"><i data-lucide="layers"></i>Environment model</span>
             <span class="tool"><i data-lucide="git-branch"></i>Workflow boundaries</span>
             <span class="tool"><i data-lucide="route"></i>Promotion path</span>
-            <span class="tool-stage">Tooling after the model</span>
-            <span class="tool"><img src="../assets/presentation-icons/openshift.svg" alt="">OpenShift</span>
+            <span class="tool-stage">OpenShift-aligned outcomes</span>
+            <span class="tool"><img src="../assets/presentation-icons/openshift.svg" alt="">OpenShift-ready governance</span>
             <span class="tool"><img src="../assets/presentation-icons/github-actions.svg" alt="">GitHub Actions</span>
+            <span class="tool"><img src="../assets/presentation-icons/policy.svg" alt="">Kyverno</span>
+            <span class="tool"><img src="../assets/presentation-icons/argocd.svg" alt="">Argo CD</span>
             <span class="tool"><img src="../assets/presentation-icons/vault.svg" alt="">Vault</span>
             <span class="tool"><img src="../assets/presentation-icons/terraform.svg" alt="">Terraform</span>
             <span class="tool"><img src="../assets/presentation-icons/kubernetes.svg" alt="">Kubernetes</span>
@@ -1101,42 +1281,62 @@
         </aside>
       </section>
 
-      <section class="section">
+<section id="tracker" class="section">
         <div class="section-head">
-          <h2>Stage 1 paths being evolved</h2>
+          <h2>Execution tracker</h2>
           <p>
-            These are Stage 1 baseline diagrams. Stage 2 keeps the same readable ownership paths,
-            then adds <span class="mark">shared-platform guardrails</span>.
+            The work is intentionally ordered. Each step reduces <span class="mark">ambiguity</span> for the next one instead of piling tools onto an unstable model.
           </p>
         </div>
-        <div class="path-tiles">
-          <article class="path-tile">
-            <img src="../assets/infrastructure_bootstrap_path.png" alt="Infrastructure bootstrap path">
-            <span class="path-label">Current Stage 1 diagram - Stage 2 version pending</span>
-            <strong>Infrastructure path</strong>
-            <span>Terraform foundation, state separation, cluster boundaries, and environment-aware inputs.</span>
-          </article>
-          <article class="path-tile">
-            <img src="../assets/platform_provision_path.png" alt="Platform provision path">
-            <span class="path-label">Current Stage 1 diagram - Stage 2 version pending</span>
-            <strong>Platform path</strong>
-            <span>Kubernetes boundaries, shared runtime controls, policy direction, GitOps, and secrets governance.</span>
-          </article>
-          <article class="path-tile">
-            <img src="../assets/app_delivery_path.png" alt="Application delivery path">
-            <span class="path-label">Current Stage 1 diagram - Stage 2 version pending</span>
-            <strong>Application path</strong>
-            <span>One image promoted through dev, staging, and prod with clearer validation and rollback evidence.</span>
-          </article>
-        </div>
+        <table class="tracker">
+          <thead>
+            <tr>
+              <th>Step</th>
+              <th>Scope</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Create the Stage 2 implementation plan</td>
+              <td><span class="status done">Completed</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Define the environment model</td>
+              <td><span class="status done">Completed</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Design the Stage 2 target architecture</td>
+              <td><span class="status progress">In progress</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Refactor configuration for multi-environment support</td>
+              <td><span class="status pending">Pending</span></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Add the promotion workflow design</td>
+              <td><span class="status pending">Pending</span></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Add Stage 2 tools after the model is stable</td>
+              <td><span class="status pending">Pending</span></td>
+            </tr>
+          </tbody>
+        </table>
       </section>
 
-      <section id="strategy" class="section">
+<section id="strategy" class="section">
         <div class="section-head">
           <h2>Working method</h2>
           <p>
-            DevOps augmented with AI: narrow prompts, manual approvals, saved mini-states,
-            and controlled refinement before each next change.
+            DevOps augmented with AI: architecture first, narrow prompts, manual approvals,
+            saved mini-states, and controlled refinement before each next change.
           </p>
         </div>
         <div class="method-flow" aria-label="Stage 2 working method">
@@ -1144,8 +1344,8 @@
             <div class="method-icon" aria-hidden="true">
               <i data-lucide="file-text"></i>
             </div>
-            <strong>Document first</strong>
-            <span><span class="mark">Ownership</span>, <span class="mark">environments</span>, and <span class="mark">promotion rules</span> become the contract before code changes.</span>
+            <strong>Architecture first</strong>
+            <span><span class="mark">Architecture boundaries</span>, ownership, environments, and promotion rules become the contract before code changes.</span>
           </article>
           <article class="method-step">
             <div class="method-icon" aria-hidden="true">
@@ -1179,20 +1379,21 @@
         <div class="ai-loop" aria-label="AI-assisted refinement loop">
           <div class="ai-loop-head">
             <strong>Control loop, not autopilot</strong>
-            <span>AI accelerates drafting, but ownership stays with manual review, small checkpoints, and intentional corrections.</span>
+            <span>Architecture frames the problem first. AI accelerates drafting, but ownership stays with manual review, small checkpoints, and intentional corrections.</span>
           </div>
           <div class="ai-mermaid-panel" aria-label="AI-assisted DevOps control flow">
             <pre class="mermaid">
 flowchart TD
-  Request["Narrow Codex GPT-5.5 request<br/><small>Small controlled change, detailed prompt,<br/>enough context, one modification at a time.</small>"]
-  Review["Manual review<br/><small>Check diff, design intent, naming, ownership, and current stable state.</small>"]
+  Architecture["Architecture first\nBoundaries\nEnvironment\nBaseline"]
+  Request["Codex GPT-5.5\nNarrow scope\nDetailed prompt\nOne change"]
+  Review["Manual review\nCheck diff, design intent,\nnaming, ownership, stable state"]
   Decision{"Aligned with intent?"}
-  Accept["Close enough<br/><small>Accept, then refine manually.</small>"]
-  Reject["Not aligned<br/><small>Reject, clarify, ask again.</small>"]
-  Refine["Refine until correct<br/><small>Rewrite or retype critical paths for ownership and retention.</small>"]
-  Stable["Save stable mini-state in Git<br/><small>Commit or checkpoint the satisfying codebase state before the next narrow change.</small>"]
+  Accept["Close enough\nAccept, then refine manually"]
+  Reject["Not aligned\nReject, clarify, ask again"]
+  Refine["Refine until correct\nRewrite or retype critical paths"]
+  Stable["Save stable mini-state in Git\nCommit or checkpoint before next change"]
 
-  Request --> Review --> Decision
+  Architecture --> Request --> Review --> Decision
   Decision -- "Close enough" --> Accept --> Refine --> Stable --> Request
   Decision -- "Not aligned" --> Reject --> Request
 
@@ -1200,7 +1401,7 @@ flowchart TD
   classDef work fill:#ffffff,stroke:#c8e5df,color:#151922,stroke-width:1.5px;
   classDef review fill:#e8eefc,stroke:#1d4ed8,color:#151922,stroke-width:2px;
   classDef reject fill:#f7ebe6,stroke:#9a3412,color:#151922,stroke-width:2px;
-  class Request principle;
+  class Architecture,Request principle;
   class Stable,Accept,Refine work;
   class Review,Decision review;
   class Reject reject;
@@ -1209,49 +1410,212 @@ flowchart TD
         </div>
       </section>
 
-      <section id="tracker" class="section">
+      <section class="section">
         <div class="section-head">
-          <h2>Execution tracker</h2>
+          <h2>Stage 1 local architecture baseline</h2>
           <p>
-            The work is intentionally ordered. Each step reduces <span class="mark">ambiguity</span> for the next one instead of piling tools onto an unstable model.
+            This is the current local runtime before Stage 2 adds environment separation. It becomes the comparison point for the next local environment architecture.
           </p>
         </div>
-        <table class="tracker">
-          <thead>
-            <tr>
-              <th>Step</th>
-              <th>Scope</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>Create the Stage 2 implementation plan</td>
-              <td><span class="status done">Completed</span></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Define the environment model</td>
-              <td><span class="status done">Completed</span></td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Refactor configuration for multi-environment support</td>
-              <td><span class="status progress">In progress</span></td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>Add the promotion workflow design</td>
-              <td><span class="status pending">Pending</span></td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td>Add Stage 2 tools after the model is stable</td>
-              <td><span class="status pending">Pending</span></td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="path-tiles architecture-panel">
+          <article class="path-tile">
+            <img src="../assets/stage1-local-architecture.drawio.svg" alt="Stage 1 local Kubernetes architecture">
+            <span class="path-label">Current Stage 1 local architecture</span>
+            <strong>Local environment baseline</strong>
+            <span>Kind cluster with the application namespace, monitoring namespace, Spring Boot backend, PostgreSQL, Prometheus, and Grafana.</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Stage 1 paths being evolved</h2>
+          <p>
+            These are Stage 1 baseline diagrams. Stage 2 keeps the same readable ownership paths,
+            then adds <span class="mark">shared-platform guardrails</span>.
+          </p>
+        </div>
+        <div class="path-tiles">
+          <article class="path-tile">
+            <img src="../assets/infrastructure_bootstrap_path.png" alt="Infrastructure bootstrap path">
+            <span class="path-label">Current Stage 1 diagram - Stage 2 version pending</span>
+            <strong>Infrastructure path</strong>
+            <span>Terraform foundation, state separation, cluster boundaries, and environment-aware inputs.</span>
+          </article>
+          <article class="path-tile">
+            <img src="../assets/platform_provision_path.png" alt="Platform provision path">
+            <span class="path-label">Current Stage 1 diagram - Stage 2 version pending</span>
+            <strong>Platform path</strong>
+            <span>Kubernetes boundaries, shared runtime controls, policy direction, GitOps, and secrets governance.</span>
+          </article>
+          <article class="path-tile">
+            <img src="../assets/app_delivery_path.png" alt="Application delivery path">
+            <span class="path-label">Current Stage 1 diagram - Stage 2 version pending</span>
+            <strong>Application path</strong>
+            <span>One image promoted through dev, staging, and prod with clearer validation and rollback evidence.</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Stage 2 architecture set</h2>
+          <p>
+            The architecture is split by <span class="mark">purpose</span>, not by tool. This keeps runtime, admission, promotion, and compatibility views readable.
+          </p>
+        </div>
+        <div class="architecture-set" aria-label="Stage 2 architecture document groups">
+          <article class="architecture-card">
+            <i data-lucide="network"></i>
+            <strong>Runtime interactions</strong>
+            <span>Local, AKS non-prod, AKS prod, and OpenShift Sandbox component interactions.</span>
+          </article>
+          <article class="architecture-card">
+            <i data-lucide="shield-check"></i>
+            <strong>Admission governance</strong>
+            <span>PSS, Kyverno, RBAC, quotas, limits, image pull, and runtime contract checks.</span>
+          </article>
+          <article class="architecture-card">
+            <i data-lucide="git-pull-request"></i>
+            <strong>Promotion governance</strong>
+            <span>PR flow, immutable image digest, QA evidence, approval gates, rollout, and rollback.</span>
+          </article>
+          <article class="architecture-card">
+            <img src="../assets/presentation-icons/openshift.svg" alt="">
+            <strong>OpenShift compatibility</strong>
+            <span>Sandbox proof boundary without pretending it is AKS dev, staging, or prod.</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Local admission flow</h2>
+          <p>
+            Stage 2 guardrails act before runtime. They validate whether a workload is allowed to start; they do not replace the Service-to-Pod or Pod-to-PostgreSQL runtime path.
+          </p>
+        </div>
+        <div class="ai-mermaid-panel" aria-label="Stage 2 local workload admission governance flow">
+          <pre class="mermaid">
+flowchart TD
+  DEV["Developer / Local Operator"]
+  APPLY["helm upgrade / install<br/>or kubectl apply"]
+  API["Kubernetes API Server<br/>kind cluster"]
+  PSA["Pod Security Admission<br/>checks namespace PSS labels<br/>Is this Pod secure enough?"]
+  KYVERNO["Kyverno admission controller<br/>evaluates Policy / ClusterPolicy<br/>Does it respect platform rules?"]
+  QUOTA["ResourceQuota check<br/>validates namespace capacity<br/>Is there enough budget left?"]
+  LIMITS["LimitRange check<br/>defaults / validates requests and limits<br/>Are container resources valid?"]
+  DECISION{"Accepted?"}
+  REJECT["Rejected<br/>manifest must be fixed"]
+  RUN["Workload admitted<br/>Pod can be created"]
+  APP_POD["Pod<br/>Payment Exception Review API<br/>runtime starts"]
+
+  DEV -->|"submits workload manifest"| APPLY
+  APPLY -->|"sends request"| API
+  API --> PSA --> KYVERNO --> QUOTA --> LIMITS --> DECISION
+  DECISION -->|"yes"| RUN --> APP_POD
+  DECISION -->|"no"| REJECT
+  REJECT -.->|"adjust manifest<br/>retry apply"| APPLY
+
+  classDef actor fill:#111827,stroke:#ffffff,color:#ffffff,stroke-width:2px;
+  classDef command fill:#172554,stroke:#93c5fd,color:#ffffff,stroke-width:2px;
+  classDef control fill:#064e3b,stroke:#34d399,color:#ffffff,stroke-width:2px;
+  classDef decision fill:#78350f,stroke:#f59e0b,color:#ffffff,stroke-width:2px;
+  classDef rejected fill:#7f1d1d,stroke:#f87171,color:#ffffff,stroke-width:2px;
+  classDef runtime fill:#052e16,stroke:#22c55e,color:#ffffff,stroke-width:2px;
+
+  class DEV actor;
+  class APPLY,API command;
+  class PSA,KYVERNO,QUOTA,LIMITS control;
+  class DECISION decision;
+  class REJECT rejected;
+  class RUN,APP_POD runtime;
+          </pre>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>OpenShift decision now clear</h2>
+          <p>
+            ADR-016 narrows the scope: Stage 2 uses OpenShift as an <span class="mark">enterprise governance target</span>, not as the runtime proof.
+          </p>
+        </div>
+        <div class="adr-decision">
+          <div class="adr-cards">
+            <article class="adr-card">
+              <span class="adr-icon"><img src="../assets/presentation-icons/kubernetes.svg" alt=""></span>
+              <strong>Stage 2 on Kubernetes / AKS</strong>
+              <p>Implement the governance outcomes: namespaces, RBAC, quotas, policy guardrails, image promotion, secrets contracts, and observability as code.</p>
+            </article>
+            <article class="adr-card">
+              <span class="adr-icon"><img src="../assets/presentation-icons/openshift.svg" alt=""></span>
+              <strong>OpenShift compatibility checks</strong>
+              <p>Use Sandbox as a compatibility runtime, without pretending it is AKS dev, AKS staging, or a full observability estate.</p>
+            </article>
+            <article class="adr-card">
+              <span class="adr-icon"><i data-lucide="split"></i></span>
+              <strong>Compatibility boundary</strong>
+              <p>Make the workload and Kubernetes manifests OpenShift-ready. Keep AKS Terraform, Azure networking, and Azure PostgreSQL as Azure-specific infrastructure.</p>
+            </article>
+            <article class="adr-card">
+              <span class="adr-icon"><i data-lucide="flag"></i></span>
+              <strong>Stage 3 runtime proof</strong>
+              <p>Move real OpenShift runtime evidence to Stage 3, where hybrid architecture, certification-grade controls, and platform runtime choices belong.</p>
+            </article>
+          </div>
+          <table class="compat-table" aria-label="Kubernetes to OpenShift compatibility attention points">
+            <thead>
+              <tr>
+                <th>Element</th>
+                <th>OpenShift attention</th>
+                <th>Why it matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Container image</td>
+                <td>Non-root runtime</td>
+                <td>OpenShift security defaults can reject images that assume root or unsafe filesystem permissions.</td>
+              </tr>
+              <tr>
+                <td>Helm chart</td>
+                <td>Portable values</td>
+                <td>The same chart should support AKS and OpenShift without hardcoding cloud-specific assumptions.</td>
+              </tr>
+              <tr>
+                <td>Image pulls</td>
+                <td>GHCR pull secret</td>
+                <td>Sandbox or OpenShift projects may need explicit pull-secret wiring for private or rate-limited images.</td>
+              </tr>
+              <tr>
+                <td>Exposure</td>
+                <td>Ingress vs Route</td>
+                <td>AKS commonly uses Ingress; OpenShift often uses Route, so exposure should be configurable.</td>
+              </tr>
+              <tr>
+                <td>Monitoring</td>
+                <td>ServiceMonitor contract</td>
+                <td>Labels, namespaces, and Prometheus Operator selectors can differ between AKS and OpenShift setups.</td>
+              </tr>
+              <tr>
+                <td>Observability stack</td>
+                <td>Available only if Sandbox allows it</td>
+                <td>Prometheus, Grafana, Alertmanager, log collector, Elasticsearch, Kibana, and dashboard ConfigMaps stay in AKS non-prod by default. Draw them in Sandbox only after `oc api-resources`, `oc auth can-i`, and quota checks prove they are available.</td>
+              </tr>
+              <tr>
+                <td>Infrastructure</td>
+                <td>Sandbox replacement boundary</td>
+                <td>AKS Terraform, Azure networking, Azure PostgreSQL provisioning, and Azure OIDC stay Azure-specific. Sandbox validates only the workload contract: Project, Route/Service, pull secret, ConfigMap/Secret, and DB connectivity.</td>
+              </tr>
+              <tr>
+                <td>Database</td>
+                <td>External first, pod fallback</td>
+                <td>AKS dev and staging use Azure PostgreSQL for prod parity. Sandbox should try external Azure PostgreSQL when networking allows it; PostgreSQL-in-pod is the fallback compatibility proof.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section class="section">
@@ -1302,10 +1666,30 @@ flowchart TD
             </div>
             <p>Build once, publish once, promote the same immutable tag or digest through dev, staging, and prod.</p>
           </article>
+          <article class="constraint">
+            <div class="constraint-head">
+              <span class="constraint-icon"><img src="../assets/presentation-icons/openshift.svg" alt=""></span>
+              <div>
+                <div class="kicker">OpenShift rule</div>
+                <h3>Aligned outcomes now, runtime later</h3>
+              </div>
+            </div>
+            <p>Stage 2 implements OpenShift-aligned governance on Kubernetes and AKS. Real OpenShift runtime proof moves to Stage 3.</p>
+          </article>
+          <article class="constraint">
+            <div class="constraint-head">
+              <span class="constraint-icon"><i data-lucide="lock-keyhole"></i></span>
+              <div>
+                <div class="kicker">Access rule</div>
+                <h3>Private platform access only</h3>
+              </div>
+            </div>
+            <p>Stage 2 owns private DNS, internal ingress/gateway, and private AKS exposure. Enterprise ZTNA/SASE/VPN integration stays in Stage 3.</p>
+          </article>
         </div>
       </section>
 
-      <section id="domains" class="section">
+<section id="domains" class="section">
         <div class="section-head">
           <h2>What changes by domain</h2>
           <p>
@@ -1340,17 +1724,17 @@ flowchart TD
               <span class="domain-icon"><i data-lucide="shield-check"></i></span>
               <div>
                 <div class="kicker">Platform</div>
-                <h3>Shared runtime controls</h3>
+                <h3>OpenShift-aligned guardrails</h3>
               </div>
             </div>
-            <p>Evolve Kubernetes resources toward stronger namespace, policy, observability, GitOps, and <span class="mark">secrets governance</span>.</p>
+            <p>Implement OpenShift-aligned governance outcomes on Kubernetes / AKS: namespace ownership, policy guardrails, GitOps direction, and <span class="mark">secrets governance</span>.</p>
             <ul>
-              <li>environment-aware namespaces and RBAC</li>
-              <li>Kyverno and GitOps direction</li>
-              <li>shared observability hardening</li>
+              <li>project-style namespaces, labels, quotas, and RBAC</li>
+              <li>PSS + Kyverno for SCC-like constraints</li>
+              <li>OpenShift Sandbox checks only where behavior differs</li>
             </ul>
             <div class="icon-row" aria-label="Platform technologies">
-              <span><img src="../assets/presentation-icons/openshift.svg" alt="">OpenShift</span>
+              <span><img src="../assets/presentation-icons/openshift.svg" alt="">OpenShift-ready</span>
               <span><img src="../assets/presentation-icons/kubernetes.svg" alt="">Kubernetes</span>
               <span><img src="../assets/presentation-icons/argocd.svg" alt="">Argo CD</span>
               <span><img src="../assets/presentation-icons/vault.svg" alt="">Vault</span>
@@ -1390,7 +1774,8 @@ flowchart TD
             <ul>
               <li>Postman + Newman staging E2E</li>
               <li>rollback runbooks</li>
-              <li>service-level interpretation</li>
+              <li>shared monitoring with platform-owned source of truth</li>
+              <li>Grafana UI permissions as a second control layer</li>
             </ul>
             <div class="icon-row" aria-label="Reliability technologies">
               <span><img src="../assets/presentation-icons/prometheus.svg" alt="">Prometheus</span>
@@ -1451,7 +1836,7 @@ flowchart TD
 
       <div class="footer-note">
         <strong>Stage 2 thesis</strong>
-        The point is not to stack enterprise tools. The point is to prove the planning discipline that makes those tools defensible once they arrive.
+        Stage 2 proves OpenShift-aligned governance outcomes cost-consciously on Kubernetes / AKS. Stage 3 is where real OpenShift runtime proof becomes the evidence.
       </div>
     </div>
   </main>
@@ -1462,7 +1847,7 @@ flowchart TD
         securityLevel: "loose",
         theme: "base",
         flowchart: {
-          htmlLabels: true,
+          htmlLabels: false,
           curve: "basis"
         },
         themeVariables: {
@@ -1541,7 +1926,7 @@ flowchart TD
             easing: "easeOutCubic"
           });
 
-          const children = entry.target.querySelectorAll(".path-tile, .method-step, .ai-mermaid-panel, .constraint, .domain, .tracker tbody tr");
+          const children = entry.target.querySelectorAll(".path-tile, .method-step, .ai-mermaid-panel, .adr-card, .constraint, .domain, .tracker tbody tr");
           if (children.length) {
             anime({
               targets: children,

@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bonnes pratiques DevOps - Workflow de promotion</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 30%),
+        radial-gradient(circle at top right, rgba(16, 185, 129, 0.10), transparent 28%),
+        #f8fafc;
+    }
+
+    .stage-line::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -36px;
+      width: 36px;
+      height: 2px;
+      background: #cbd5e1;
+    }
+
+    .stage-line:last-child::after {
+      display: none;
+    }
+
+    @media (max-width: 1024px) {
+      .stage-line::after {
+        display: none;
+      }
+    }
+
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+
+      body {
+        background: white !important;
+      }
+
+      .print-shadow {
+        box-shadow: none !important;
+      }
+
+      .page-break {
+        page-break-before: always;
+      }
+    }
+  </style>
+</head>
+
+<body class="text-slate-800">
+  <div class="max-w-7xl mx-auto px-5 py-8 lg:py-12">
+
+    <!-- Header -->
+    <header class="mb-10">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div>
+          <div class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 mb-4">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+            Workflow DevOps gouverné
+          </div>
+
+          <h1 class="text-3xl lg:text-5xl font-bold tracking-tight text-slate-950">
+            Bonnes pratiques DevOps utilisées
+          </h1>
+
+          <p class="mt-4 max-w-3xl text-lg text-slate-600">
+            Représentation claire d’un processus de promotion contrôlé, de la pull request jusqu’à la production,
+            avec quality gates, validations QA/PO, déploiement progressif et stratégie de rollback.
+          </p>
+        </div>
+
+        <div class="no-print flex gap-3">
+          <button
+            onclick="window.print()"
+            class="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-3 text-white font-medium hover:bg-slate-800 transition"
+          >
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            Imprimer
+          </button>
+
+          <a
+            href="#workflow"
+            class="inline-flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-4 py-3 text-slate-700 font-medium hover:bg-slate-50 transition"
+          >
+            <i data-lucide="arrow-down" class="w-4 h-4"></i>
+            Voir le workflow
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Executive Summary -->
+    <section class="grid lg:grid-cols-4 gap-4 mb-10">
+      <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm print-shadow">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="rounded-xl bg-blue-50 p-2 text-blue-700">
+            <i data-lucide="git-pull-request" class="w-5 h-5"></i>
+          </div>
+          <h2 class="font-bold text-slate-950">PR contrôlée</h2>
+        </div>
+        <p class="text-sm text-slate-600">
+          Les PR non conformes sont bloquées avant d’atteindre les environnements supérieurs.
+        </p>
+      </div>
+
+      <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm print-shadow">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="rounded-xl bg-emerald-50 p-2 text-emerald-700">
+            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+          </div>
+          <h2 class="font-bold text-slate-950">Quality gates</h2>
+        </div>
+        <p class="text-sm text-slate-600">
+          Build, tests, couverture, SonarQube, Snyk et validation humaine sécurisent la livraison.
+        </p>
+      </div>
+
+      <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm print-shadow">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="rounded-xl bg-amber-50 p-2 text-amber-700">
+            <i data-lucide="users" class="w-5 h-5"></i>
+          </div>
+          <h2 class="font-bold text-slate-950">Go QA / PO</h2>
+        </div>
+        <p class="text-sm text-slate-600">
+          Le QA et le PO donnent leur accord avant les promotions critiques.
+        </p>
+      </div>
+
+      <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm print-shadow">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="rounded-xl bg-red-50 p-2 text-red-700">
+            <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+          </div>
+          <h2 class="font-bold text-slate-950">Rollback prêt</h2>
+        </div>
+        <p class="text-sm text-slate-600">
+          Si le comportement est instable, le rollback est possible à tout moment.
+        </p>
+      </div>
+    </section>
+
+    <!-- Workflow Overview -->
+    <section id="workflow" class="mb-12">
+      <div class="rounded-3xl bg-white border border-slate-200 p-6 lg:p-8 shadow-sm print-shadow">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="rounded-xl bg-slate-950 p-2 text-white">
+            <i data-lucide="workflow" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-950">Chaîne de promotion</h2>
+            <p class="text-slate-600">Du développement local jusqu’à la production.</p>
+          </div>
+        </div>
+
+        <div class="grid lg:grid-cols-5 gap-9 lg:gap-4">
+          <div class="stage-line relative rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <div class="text-sm text-slate-500 mb-2">Étape 1</div>
+            <h3 class="text-lg font-bold text-slate-950">Local</h3>
+            <p class="mt-2 text-sm text-slate-600">
+              Le développeur prépare une feature isolée avec un commit propre et une PR traçable.
+            </p>
+          </div>
+
+          <div class="stage-line relative rounded-2xl border border-blue-200 bg-blue-50 p-5">
+            <div class="text-sm text-blue-600 mb-2">Étape 2</div>
+            <h3 class="text-lg font-bold text-blue-950">Dev</h3>
+            <p class="mt-2 text-sm text-blue-800">
+              Les checks automatiques bloquent les PR non conformes avant l’intégration.
+            </p>
+          </div>
+
+          <div class="stage-line relative rounded-2xl border border-purple-200 bg-purple-50 p-5">
+            <div class="text-sm text-purple-600 mb-2">Étape 3</div>
+            <h3 class="text-lg font-bold text-purple-950">Staging</h3>
+            <p class="mt-2 text-sm text-purple-800">
+              Le QA vérifie la feature, les critères d’acceptation et les cas critiques.
+            </p>
+          </div>
+
+          <div class="stage-line relative rounded-2xl border border-amber-200 bg-amber-50 p-5">
+            <div class="text-sm text-amber-600 mb-2">Étape 4</div>
+            <h3 class="text-lg font-bold text-amber-950">Certification</h3>
+            <p class="mt-2 text-sm text-amber-800">
+              La feature est testée dans un environnement proche de la production.
+            </p>
+          </div>
+
+          <div class="relative rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+            <div class="text-sm text-emerald-600 mb-2">Étape 5</div>
+            <h3 class="text-lg font-bold text-emerald-950">Production</h3>
+            <p class="mt-2 text-sm text-emerald-800">
+              Déploiement contrôlé, monitoring, validation QA et rollback possible.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Detailed Stages -->
+    <main class="space-y-8">
+
+      <!-- Local to Dev -->
+      <section class="rounded-3xl bg-white border border-slate-200 overflow-hidden shadow-sm print-shadow">
+        <div class="bg-blue-950 text-white p-6">
+          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <p class="text-blue-200 font-medium">Promotion 1</p>
+              <h2 class="text-2xl font-bold">Local -> Dev</h2>
+            </div>
+            <span class="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm">
+              <i data-lucide="lock" class="w-4 h-4"></i>
+              PR checks bloquants
+            </span>
+          </div>
+        </div>
+
+        <div class="p-6 lg:p-8 grid lg:grid-cols-2 gap-6">
+          <div class="rounded-2xl border border-slate-200 p-5">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="rounded-xl bg-blue-50 p-2 text-blue-700">
+                <i data-lucide="bot" class="w-5 h-5"></i>
+              </div>
+              <h3 class="text-xl font-bold text-slate-950">Checks automatiques</h3>
+            </div>
+
+            <ul class="space-y-3 text-slate-700">
+              <li class="flex gap-3">
+                <i data-lucide="check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                <span>Le build passe.</span>
+              </li>
+              <li class="flex gap-3">
+                <i data-lucide="check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                <span>La couverture de tests atteint le seuil attendu, par exemple 85 %.</span>
+              </li>
+              <li class="flex gap-3">
+                <i data-lucide="check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                <span>Les tests unitaires et les tests d’intégration passent.</span>
+              </li>
+              <li class="flex gap-3">
+                <i data-lucide="check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                <span>Un autre développeur a validé la PR.</span>
+              </li>
+              <li class="flex gap-3">
+                <i data-lucide="check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                <span>La PR contient une seule feature à la fois.</span>
+              </li>
+              <li class="flex gap-3">
+                <i data-lucide="check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                <span>Le nom de la PR contient le hashtag du ticket Jira.</span>
+              </li>
+              <li class="flex gap-3">
+                <i data-lucide="check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                <span>Le nom de la PR commence par <strong>[FEATURE]</strong>, <strong>[BUGFIX]</strong> ou <strong>[PIPELINE]</strong>.</span>
+              </li>
+              <li class="flex gap-3">
+                <i data-lucide="check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                <span>Les checks SonarQube passent.</span>
+              </li>
+              <li class="flex gap-3">
+                <i data-lucide="check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                <span>Aucune vulnérabilité critique n’est détectée par Snyk dans les packages.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200 p-5">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="rounded-xl bg-amber-50 p-2 text-amber-700">
+                <i data-lucide="user-check" class="w-5 h-5"></i>
+              </div>
+              <h3 class="text-xl font-bold text-slate-950">Checks manuels</h3>
+            </div>
+
+            <ul class="space-y-3 text-slate-700">
+              <li class="flex gap-3">
+                <i data-lucide="git-branch" class="w-5 h-5 text-amber-600 shrink-0"></i>
+                <span>
+                  Vérifier si la feature dépend d’une autre feature qui doit être déployée avant.
+                </span>
+              </li>
+              <li class="flex gap-3">
+                <i data-lucide="toggle-right" class="w-5 h-5 text-amber-600 shrink-0"></i>
+                <span>
+                  Vérifier que le feature flag est implémenté lorsque le risque de livraison le justifie.
+                </span>
+              </li>
+            </ul>
+
+            <div class="mt-6 rounded-2xl bg-slate-50 border border-slate-200 p-4">
+              <h4 class="font-bold text-slate-950 mb-2">Objectif</h4>
+              <p class="text-sm text-slate-600">
+                Empêcher qu’un changement non conforme, non testé ou difficile à tracer entre dans l’environnement Dev.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dev to Staging -->
+      <section class="rounded-3xl bg-white border border-slate-200 overflow-hidden shadow-sm print-shadow">
+        <div class="bg-purple-950 text-white p-6">
+          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <p class="text-purple-200 font-medium">Promotion 2</p>
+              <h2 class="text-2xl font-bold">Dev -> Staging</h2>
+            </div>
+            <span class="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm">
+              <i data-lucide="package-check" class="w-4 h-4"></i>
+              Une feature à la fois
+            </span>
+          </div>
+        </div>
+
+        <div class="p-6 lg:p-8 grid lg:grid-cols-3 gap-6">
+          <div class="rounded-2xl border border-slate-200 p-5">
+            <div class="rounded-xl bg-purple-50 p-2 text-purple-700 w-fit mb-4">
+              <i data-lucide="list-checks" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-950 mb-2">Critères d’acceptation</h3>
+            <p class="text-slate-600">
+              Les conditions d’acceptation du récit ont été vérifiées préalablement.
+            </p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200 p-5">
+            <div class="rounded-xl bg-purple-50 p-2 text-purple-700 w-fit mb-4">
+              <i data-lucide="presentation" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-950 mb-2">Démo QA</h3>
+            <p class="text-slate-600">
+              Une démo est faite avec le QA pour valider le happy path et les corner cases critiques vérifiables.
+            </p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200 p-5">
+            <div class="rounded-xl bg-red-50 p-2 text-red-700 w-fit mb-4">
+              <i data-lucide="bug" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-950 mb-2">Bug détecté</h3>
+            <p class="text-slate-600">
+              Si le QA trouve un bug dans la feature, la feature retourne en Dev.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Staging to Certification -->
+      <section class="rounded-3xl bg-white border border-slate-200 overflow-hidden shadow-sm print-shadow page-break">
+        <div class="bg-amber-950 text-white p-6">
+          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <p class="text-amber-200 font-medium">Promotion 3</p>
+              <h2 class="text-2xl font-bold">Staging -> Certification</h2>
+            </div>
+            <span class="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm">
+              <i data-lucide="shield" class="w-4 h-4"></i>
+              Validation QA / PO
+            </span>
+          </div>
+        </div>
+
+        <div class="p-6 lg:p-8">
+          <div class="grid lg:grid-cols-2 gap-6">
+            <div class="rounded-2xl border border-slate-200 p-5">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="rounded-xl bg-amber-50 p-2 text-amber-700">
+                  <i data-lucide="clipboard-check" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-950">Validation fonctionnelle</h3>
+              </div>
+
+              <ul class="space-y-3 text-slate-700">
+                <li class="flex gap-3">
+                  <i data-lucide="check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                  <span>Les tests E2E passent.</span>
+                </li>
+                <li class="flex gap-3">
+                  <i data-lucide="check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                  <span>Le QA et le PO donnent leur go pour le déploiement en certif.</span>
+                </li>
+                <li class="flex gap-3">
+                  <i data-lucide="check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                  <span>Le QA teste la feature sur l’environnement de certification.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 p-5">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="rounded-xl bg-blue-50 p-2 text-blue-700">
+                  <i data-lucide="message-square" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-950">Communication</h3>
+              </div>
+
+              <p class="text-slate-600">
+                Un canal Teams est ouvert pour notifier le PO et le QA de la progression du déploiement.
+              </p>
+
+              <div class="mt-5 rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <h4 class="font-bold text-slate-950 mb-2">Pourquoi c’est important</h4>
+                <p class="text-sm text-slate-600">
+                  Le canal centralise les décisions, les validations, les incidents et les actions de rollback.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-5">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="rounded-xl bg-white p-2 text-amber-700">
+                <i data-lucide="route" class="w-5 h-5"></i>
+              </div>
+              <h3 class="text-xl font-bold text-amber-950">Déploiement progressif / canary-ish</h3>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-4">
+              <div class="rounded-xl bg-white border border-amber-100 p-4">
+                <h4 class="font-bold text-slate-950 mb-2">1. Groupe bêta</h4>
+                <p class="text-sm text-slate-600">
+                  Un endpoint spécifique est utilisé par des bêta-testeurs ou par une autre équipe interne.
+                </p>
+              </div>
+
+              <div class="rounded-xl bg-white border border-amber-100 p-4">
+                <h4 class="font-bold text-slate-950 mb-2">2. Redirection graduelle</h4>
+                <p class="text-sm text-slate-600">
+                  Si la nouvelle version fonctionne correctement, le trafic est orienté graduellement vers elle.
+                </p>
+              </div>
+
+              <div class="rounded-xl bg-white border border-amber-100 p-4">
+                <h4 class="font-bold text-slate-950 mb-2">3. Rollback</h4>
+                <p class="text-sm text-slate-600">
+                  Si le comportement n’est pas satisfaisant, retour immédiat vers la version stable.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Certification to Prod -->
+      <section class="rounded-3xl bg-white border border-slate-200 overflow-hidden shadow-sm print-shadow">
+        <div class="bg-emerald-950 text-white p-6">
+          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <p class="text-emerald-200 font-medium">Promotion 4</p>
+              <h2 class="text-2xl font-bold">Certification -> Production</h2>
+            </div>
+            <span class="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm">
+              <i data-lucide="server-cog" class="w-4 h-4"></i>
+              Déploiement contrôlé
+            </span>
+          </div>
+        </div>
+
+        <div class="p-6 lg:p-8">
+          <div class="grid lg:grid-cols-2 gap-6">
+            <div class="rounded-2xl border border-slate-200 p-5">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="rounded-xl bg-red-50 p-2 text-red-700">
+                  <i data-lucide="key-round" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-950">Contrôle d’accès</h3>
+              </div>
+
+              <ul class="space-y-3 text-slate-700">
+                <li class="flex gap-3">
+                  <i data-lucide="lock-keyhole" class="w-5 h-5 text-red-600 shrink-0"></i>
+                  <span>Seul le DevOps a accès au pipeline et aux credentials de production.</span>
+                </li>
+                <li class="flex gap-3">
+                  <i data-lucide="user-check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                  <span>Le PO et le QA donnent leur go avant la promotion en production.</span>
+                </li>
+                <li class="flex gap-3">
+                  <i data-lucide="calendar-check" class="w-5 h-5 text-blue-600 shrink-0"></i>
+                  <span>Le DevOps est réservé à une date spécifique pour le déploiement.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 p-5">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="rounded-xl bg-emerald-50 p-2 text-emerald-700">
+                  <i data-lucide="phone-call" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-950">Présence pendant le déploiement</h3>
+              </div>
+
+              <ul class="space-y-3 text-slate-700">
+                <li class="flex gap-3">
+                  <i data-lucide="users" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                  <span>Le DevOps et au moins un développeur sont en appel.</span>
+                </li>
+                <li class="flex gap-3">
+                  <i data-lucide="code-2" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                  <span>Idéalement, le développeur présent est celui qui a implémenté la feature.</span>
+                </li>
+                <li class="flex gap-3">
+                  <i data-lucide="search-check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                  <span>Le QA vérifie le comportement en production.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="rounded-xl bg-white p-2 text-emerald-700">
+                <i data-lucide="activity" class="w-5 h-5"></i>
+              </div>
+              <h3 class="text-xl font-bold text-emerald-950">Déploiement canary en production</h3>
+            </div>
+
+            <div class="grid lg:grid-cols-4 gap-4">
+              <div class="rounded-xl bg-white border border-emerald-100 p-4">
+                <h4 class="font-bold text-slate-950 mb-2">1. Version stable</h4>
+                <p class="text-sm text-slate-600">
+                  La version actuelle reste disponible comme point de retour.
+                </p>
+              </div>
+
+              <div class="rounded-xl bg-white border border-emerald-100 p-4">
+                <h4 class="font-bold text-slate-950 mb-2">2. Trafic progressif</h4>
+                <p class="text-sm text-slate-600">
+                  Le trafic est graduellement redirigé vers la nouvelle version.
+                </p>
+              </div>
+
+              <div class="rounded-xl bg-white border border-emerald-100 p-4">
+                <h4 class="font-bold text-slate-950 mb-2">3. Validation QA</h4>
+                <p class="text-sm text-slate-600">
+                  Le QA valide les comportements critiques directement en production.
+                </p>
+              </div>
+
+              <div class="rounded-xl bg-white border border-emerald-100 p-4">
+                <h4 class="font-bold text-slate-950 mb-2">4. Rollback</h4>
+                <p class="text-sm text-slate-600">
+                  Si le comportement n’est pas satisfaisant, rollback immédiat.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 rounded-2xl border border-blue-200 bg-blue-50 p-5">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="rounded-xl bg-white p-2 text-blue-700">
+                <i data-lucide="messages-square" class="w-5 h-5"></i>
+              </div>
+              <h3 class="text-xl font-bold text-blue-950">Communication de production</h3>
+            </div>
+
+            <p class="text-blue-900">
+              Un canal Teams est ouvert pour notifier le PO, le QA, le PM et le CIO, au besoin,
+              de la progression du déploiement.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Decision Table -->
+      <section class="rounded-3xl bg-white border border-slate-200 p-6 lg:p-8 shadow-sm print-shadow">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="rounded-xl bg-slate-950 p-2 text-white">
+            <i data-lucide="table-2" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-950">Résumé des décisions</h2>
+            <p class="text-slate-600">Vision simple des conditions de passage entre environnements.</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse text-left">
+            <thead>
+              <tr class="border-b border-slate-200 bg-slate-50">
+                <th class="p-4 font-bold text-slate-950">Transition</th>
+                <th class="p-4 font-bold text-slate-950">Contrôle principal</th>
+                <th class="p-4 font-bold text-slate-950">Responsables</th>
+                <th class="p-4 font-bold text-slate-950">Décision</th>
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-slate-200">
+              <tr>
+                <td class="p-4 font-medium">Local -> Dev</td>
+                <td class="p-4 text-slate-600">Build, tests, SonarQube, Snyk, review, convention de PR</td>
+                <td class="p-4 text-slate-600">Dev + reviewer</td>
+                <td class="p-4">
+                  <span class="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">PR acceptée ou bloquée</span>
+                </td>
+              </tr>
+
+              <tr>
+                <td class="p-4 font-medium">Dev -> Staging</td>
+                <td class="p-4 text-slate-600">Critères d’acceptation, démo QA, happy path, cas critiques</td>
+                <td class="p-4 text-slate-600">Dev + QA</td>
+                <td class="p-4">
+                  <span class="rounded-full bg-purple-50 px-3 py-1 text-sm font-medium text-purple-700">Promotion ou retour en Dev</span>
+                </td>
+              </tr>
+
+              <tr>
+                <td class="p-4 font-medium">Staging -> Certification</td>
+                <td class="p-4 text-slate-600">Tests E2E, validation QA/PO, test en certif</td>
+                <td class="p-4 text-slate-600">QA + PO</td>
+                <td class="p-4">
+                  <span class="rounded-full bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Go ou no-go</span>
+                </td>
+              </tr>
+
+              <tr>
+                <td class="p-4 font-medium">Certification -> Production</td>
+                <td class="p-4 text-slate-600">Accès contrôlé, date réservée, appel de déploiement, validation prod</td>
+                <td class="p-4 text-slate-600">DevOps + Dev + QA + PO</td>
+                <td class="p-4">
+                  <span class="rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700">Déploiement, canary ou rollback</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Final Punchline -->
+      <section class="rounded-3xl bg-slate-950 text-white p-6 lg:p-8 shadow-sm print-shadow">
+        <div class="flex items-start gap-4">
+          <div class="rounded-2xl bg-white/10 p-3">
+            <i data-lucide="target" class="w-6 h-6"></i>
+          </div>
+
+          <div>
+            <h2 class="text-2xl font-bold mb-3">Vision DevOps résumée</h2>
+            <p class="text-slate-300 text-lg max-w-4xl">
+              L’objectif n’est pas seulement d’automatiser les déploiements, mais de sécuriser chaque promotion
+              avec des quality gates, des validations humaines ciblées, une traçabilité claire, une communication active
+              et une capacité de rollback rapide.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

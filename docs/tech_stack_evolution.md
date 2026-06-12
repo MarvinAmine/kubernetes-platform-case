@@ -128,8 +128,6 @@ Show that the platform can evolve into an enterprise-ready model with stronger i
 * Palo Alto Prisma Access
 * Microsoft Purview DLP
 * Wiz
-* Splunk
-* ServiceNow Security Operations
 * Docker
 * Java Spring Boot
 * PostgreSQL
@@ -146,14 +144,19 @@ Show that the platform can evolve into an enterprise-ready model with stronger i
 * OnPrem
 * Linux / Red Hat
 * GitHub
+* IBM MQ
+* Apache Kafka / Confluent
 
 **What this stage is really about:**
 
 * hybrid Azure + AWS credibility
+* enterprise messaging and event-streaming direction
+* transactional messaging with IBM MQ and modern event streaming with Kafka / Confluent
 * enterprise identity, access, and hybrid identity model
+* enterprise access integration across ZTNA, SASE, VPN, WAF, and conditional access patterns
 * enterprise security integration model
 * cloud, container, and Kubernetes security posture direction
-* SIEM / SOC integration direction
+* SIEM / SOC hand-off direction for Stage 4+
 * SASE / ZTNA / DLP integration awareness
 * stronger observability layering
 * platform standardization across environments
@@ -163,6 +166,16 @@ Show that the platform can evolve into an enterprise-ready model with stronger i
 * large-scale governance and supportability
 * compliance-aware architecture foundation
 * future certification-environment and control-mapping direction
+
+**Deferred to Stage 4+:**
+
+* Splunk
+* ServiceNow Security Operations
+* ISO / NIST / SOC 2 / PCI DSS / ISO/IEC 20000 formal control program
+
+These are intentionally kept out of Stage 3 headline scope because they move
+the project from enterprise-ready platform architecture into formal SIEM/SOC,
+ITSM, audit, and enterprise risk operations.
 
 **Best place to emphasize:**
 

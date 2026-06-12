@@ -11,6 +11,12 @@ head.
 
 ## Working method
 
+The first step is architecture, not prompting.
+
+Before asking AI for implementation changes, the target architecture, runtime
+boundaries, environment shape, and comparison baseline should be explicit
+enough to constrain the work.
+
 AI is mainly used for:
 
 - exploring implementation options and tradeoffs

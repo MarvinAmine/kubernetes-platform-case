@@ -167,6 +167,8 @@ This stage uses a clear 3-team model:
 For the detailed responsibilities and role boundaries inside each team, see
 [project_team_ownership_model.md](./project_team_ownership_model.md).
 
+![Stage 1 local Kubernetes architecture](/assets/Stage2_environment-Stage%201%20-%20Local.drawio.svg)
+
 ![Intrastructure bootstrap path](/assets/infrastructure_bootstrap_path.png)
 ![Platform provision path](/assets/platform_provision_path.png)
 ![Application delivery path](/assets/app_delivery_path.png)
@@ -219,19 +221,19 @@ Outcome:
 An infrastructure team bootstraps the foundation, a platform team provisions a governed Kubernetes environment on top of it, and an application team deploys the Payment Exception Review Status API into it through a controlled path.
 
 <p align="left">
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/azure.svg" alt="Azure" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/kubernetes.svg" alt="Kubernetes" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/terraform.svg" alt="Terraform" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github-actions.svg" alt="GitHub Actions" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github.svg" alt="GitHub" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github.svg" alt="GHCR" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/github-releases.svg" alt="GitHub Releases" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/docker.svg" alt="Docker" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/helm.svg" alt="Helm" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/spring-boot.svg" alt="Spring Boot" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/postgresql.svg" alt="PostgreSQL" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/prometheus.svg" alt="Prometheus" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/grafana.svg" alt="Grafana" width="18" />
+  <img src="../presentation/assets/presentation-icons/azure.svg" alt="Azure" width="18" />
+  <img src="../presentation/assets/presentation-icons/kubernetes.svg" alt="Kubernetes" width="18" />
+  <img src="../presentation/assets/presentation-icons/terraform.svg" alt="Terraform" width="18" />
+  <img src="../presentation/assets/presentation-icons/github-actions.svg" alt="GitHub Actions" width="18" />
+  <img src="../presentation/assets/presentation-icons/github.svg" alt="GitHub" width="18" />
+  <img src="../presentation/assets/presentation-icons/github.svg" alt="GHCR" width="18" />
+  <img src="../presentation/assets/presentation-icons/github-releases.svg" alt="GitHub Releases" width="18" />
+  <img src="../presentation/assets/presentation-icons/docker.svg" alt="Docker" width="18" />
+  <img src="../presentation/assets/presentation-icons/helm.svg" alt="Helm" width="18" />
+  <img src="../presentation/assets/presentation-icons/spring-boot.svg" alt="Spring Boot" width="18" />
+  <img src="../presentation/assets/presentation-icons/postgresql.svg" alt="PostgreSQL" width="18" />
+  <img src="../presentation/assets/presentation-icons/prometheus.svg" alt="Prometheus" width="18" />
+  <img src="../presentation/assets/presentation-icons/grafana.svg" alt="Grafana" width="18" />
 </p>
 
 ### Stage 2 — Governance, security, and shared-platform hardening
@@ -250,14 +252,14 @@ Outcome:
 One governed service becomes a reusable shared platform with controlled promotion, approval gates, rollback discipline, centralized secrets, policy guardrails, security gates, and operational visibility for multiple teams.
 
 <p align="left">
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/openshift.svg" alt="OpenShift" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/dependabot.svg" alt="Dependabot" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/git-orange.svg" alt="ArgoCD" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/vault.svg" alt="Vault" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/ansible.svg" alt="Ansible" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/elasticsearch.svg" alt="Elasticsearch" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/kibana.svg" alt="Kibana" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/ubuntu.svg" alt="Linux" width="18" />
+  <img src="../presentation/assets/presentation-icons/openshift.svg" alt="OpenShift" width="18" />
+  <img src="../presentation/assets/presentation-icons/dependabot.svg" alt="Dependabot" width="18" />
+  <img src="../presentation/assets/presentation-icons/argocd.svg" alt="ArgoCD" width="18" />
+  <img src="../presentation/assets/presentation-icons/vault.svg" alt="Vault" width="18" />
+  <img src="../presentation/assets/presentation-icons/ansible.svg" alt="Ansible" width="18" />
+  <img src="../presentation/assets/presentation-icons/elasticsearch.svg" alt="Elasticsearch" width="18" />
+  <img src="../presentation/assets/presentation-icons/kibana.svg" alt="Kibana" width="18" />
+  <img src="../presentation/assets/presentation-icons/ubuntu.svg" alt="Linux" width="18" />
 </p>
 
 ### Stage 3 — Enterprise hybrid platform expansion
@@ -267,28 +269,48 @@ One governed service becomes a reusable shared platform with controlled promotio
 | Hybrid platform | AWS, Azure, OpenShift, OnPrem | Multi-cloud hybrid platform direction for stronger production governance |
 | Service mesh | OpenShift Service Mesh (Istio-based) | Enterprise east-west traffic governance, mTLS, and mesh-level policy |
 | Terraform orchestration | Terragrunt | Reduce repeated Terraform structure and coordinate more complex multi-environment stacks |
-| Observability | DataDog, Thanos, Prometheus, Grafana | Advanced observability for SRE / Production Engineering visibility |
+| Observability | DataDog, Thanos, Prometheus, Grafana | Enterprise observability direction and longer-retention metrics strategy |
 | Identity | Okta, Microsoft Entra ID, Active Directory / AD DS, hybrid identity synchronization, OAuth2/OIDC, MFA, RBAC | Stronger enterprise identity, access, and hybrid identity alignment |
-| Enterprise security integration | CrowdStrike Falcon, Palo Alto Prisma Access, Microsoft Purview DLP, Wiz, Splunk, ServiceNow Security Operations | Broader endpoint, SASE / ZTNA, DLP, cloud security posture, SIEM/SOC, and security workflow integration |
+| Enterprise security integration | CrowdStrike Falcon, Palo Alto Prisma Access, Microsoft Purview DLP, Wiz | Broader endpoint, SASE / ZTNA, VPN, WAF, DLP, and cloud security posture integration direction |
 | Promotion model | local, dev, staging, certification, prod | Multi-environment promotion across hybrid platform boundaries |
-| Compliance direction | ISO, NIST, SOC 2, PCI DSS, ISO/IEC 20000 control-mapping notes | Compliance-aware architecture foundation, not a formal compliance program |
+| Compliance direction | Control-mapping notes and audit-friendly evidence direction | Compliance-aware architecture foundation, not a formal compliance program |
 | Operations | AWS EKS, Azure AKS, Ansible, GitHub Actions | Enterprise-grade operations narrative |
 
 Outcome:
-The platform becomes a broader enterprise platform case aligned with highly regulated environments. Stage 3 prepares compliance evidence and control-mapping direction; formal compliance implementation belongs to a later stage.
+The platform becomes a broader enterprise platform case aligned with highly regulated environments. Stage 3 prepares hybrid architecture, identity, enterprise access, observability, and control-mapping direction; formal SOC, SIEM, ITSM, and compliance implementation belongs to Stage 4+.
 
 <p align="left">
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/aws.svg" alt="AWS" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/azure.svg" alt="Azure" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/openshift.svg" alt="OpenShift" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/eks.svg" alt="EKS" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/onprem.svg" alt="On-premises" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/terraform.svg" alt="Terragrunt" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/okta.svg" alt="Okta" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/datadog.svg" alt="DataDog" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/thanos.svg" alt="Thanos" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/prometheus.svg" alt="Prometheus" width="18" />
-  <img src="../presentation/payment-exception-review-stage-1/assets/presentation-icons/grafana.svg" alt="Grafana" width="18" />
+  <img src="../presentation/assets/presentation-icons/aws.svg" alt="AWS" width="18" />
+  <img src="../presentation/assets/presentation-icons/azure.svg" alt="Azure" width="18" />
+  <img src="../presentation/assets/presentation-icons/openshift.svg" alt="OpenShift" width="18" />
+  <img src="../presentation/assets/presentation-icons/eks.svg" alt="EKS" width="18" />
+  <img src="../presentation/assets/presentation-icons/onprem.svg" alt="On-premises" width="18" />
+  <img src="../presentation/assets/presentation-icons/terraform.svg" alt="Terragrunt" width="18" />
+  <img src="../presentation/assets/presentation-icons/okta.svg" alt="Okta" width="18" />
+  <img src="../presentation/assets/presentation-icons/datadog.svg" alt="DataDog" width="18" />
+  <img src="../presentation/assets/presentation-icons/thanos.svg" alt="Thanos" width="18" />
+  <img src="../presentation/assets/presentation-icons/prometheus.svg" alt="Prometheus" width="18" />
+  <img src="../presentation/assets/presentation-icons/grafana.svg" alt="Grafana" width="18" />
+</p>
+
+### Stage 4+ — Compliance, SOC, and enterprise risk operations
+| Additive scope | Technologies | Purpose |
+| --- | --- | --- |
+| Inheritance | All Stage 3 technologies | Keep the enterprise hybrid-platform base |
+| SIEM / SOC integration | Splunk | Centralized enterprise detection, response, audit visibility, and SOC correlation |
+| Security operations workflow | ServiceNow Security Operations | Vulnerability, incident, risk, remediation, and evidence workflow integration |
+| Compliance program direction | ISO, NIST, SOC 2, PCI DSS, ISO/IEC 20000 | Formal control mapping, audit evidence, governance workflows, and compliance operating model |
+| Enterprise risk operations | Risk register, audit trail, CAB / change evidence, exception handling | Move from compliance-aware architecture to compliance and enterprise-risk execution |
+
+Outcome:
+The platform story moves from enterprise-ready architecture into formal operational governance. This is where SIEM/SOC, ITSM/security workflow, audit evidence, and compliance program scope become explicit instead of being mixed into Stage 3.
+
+<p align="left">
+  <img src="../presentation/assets/presentation-icons/splunk.svg" alt="Splunk" width="18" />
+  <img src="../presentation/assets/presentation-icons/servicenow.svg" alt="ServiceNow Security Operations" width="18" />
+  <img src="../presentation/assets/presentation-icons/compliance-certificate.svg" alt="Compliance program" width="18" />
+  <img src="../presentation/assets/presentation-icons/audit-control.svg" alt="Audit controls" width="18" />
+  <img src="../presentation/assets/presentation-icons/risk-register.svg" alt="Risk register" width="18" />
 </p>
 
 ## FinOps and Cost Control

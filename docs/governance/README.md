@@ -9,6 +9,11 @@ forums.
 It is not an implementation folder.
 It defines constraints before tools are selected.
 
+## Documents
+
+- [Stage 2 governance directives](./stage2-governance-directives.md)
+- [Stage 2 reliability targets](./stage2-reliability-targets.md)
+
 Implementation teams consume these directives:
 
 - `infrastructure/` implements infrastructure boundaries

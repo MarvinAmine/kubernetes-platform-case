@@ -410,6 +410,18 @@
       cursor: zoom-in;
     }
 
+    .media-frame.architecture-frame {
+      border-radius: 18px;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .media-frame.architecture-frame img {
+      width: 100%;
+      min-width: 0;
+      max-width: none;
+    }
+
     .video-embed {
       position: relative;
       width: 100%;
@@ -2089,6 +2101,21 @@ flowchart TB
         </div>
       </section>
 
+      <section class="section" id="local-architecture">
+        <div class="section-head reveal-item">
+          <h2>Stage 1 local architecture</h2>
+          <p>
+            The local environment is a complete Kind-based runtime used to validate the application, database dependency, and shared observability stack without Azure.
+          </p>
+        </div>
+        <div class="media-frame architecture-frame reveal-item">
+          <img src="../assets/stage1-local-architecture.drawio.svg" alt="Stage 1 local Kubernetes architecture">
+          <div class="media-caption">
+            Local architecture: Kind cluster, application namespace, monitoring namespace, Spring Boot backend, PostgreSQL, Prometheus, and Grafana.
+          </div>
+        </div>
+      </section>
+
       <section class="section" id="delivery">
         <div class="section-head reveal-item">
           <h2>Controlled delivery journey</h2>
@@ -2283,7 +2310,7 @@ flowchart TB
               </div>
               <div class="evo-band stage2">
                 <img class="tech-float" style="left:9%; top:21%;" src="../assets/presentation-icons/openshift.svg" alt="">
-                <img class="tech-float small" style="left:19%; top:68%;" src="../assets/presentation-icons/git-orange.svg" alt="">
+                <img class="tech-float small" style="left:19%; top:68%;" src="../assets/presentation-icons/argocd.svg" alt="">
                 <img class="tech-float large" style="left:34%; top:14%;" src="../assets/presentation-icons/vault.svg" alt="">
                 <img class="tech-float" style="left:49%; top:64%;" src="../assets/presentation-icons/elasticsearch.svg" alt="">
                 <img class="tech-float small" style="left:62%; top:20%;" src="../assets/presentation-icons/kibana.svg" alt="">
@@ -2360,7 +2387,7 @@ flowchart TB
                   <div class="evo-pills">
                     <span><img src="../assets/presentation-icons/openshift.svg" alt="">OpenShift</span>
                     <span><img src="../assets/presentation-icons/dependabot.svg" alt="">Dependabot</span>
-                    <span><img src="../assets/presentation-icons/git-orange.svg" alt="">ArgoCD</span>
+                    <span><img src="../assets/presentation-icons/argocd.svg" alt="">ArgoCD</span>
                     <span><img src="../assets/presentation-icons/vault.svg" alt="">Vault</span>
                     <span><img src="../assets/presentation-icons/elasticsearch.svg" alt="">ElasticSearch</span>
                     <span><img src="../assets/presentation-icons/kibana.svg" alt="">Kibana</span>

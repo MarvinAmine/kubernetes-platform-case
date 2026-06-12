@@ -32,9 +32,13 @@ This stage is where the broader architecture concerns become explicit, such as:
 - on-prem operating model compatibility
 - multi-cluster operating patterns across different hosting models
 - enterprise service-mesh patterns with OpenShift Service Mesh (Istio-based)
+- enterprise messaging and event-streaming direction through IBM MQ and
+  Apache Kafka / Confluent
 - stronger portability and standardization between environments
 - broader enterprise identity integration across cloud and on-prem environments
-- enterprise security integration patterns across IAM, endpoint, network, SOC, and cloud security posture layers
+- enterprise security integration patterns across IAM, endpoint, network, and cloud security posture layers
+- enterprise access integration across ZTNA, SASE, VPN, WAF, and conditional
+  access patterns
 - cross-environment observability strategy and wider enterprise visibility
 - long-term metrics retention and global query patterns such as Thanos when
   justified
@@ -53,10 +57,10 @@ This stage can introduce:
 - deployment evidence and approval history
 - audit-friendly release traceability
 - segregation-of-duties thinking
-- SIEM / SOC / ITSM integration direction
+- SIEM / SOC / ITSM hand-off direction for Stage 4+
 - control-mapping notes for ISO, NIST, SOC 2, PCI DSS, and ISO/IEC 20000
 
-Formal compliance implementation is intentionally deferred to a later stage.
+Formal compliance implementation is intentionally deferred to Stage 4+.
 That later scope would cover control owners, evidence lifecycle, risk register,
 audit-ready reporting, formal ITSM processes, and framework-specific mappings.
 
@@ -85,8 +89,6 @@ At this stage, the platform is no longer presented as a single-cluster implement
 - **Palo Alto Prisma Access** represents SASE / SSE / ZTNA direction for enterprise access governance
 - **Microsoft Purview DLP** represents data loss prevention controls at enterprise scale
 - **Wiz** represents cloud, container, and Kubernetes security posture management
-- **Splunk** represents SIEM integration for broader detection, response, and audit visibility
-- **ServiceNow Security Operations** represents enterprise vulnerability, incident, and risk workflow integration when security findings need operational ownership
 - **Helm** continues to package deployable Kubernetes resources in a reusable and controlled way
 - **Ansible** supports platform standardization and repeatable operational configuration tasks
 - **Prometheus and Grafana** continue to provide Kubernetes-native metrics visibility
@@ -94,6 +96,18 @@ At this stage, the platform is no longer presented as a single-cluster implement
 - **DataDog** introduces an enterprise-wide observability direction for broader cross-environment monitoring and operational visibility
 - **Thanos** is the natural extension when shared Prometheus retention and
   global query need to scale beyond a single cluster or short local retention
+- **IBM MQ** represents the safer regulated-enterprise messaging signal for transactional middleware, queue-based integration, and legacy financial-system interoperability
+- **Apache Kafka / Confluent** represents the safer modern event-streaming signal for high-throughput event platforms, replay, consumer groups, and governed streaming operations
+
+RabbitMQ, Azure Service Bus, Azure Event Hubs, Schema Registry, and Debezium are
+kept as alternatives or supporting capabilities. They are not Stage 3 headline
+technologies because they duplicate the main purpose of IBM MQ or Kafka /
+Confluent, or they are narrower sub-capabilities of an event platform.
+
+Splunk and ServiceNow Security Operations are intentionally not Stage 3
+headline technologies. They belong to Stage 4+ because they represent formal
+SIEM/SOC, ITSM, risk workflow, and audit evidence operations rather than the
+core hybrid-platform architecture proof.
 
 ### Why this stage matters in regulated environments
 
@@ -115,7 +129,7 @@ This stage is built to reflect that reality.
 - ability to evolve a governed Kubernetes platform into an enterprise-ready hybrid operating model
 - practical understanding of platform design across **Azure**, **AWS**, and **on-prem**
 - stronger maturity in **identity, access, hybrid identity, and secrets governance**
-- stronger ability to reason about how platform delivery controls integrate with enterprise security operations, endpoint protection, SASE / ZTNA, DLP, SIEM, and cloud security posture tooling
+- stronger ability to reason about how platform delivery controls integrate with enterprise security operations, endpoint protection, SASE / ZTNA, DLP, cloud security posture tooling, and later SIEM/SOC hand-offs
 - stronger observability judgment across self-managed and enterprise-scale monitoring approaches
 - better judgment about when to keep observability shared at the platform level
   and when regulation actually justifies separate monitoring estates
@@ -143,11 +157,11 @@ This stage signals hands-on exposure and architectural thinking around:
 - Palo Alto Prisma Access
 - Microsoft Purview DLP
 - Wiz
-- Splunk
-- ServiceNow Security Operations
 - Docker
 - Java Spring Boot
 - PostgreSQL
+- IBM MQ
+- Apache Kafka / Confluent
 - DataDog
 - Elasticsearch
 - Kibana
@@ -171,7 +185,7 @@ This stage is also meant to demonstrate:
 - platform supportability mindset
 - resilience and operational consistency thinking
 - identity and access governance awareness
-- enterprise security integration awareness across AppSec, cloud security posture, endpoint, network access, DLP, and SOC layers
+- enterprise security integration awareness across AppSec, cloud security posture, endpoint, network access, DLP, and later SOC hand-off layers
 - compliance-scope judgment without overstating certification readiness
 - communication across platform, security, infrastructure, and application concerns
 
